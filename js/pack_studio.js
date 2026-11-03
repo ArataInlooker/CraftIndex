@@ -1,7 +1,7 @@
 /**
  * CraftIndex - Pack Studio, Native ZIP Import/Export & Persistent Binary Storage Engine
  * Author: Arata Inlooker <aratainlooker@gmail.com>
- * Website: https://craftvault.inlooker.top
+ * Website: https://craftindex.inlooker.top
  */
 
 (function (window) {
