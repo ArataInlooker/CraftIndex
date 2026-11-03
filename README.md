@@ -115,6 +115,6 @@ REA/
 
 - **Product Name:** CraftIndex
 - **Creator / Maintainer:** Arata Inlooker ([aratainlooker@gmail.com](mailto:aratainlooker@gmail.com))
-- **Official Website:** [craftvault.inlooker.top](https://craftvault.inlooker.top)
+- **Official Website:** [craftindex.inlooker.top](https://craftindex.inlooker.top)
 - **GitHub Repository:** [https://github.com/ArataInlooker/CraftIndex](https://github.com/ArataInlooker/CraftIndex)
-- **License:** MIT
+- **License:** All Rights Reserved (Proprietary)
