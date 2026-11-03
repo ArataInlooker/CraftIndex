@@ -3,7 +3,7 @@
 **Product:** CraftIndex  
 **Authoritative Maintainer:** Arata Inlooker ([aratainlooker@gmail.com](mailto:aratainlooker@gmail.com))  
 **Repository:** [https://github.com/ArataInlooker/CraftIndex](https://github.com/ArataInlooker/CraftIndex)  
-**Primary Domain:** [https://craftvault.inlooker.top](https://craftvault.inlooker.top)  
+**Primary Domain:** [https://craftindex.inlooker.top](https://craftindex.inlooker.top)  
 **Specification Version:** 2.6.0  
 **Status:** Living Design Standard
 
