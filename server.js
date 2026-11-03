@@ -175,7 +175,7 @@ const server = http.createServer((req, res) => {
       const proxyReq = targetProtocol.request(parsedTarget, {
         method: req.method,
         headers: {
-          'User-Agent': 'CraftIndex/2.6.0 (https://craftvault.inlooker.top)',
+          'User-Agent': 'CraftIndex/2.6.0 (https://craftindex.inlooker.top)',
           'Accept': req.headers['accept'] || '*/*'
         }
       }, (proxyRes) => {
@@ -411,7 +411,7 @@ const server = http.createServer((req, res) => {
       method: req.method,
       headers: {
         'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'CraftIndex/2.6.0 (https://craftvault.inlooker.top; aratainlooker@gmail.com)'
+        'User-Agent': 'CraftIndex/2.6.0 (https://craftindex.inlooker.top; aratainlooker@gmail.com)'
       }
     }, (proxyRes) => {
       res.writeHead(proxyRes.statusCode, {
