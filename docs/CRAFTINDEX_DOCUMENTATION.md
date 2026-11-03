@@ -107,7 +107,7 @@ CraftIndex adheres to a minimalist, futuristic cyber-glass aesthetic that runs e
 
 ---
 
-<a id="03-why-craftvault"></a>
+<a id="03-why-craftindex"></a><a id="03-why-craftvault"></a>
 ## 03. Why CraftIndex
 
 Collecting Minecraft resources from multiple platforms presents repetitive hurdles:
