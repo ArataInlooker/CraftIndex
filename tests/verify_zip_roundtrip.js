@@ -73,7 +73,7 @@ async function createFixtures() {
   const modB64 = fixtures.mod.buffer.toString('base64');
   const rpB64 = fixtures.resourcePack.buffer.toString('base64');
 
-  console.log('\n[Step 3: Initial Import into CraftVault]');
+  console.log('\n[Step 3: Initial Import into CraftIndex]');
   const initialImport = await browser.evaluate(`(async () => {
     function b64ToBlob(b64, type) {
       const bin = atob(b64);
@@ -98,7 +98,7 @@ async function createFixtures() {
   })()`);
   console.log(' - Initial Import Cart Size:', initialImport.cartSize);
 
-  console.log('\n[Step 4: Export Collection Archive from CraftVault]');
+  console.log('\n[Step 4: Export Collection Archive from CraftIndex]');
   const exportResult = await browser.evaluate(`(async () => {
     const res = await window.CraftVaultStudio.exportCollectionZip({
       packName: 'RoundTrip-Verification-Pack',
@@ -130,9 +130,9 @@ async function createFixtures() {
   const exportedZip = await JSZip.loadAsync(exportedZipBuffer);
 
   console.log('\n[Step 5: Inspect Exported ZIP with Independent JSZip]');
-  const manifestFile = exportedZip.file('craftvault_manifest.json');
-  console.log(' - craftvault_manifest.json present:', Boolean(manifestFile));
-  if (!manifestFile) throw new Error('Exported ZIP missing craftvault_manifest.json');
+  const manifestFile = exportedZip.file('craftindex_manifest.json');
+  console.log(' - craftindex_manifest.json present:', Boolean(manifestFile));
+  if (!manifestFile) throw new Error('Exported ZIP missing craftindex_manifest.json');
 
   const manifestData = JSON.parse(await manifestFile.async('string'));
   console.log(' - Manifest Schema Version:', manifestData.schema_version);
@@ -156,7 +156,7 @@ async function createFixtures() {
   console.log(` - Mod Hash in Exported ZIP: ${exportedModHash} (Match: ${exportedModHash === fixtures.mod.hash ? '✅' : '❌'})`);
   console.log(` - RP Hash in Exported ZIP:  ${exportedRpHash} (Match: ${exportedRpHash === fixtures.resourcePack.hash ? '✅' : '❌'})`);
 
-  console.log('\n[Step 6: Clear CraftVault Browser State]');
+  console.log('\n[Step 6: Clear CraftIndex Browser State]');
   await browser.evaluate(`(async () => {
     if (window.cart) window.cart.clear();
     localStorage.removeItem('cv_cart');
@@ -175,7 +175,7 @@ async function createFixtures() {
   })()`);
   console.log(` - State Cleared: Cart=${postClearStatus.cartSize}, IDB=${postClearStatus.idbCount}`);
 
-  console.log('\n[Step 7: Re-import Exported Collection ZIP into CraftVault]');
+  console.log('\n[Step 7: Re-import Exported Collection ZIP into CraftIndex]');
   const reimportResult = await browser.evaluate(`(async () => {
     function b64ToBlob(b64, type) {
       const bin = atob(b64);
