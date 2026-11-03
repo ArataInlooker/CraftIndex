@@ -7,7 +7,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const DOMAIN = process.env.CRAFTINDEX_DOMAIN || process.env.CRAFTVAULT_DOMAIN || 'https://craftvault.inlooker.top';
+const DOMAIN = process.env.CRAFTINDEX_DOMAIN || process.env.CRAFTVAULT_DOMAIN || 'https://craftindex.inlooker.top';
 const AUTHOR = {
   '@type': 'Person',
   name: 'Arata Inlooker',
