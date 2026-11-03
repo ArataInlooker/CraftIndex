@@ -687,7 +687,7 @@ const ABOUT_DOCS = [
             <tr>
               <td><strong>ZIP download fails to trigger</strong></td>
               <td>Browser blocked multiple download popups.</td>
-              <td>Allow popups and downloads for <code>craftvault.inlooker.top</code> in browser site settings.</td>
+              <td>Allow popups and downloads for <code>craftindex.inlooker.top</code> in browser site settings.</td>
             </tr>
             <tr>
               <td><strong>Settings JSON import error</strong></td>
@@ -761,7 +761,7 @@ const ABOUT_DOCS = [
       <div class="doc-card-link-box">
         <p><strong>Product:</strong> CraftIndex</p>
         <p><strong>Creator & Maintainer:</strong> Arata Inlooker</p>
-        <p><strong>Official Website:</strong> <a href="https://craftvault.inlooker.top" target="_blank" rel="noopener noreferrer">https://craftvault.inlooker.top</a></p>
+        <p><strong>Official Website:</strong> <a href="https://craftindex.inlooker.top" target="_blank" rel="noopener noreferrer">https://craftindex.inlooker.top</a></p>
         <p><strong>Creator Portfolio:</strong> <a href="https://inlooker.top" target="_blank" rel="noopener noreferrer">https://inlooker.top</a></p>
         <p><strong>GitHub Repository:</strong> <a href="https://github.com/ArataInlooker/CraftIndex" target="_blank" rel="noopener noreferrer">https://github.com/ArataInlooker/CraftIndex</a></p>
         <p><strong>Contact Email:</strong> <a href="mailto:aratainlooker@gmail.com">aratainlooker@gmail.com</a></p>
