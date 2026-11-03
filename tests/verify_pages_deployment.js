@@ -93,7 +93,7 @@ async function runPreflightAudit() {
       const html = await res.text();
       const expTitle = cfg.title.replace(/&/g, '&amp;');
       assert(`Route ${cPath} includes canonical title`, html.includes(expTitle) || html.includes(cfg.title), `expected: ${cfg.title.slice(0, 30)}...`);
-      assert(`Route ${cPath} includes canonical link`, html.includes(`href="https://craftvault.inlooker.top${cPath}"`));
+      assert(`Route ${cPath} includes canonical link`, html.includes(`href="https://craftindex.inlooker.top${cPath}"`));
       assert(`Route ${cPath} has <base href="/">`, html.includes('<base href="/" />'));
       assert(`Route ${cPath} has transparent favicon.svg`, html.includes('images/favicon.svg'));
       assert(`Route ${cPath} has Open Graph tags`, html.includes('property="og:title"'));
