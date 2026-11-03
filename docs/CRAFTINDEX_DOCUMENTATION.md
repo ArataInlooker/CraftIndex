@@ -2,7 +2,7 @@
 
 > **Official Minecraft Resource Discovery, Pack Studio & Multi-Resource Collection Platform**  
 > **Creator & Maintainer:** Arata Inlooker  
-> **Official Website:** [craftvault.inlooker.top](https://craftvault.inlooker.top)  
+> **Official Website:** [craftindex.inlooker.top](https://craftindex.inlooker.top)  
 > **Creator Portfolio:** [inlooker.top](https://inlooker.top)  
 > **GitHub Repository:** [github.com/ArataInlooker/CraftIndex](https://github.com/ArataInlooker/CraftIndex)
 
@@ -59,7 +59,7 @@
 - **Maintainer:** Arata Inlooker
 - **Tagline:** Discover. Collect. Download.
 - **Category:** Minecraft Resource Discovery, Modpack Builder & Pack Studio
-- **Website:** [https://craftvault.inlooker.top](https://craftvault.inlooker.top)
+- **Website:** [https://craftindex.inlooker.top](https://craftindex.inlooker.top)
 - **Primary Color Identity:** Cosmic Purple (`#0c0915`, `#161126`, `#7c4dff`, `#b388ff`, `#d1b3ff`)
 
 ### Main Description
@@ -183,7 +183,7 @@ The CraftIndex interface is structured into four main functional regions:
 | [ Card 1 ]       [ Card 2 ]       [ Card 3 ]       [ Card 4 ]       [ Card 5 ]      |
 | [ Card 6 ]       [ Card 7 ]       [ Card 8 ]       [ Card 9 ]       [ Card 10]      |
 +-------------------------------------------------------------------------------------+
-| [ CraftIndex by Arata Inlooker - craftvault.inlooker.top                          ] |
+| [ CraftIndex by Arata Inlooker - craftindex.inlooker.top                          ] |
 +-------------------------------------------------------------------------------------+
 ```
 
@@ -453,7 +453,7 @@ The standalone distribution is located at:
 | **Search returns no results** | Upstream API rate limit or strict filter combination. | Clear version/loader filters, check search spelling, or wait 30 seconds for rate limits to reset. |
 | **CurseForge results fail to load** | Missing `CF_KEY` in `server.js` or proxy offline. | Ensure `server.js` is running and supply an API key in `.env`, or switch primary source to Modrinth. |
 | **Cart is empty after closing browser** | Private browsing mode or cleared LocalStorage. | Use standard browser mode; ensure browser settings do not clear storage on exit. |
-| **ZIP download fails to trigger** | Browser blocked multiple download popups. | Allow popups and downloads for `craftvault.inlooker.top` in browser site settings. |
+| **ZIP download fails to trigger** | Browser blocked multiple download popups. | Allow popups and downloads for `craftindex.inlooker.top` in browser site settings. |
 | **Settings JSON import error** | Malformed or incompatible JSON schema. | Re-export settings from CraftIndex to inspect valid format; ensure valid JSON syntax. |
 | **Backend proxy connection refused** | Port 3000 occupied or server not running. | Run `npm start` in the project terminal or check `Get-NetTCPConnection -LocalPort 3000`. |
 
@@ -491,10 +491,10 @@ The user interface and standalone file (`dist/index.standalone.html`) can be ope
 
 - **Product:** CraftIndex
 - **Creator & Maintainer:** Arata Inlooker
-- **Official Website:** [https://craftvault.inlooker.top](https://craftvault.inlooker.top)
+- **Official Website:** [https://craftindex.inlooker.top](https://craftindex.inlooker.top)
 - **Creator Portfolio:** [https://inlooker.top](https://inlooker.top)
 - **GitHub Repository:** [https://github.com/ArataInlooker/CraftIndex](https://github.com/ArataInlooker/CraftIndex)
 - **Contact Email:** [aratainlooker@gmail.com](mailto:aratainlooker@gmail.com)
-- **License:** MIT License
+- **License:** All Rights Reserved (Proprietary)
 
 *CraftIndex is an independent open-source project and is not affiliated with, endorsed by, or associated with Mojang Studios, Microsoft, CurseForge, or Modrinth.*
