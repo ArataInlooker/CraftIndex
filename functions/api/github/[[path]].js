@@ -29,7 +29,7 @@ export async function onRequest(context) {
   try {
     const headers = new Headers();
     headers.set('Accept', 'application/vnd.github.v3+json');
-    headers.set('User-Agent', 'CraftIndex/2.6.0 (https://craftvault.inlooker.top; aratainlooker@gmail.com)');
+    headers.set('User-Agent', 'CraftIndex/2.6.0 (https://craftindex.inlooker.top; aratainlooker@gmail.com)');
     if (env.GITHUB_TOKEN) {
       headers.set('Authorization', 'Bearer ' + env.GITHUB_TOKEN);
     }
