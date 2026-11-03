@@ -14,7 +14,14 @@
     "build:pages": "node build_pages.js",
     "build:routes": "node build_static_routes.js",
     "build:standalone": "node sync_standalone.js",
-    "test": "node tests/verify_header_logo_and_favicon.js"
+    "build:docs": "node build_docs.js",
+    "test": "node tests/run_all_tests.js",
+    "test:unit": "node tests/test_pages_function.js",
+    "test:pages": "node tests/verify_pages_deployment.js",
+    "test:zip": "node tests/verify_zip_roundtrip.js",
+    "test:persistence": "node tests/verify_binary_persistence.js",
+    "test:routing": "node tests/verify_browser_routing.js",
+    "test:visual": "node tests/verify_header_logo_and_favicon.js"
   },
   "keywords": [
     "craftindex",

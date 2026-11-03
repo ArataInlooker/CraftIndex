@@ -31,12 +31,25 @@ async function testPagesFunction() {
   const ssrfRes1 = await onRequest({ request: ssrfReq1, env: {} });
   assert('SSRF localhost rejected with 403', ssrfRes1.status === 403);
 
-  // 4. Test SSRF protection - private IP rejection (169.254.169.254)
+  // 4. Test SSRF protection - private IP rejection (169.254.169.254, 10.0.0.1, 192.168.1.1)
   const ssrfReq2 = new Request('http://localhost/api/fetch?url=http://169.254.169.254/latest/meta-data', { method: 'GET' });
   const ssrfRes2 = await onRequest({ request: ssrfReq2, env: {} });
   assert('SSRF AWS metadata IP rejected with 403', ssrfRes2.status === 403);
 
-  // 5. Test Non-whitelisted domain rejection
+  const ssrfReq3 = new Request('http://localhost/api/fetch?url=http://10.0.0.1/admin', { method: 'GET' });
+  const ssrfRes3 = await onRequest({ request: ssrfReq3, env: {} });
+  assert('SSRF private IP 10.0.0.1 rejected with 403', ssrfRes3.status === 403);
+
+  const ssrfReq4 = new Request('http://localhost/api/fetch?url=http://192.168.1.1/router', { method: 'GET' });
+  const ssrfRes4 = await onRequest({ request: ssrfReq4, env: {} });
+  assert('SSRF private IP 192.168.1.1 rejected with 403', ssrfRes4.status === 403);
+
+  // 5. Test Non-HTTP protocol rejection (file://)
+  const fileProtoReq = new Request('http://localhost/api/fetch?url=file:///etc/passwd', { method: 'GET' });
+  const fileProtoRes = await onRequest({ request: fileProtoReq, env: {} });
+  assert('Non-HTTP file:// protocol rejected with 403', fileProtoRes.status === 403);
+
+  // 6. Test Non-whitelisted domain rejection
   const nonWhiteReq = new Request('http://localhost/api/fetch?url=https://evil-attacker.com/steal', { method: 'GET' });
   const nonWhiteRes = await onRequest({ request: nonWhiteReq, env: {} });
   assert('Non-whitelisted domain rejected with 403', nonWhiteRes.status === 403);

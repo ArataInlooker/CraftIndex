@@ -352,7 +352,7 @@ const ROUTE_CONFIG = {
         <p class="seo-crawler-lead">CraftIndex Pack Studio empowers players and administrators to curate, inspect, and package multi-resource collections into standard-compliant Minecraft archives with persistent IndexedDB binary storage.</p>
         <div class="seo-crawler-features">
           <div class="seo-feature-item"><strong>Binary Persistence:</strong> Raw files stored locally as Blobs in CraftIndexDB IndexedDB with SHA-256 integrity checks.</div>
-          <div class="seo-feature-item"><strong>Automated Manifests:</strong> Generates craftindex_manifest.json (schema 1.0.0) alongside Modrinth .mrpack compatibility.</div>
+          <div class="seo-feature-item"><strong>Automated Manifests:</strong> Generates craftindex_manifest.json (schema 1.1.0) alongside Modrinth .mrpack compatibility.</div>
           <div class="seo-feature-item"><strong>Organized Folders:</strong> Automatic routing into mods/, plugins/, resourcepacks/, shaderpacks/, and datapacks/.</div>
         </div>
       </section>

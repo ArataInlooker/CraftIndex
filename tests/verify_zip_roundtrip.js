@@ -224,7 +224,9 @@ async function createFixtures() {
 
   console.log('\n================================================================');
   console.log('ZIP ROUND-TRIP VERIFICATION VERDICT:');
+  const schemaValid = manifestData && manifestData.schema_version === '1.1.0';
   console.log(' - Export Manifest Validation:              ', manifestFile ? '✅ PASS' : '❌ FAIL');
+  console.log(' - Manifest Schema 1.1.0 Validation:        ', schemaValid ? '✅ PASS' : '❌ FAIL');
   console.log(' - Export Directory Architecture:          ', (exportedModFile && exportedRpFile) ? '✅ PASS' : '❌ FAIL');
   console.log(' - Bit-for-Bit Hash Match in Export Archive: ', (exportedModHash === fixtures.mod.hash && exportedRpHash === fixtures.resourcePack.hash) ? '✅ PASS' : '❌ FAIL');
   console.log(' - Re-import Manifest Recognition:          ', reimportResult.craftindexManifest ? '✅ PASS' : '❌ FAIL');
@@ -232,7 +234,7 @@ async function createFixtures() {
   console.log('================================================================');
 
   await browser.close();
-  const allPass = manifestFile && exportedModFile && exportedRpFile &&
+  const allPass = manifestFile && schemaValid && exportedModFile && exportedRpFile &&
     exportedModHash === fixtures.mod.hash && exportedRpHash === fixtures.resourcePack.hash &&
     reimportResult.craftindexManifest && modMatched && rpMatched;
   process.exit(allPass ? 0 : 1);

@@ -74,6 +74,14 @@ export async function onRequest(context) {
       });
     }
 
+    // Protocol Validation: Only HTTP(S) protocols are permitted
+    if (parsedTarget.protocol !== 'https:' && parsedTarget.protocol !== 'http:') {
+      return new Response(JSON.stringify({ error: `Forbidden: Protocol '${parsedTarget.protocol}' is not allowed.` }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json', ...SECURITY_HEADERS }
+      });
+    }
+
     // SSRF & Allowlist Validation
     const targetHost = parsedTarget.hostname.toLowerCase();
     if (isPrivateIpOrHost(targetHost) || !WHITELISTED_HOSTS.has(targetHost)) {

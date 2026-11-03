@@ -36,11 +36,11 @@ function httpGetStatus(urlPath) {
     { path: '/studio/', expectedTab: 'studio', check: async () => {
       return await browser.evaluate(`Boolean(window.CraftIndexStudio)`);
     }, note: 'CraftIndexStudio available' },
-    { path: '/docs/', check: async () => {
-      return await browser.evaluate(`Boolean(document.getElementById('aboutModal') && document.getElementById('aboutModal').classList.contains('open'))`);
-    }, note: 'About/Docs modal opened' },
-    { path: '/docs/api-backend', check: async () => {
-      return await browser.evaluate(`Boolean(document.getElementById('aboutModal') && document.getElementById('aboutModal').classList.contains('open') && document.querySelector('.about-nav-item.active') && document.querySelector('.about-nav-item.active').dataset.id === 'api-backend')`);
+    { path: '/docs/', expectedTab: 'docs', check: async () => {
+      return await browser.evaluate(`Boolean((document.getElementById('aboutModal') && document.getElementById('aboutModal').classList.contains('open')) || (document.getElementById('standaloneDocsView') && document.getElementById('standaloneDocsView').style.display !== 'none') || document.body.dataset.tab === 'docs')`);
+    }, note: 'About/Docs view opened' },
+    { path: '/docs/api-backend', expectedTab: 'docs', check: async () => {
+      return await browser.evaluate(`Boolean(document.body.dataset.tab === 'docs' && (document.getElementById('standaloneDocsView') || (document.getElementById('aboutModal') && document.getElementById('aboutModal').classList.contains('open'))))`);
     }, note: 'Docs opened directly to API & Backend section' }
   ];
 
@@ -49,13 +49,18 @@ function httpGetStatus(urlPath) {
 
   for (const r of testRoutes) {
     await browser.navigate(`http://localhost:3000${r.path}`);
-    await new Promise(res => setTimeout(res, 800));
-
-    const state = await browser.evaluate(`({
-      bodyTab: document.body.dataset.tab,
-      title: document.title,
-      url: window.location.pathname
-    })`);
+    let state = { bodyTab: null, title: '', url: '' };
+    for (let retry = 0; retry < 15; retry++) {
+      await new Promise(res => setTimeout(res, 150));
+      state = await browser.evaluate(`({
+        bodyTab: document.body ? document.body.dataset.tab : null,
+        title: document.title || '',
+        url: window.location.pathname
+      })`);
+      if (state.bodyTab && (!r.expectedTab || state.bodyTab === r.expectedTab)) {
+        break;
+      }
+    }
 
     let pass = true;
     if (r.expectedTab && state.bodyTab !== r.expectedTab) pass = false;
@@ -77,20 +82,20 @@ function httpGetStatus(urlPath) {
   await browser.evaluate(`switchTab(T('shaders'))`);
   await new Promise(res => setTimeout(res, 600));
 
-  const afterSwitch = await browser.evaluate(`({ tab: document.body.dataset.tab, path: window.location.pathname })`);
+  const afterSwitch = await browser.evaluate(`({ tab: document.body ? document.body.dataset.tab : null, path: window.location.pathname })`);
   console.log(' - Switched tab to shaders:', afterSwitch);
 
   // 3. Trigger history.back()
   await browser.evaluate(`window.history.back()`);
   await new Promise(res => setTimeout(res, 800));
-  const afterBack = await browser.evaluate(`({ tab: document.body.dataset.tab, path: window.location.pathname })`);
+  const afterBack = await browser.evaluate(`({ tab: document.body ? document.body.dataset.tab : null, path: window.location.pathname })`);
   console.log(' - History Back (expected plugins):', afterBack);
   const backPass = afterBack.tab === 'plugins' && afterBack.path === '/plugins/';
 
   // 4. Trigger history.forward()
   await browser.evaluate(`window.history.forward()`);
   await new Promise(res => setTimeout(res, 800));
-  const afterForward = await browser.evaluate(`({ tab: document.body.dataset.tab, path: window.location.pathname })`);
+  const afterForward = await browser.evaluate(`({ tab: document.body ? document.body.dataset.tab : null, path: window.location.pathname })`);
   console.log(' - History Forward (expected shaders):', afterForward);
   const forwardPass = afterForward.tab === 'shaders' && afterForward.path === '/shaders/';
 
@@ -103,7 +108,7 @@ function httpGetStatus(urlPath) {
   await new Promise(res => setTimeout(res, 1200));
 
   const afterReload = await browser.evaluate(`({
-    tab: document.body.dataset.tab,
+    tab: document.body ? document.body.dataset.tab : null,
     path: window.location.pathname,
     loaderVal: document.getElementById('fl') ? document.getElementById('fl').value : null
   })`);

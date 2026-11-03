@@ -78,7 +78,7 @@ REA/
 4. **`js/pack_studio.js`:**
    - Manages client-side binary persistence using IndexedDB (`CraftIndexDB`).
    - Implements recursive ZIP inspection for mods, plugins, resource packs, shaders, and datapacks.
-   - Builds and extracts `craftindex_manifest.json` (schema 1.0.0).
+   - Builds and extracts `craftindex_manifest.json` (schema 1.1.0).
    - Exports collection archives with standardized directory structures (`mods/`, `resourcepacks/`, `plugins/`, etc.).
 5. **`js/about_docs.js`:**
    - Authoritative source for documentation articles rendered in the About Center modal.
