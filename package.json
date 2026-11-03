@@ -25,5 +25,6 @@
     "cosmic-purple"
   ],
   "author": "Arata Inlooker <aratainlooker@gmail.com>",
-  "license": "MIT"
+  "private": true,
+  "license": "UNLICENSED"
 }
