@@ -6738,7 +6738,7 @@ function openSettingsModal() {
       $("set-btn-export-cfg").onclick = () => {
         syncDraftFromUi();
         const exportObj = {
-          craftindex_version: "2.6", craftvault_version: "2.6",
+          craftindex_version: "2.6",
           exported_at: new Date().toISOString(),
           settings: { ...draft },
           sources: JSON.parse(safeStorage.getItem("cv_source_prefs") || "{}")
@@ -6763,7 +6763,7 @@ function openSettingsModal() {
           try {
             const data = JSON.parse(ev.target.result);
             if (!data || typeof data !== "object") throw new Error("Invalid format");
-            const hasValidSchema = data.craftindex_version || data.craftvault_version || data.settings || Object.keys(data).some(k => k.endsWith("_version"));
+            const hasValidSchema = data.craftindex_version || data.settings || Object.keys(data).some(k => k.endsWith("_version"));
             if (!hasValidSchema) {
               throw new Error("Unrecognized configuration schema");
             }
@@ -6996,10 +6996,7 @@ function renderAboutSidebar(activeId) {
   });
 }
 
-const DOC_ANCHOR_ALIASES = {
-  "why-craftvault": "why-craftindex",
-  "03-why-craftvault": "why-craftindex"
-};
+const DOC_ANCHOR_ALIASES = {};
 
 function showAboutCategory(id) {
   const contentEl = $("aboutContent");
@@ -7578,8 +7575,8 @@ async function handleImportMrpackFile(e) {
     const buffer = await file.arrayBuffer();
     const zip = await JSZip.loadAsync(buffer);
 
-    // 1. Check if it was exported by CraftVault or compatible tool with manifest
-    let manifestFile = zip.file("overrides/craftindex_manifest.json") || zip.file("overrides/craftvault_manifest.json") || zip.file("craftindex_manifest.json") || zip.file("craftvault_manifest.json");
+    // 1. Check if it was exported with a CraftIndex manifest
+    let manifestFile = zip.file("overrides/craftindex_manifest.json") || zip.file("craftindex_manifest.json");
     if (!manifestFile) {
       // Generic discovery of valid manifests inside overrides/
       for (const relativePath in zip.files) {

@@ -87,7 +87,7 @@ CraftIndex aims to make Minecraft resource discovery and collection simpler, mor
 - **Interactive Cart & Collection:** Select resources across completely different categories into one persistent cart.
 - **Client-Side Pack Packaging:** Generate organized ZIP files in-browser via JSZip with zero server upload bottleneck.
 - **Dependency Detection:** Detect required library dependencies (e.g. Fabric API, Cloth Config) prior to checkout.
-- **Modpack Interoperability:** Import and export standard Modrinth `.mrpack` files, CurseForge `manifest.json`, and custom CraftIndex JSON manifests (`craftindex_manifest.json` (with backward compatibility for `craftvault_manifest.json`) schema 1.0.0).
+- **Modpack Interoperability:** Import and export standard Modrinth `.mrpack` files, CurseForge `manifest.json`, and custom CraftIndex JSON manifests (`craftindex_manifest.json`, schema 1.1.0).
 - **Standalone Distribution:** Complete single-file offline distribution (`dist/index.standalone.html`).
 
 ---
@@ -107,7 +107,7 @@ CraftIndex adheres to a minimalist, futuristic cyber-glass aesthetic that runs e
 
 ---
 
-<a id="03-why-craftindex"></a><a id="03-why-craftvault"></a>
+<a id="03-why-craftindex"></a>
 ## 03. Why CraftIndex
 
 Collecting Minecraft resources from multiple platforms presents repetitive hurdles:
@@ -260,7 +260,7 @@ CraftIndex features **Pack Studio**, a dedicated client-side curation and archiv
 ```
 
 1. **Validation:** Checks that the collection contains valid resources and displays summary metrics.
-2. **Archive Naming & Metadata:** Custom pack naming and description with automatic manifest generation (`craftindex_manifest.json` (with backward compatibility for `craftvault_manifest.json`) schema 1.0.0).
+2. **Archive Naming & Metadata:** Custom pack naming and description with automatic manifest generation (`craftindex_manifest.json`, schema 1.1.0).
 3. **Dependency Check:** If staged mods require unmet dependencies (e.g. Fabric API, Cloth Config), the Dependency Resolution Dialog offers one-click inclusion.
 4. **Persistent Binary Storage:** Imported JARs and ZIPs are committed directly to IndexedDB (`CraftIndexDB`), ensuring local files survive page reloads and browser process restarts.
 5. **Standardized Folder Organization:** Automatically places files into structured subdirectories conforming to Minecraft client and server standards:

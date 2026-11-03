@@ -65,9 +65,9 @@ async function createFixtures() {
   await new Promise(r => setTimeout(r, 1200));
 
   console.log('[Step 2: Browser Launch & Navigation]');
-  const isLoaded = await browser.evaluate('Boolean(window.CraftVaultStudio)');
-  console.log(' - CraftVaultStudio available:', isLoaded);
-  if (!isLoaded) throw new Error('CraftVaultStudio failed to initialize in browser');
+  const isLoaded = await browser.evaluate('Boolean(window.CraftIndexStudio)');
+  console.log(' - CraftIndexStudio available:', isLoaded);
+  if (!isLoaded) throw new Error('CraftIndexStudio failed to initialize in browser');
 
   // Convert fixtures to base64
   const modB64 = fixtures.mod.buffer.toString('base64');
@@ -87,8 +87,8 @@ async function createFixtures() {
     const rpBlob = b64ToBlob("${rpB64}", "application/zip");
     rpBlob.name = "${fixtures.resourcePack.name}";
 
-    const resMod = await window.CraftVaultStudio.importZipArchive(modBlob);
-    const resRp = await window.CraftVaultStudio.importZipArchive(rpBlob);
+    const resMod = await window.CraftIndexStudio.importZipArchive(modBlob);
+    const resRp = await window.CraftIndexStudio.importZipArchive(rpBlob);
 
     return {
       modAdded: resMod.addedItems.length,
@@ -100,7 +100,7 @@ async function createFixtures() {
 
   console.log('\n[Step 4: Export Collection Archive from CraftIndex]');
   const exportResult = await browser.evaluate(`(async () => {
-    const res = await window.CraftVaultStudio.exportCollectionZip({
+    const res = await window.CraftIndexStudio.exportCollectionZip({
       packName: 'RoundTrip-Verification-Pack',
       packDesc: 'Automated Roundtrip Audit Pack',
       mcVersion: '1.20.1',
@@ -160,14 +160,14 @@ async function createFixtures() {
   await browser.evaluate(`(async () => {
     if (window.cart) window.cart.clear();
     localStorage.removeItem('cv_cart');
-    const dbs = await window.CraftVaultStudio.idbGetAllBinaries();
+    const dbs = await window.CraftIndexStudio.idbGetAllBinaries();
     for (const b of dbs) {
-      await window.CraftVaultStudio.idbDeleteBinary(b.id);
+      await window.CraftIndexStudio.idbDeleteBinary(b.id);
     }
   })()`);
 
   const postClearStatus = await browser.evaluate(`(async () => {
-    const list = await window.CraftVaultStudio.idbGetAllBinaries();
+    const list = await window.CraftIndexStudio.idbGetAllBinaries();
     return {
       cartSize: window.cart ? window.cart.size : 0,
       idbCount: list.length
@@ -187,7 +187,7 @@ async function createFixtures() {
     const colBlob = b64ToBlob("${exportResult.b64}", "application/zip");
     colBlob.name = "${exportResult.fileName}";
 
-    const res = await window.CraftVaultStudio.importZipArchive(colBlob);
+    const res = await window.CraftIndexStudio.importZipArchive(colBlob);
     return res;
   })()`);
 
@@ -196,15 +196,15 @@ async function createFixtures() {
   console.log(`    Identified Mods: ${reimportResult.identifiedMods}`);
   console.log(`    Identified Resource Packs: ${reimportResult.identifiedResourcePacks}`);
   console.log(`    Added Items Count: ${reimportResult.addedItems.length}`);
-  console.log(`    Manifest Detected: ${Boolean(reimportResult.craftvaultManifest)}`);
+  console.log(`    Manifest Detected: ${Boolean(reimportResult.craftindexManifest)}`);
 
   console.log('\n[Step 8: Retrieve Re-imported Binaries from IndexedDB]');
   const reimportedDb = await browser.evaluate(`(async () => {
-    const list = await window.CraftVaultStudio.idbGetAllBinaries();
+    const list = await window.CraftIndexStudio.idbGetAllBinaries();
     const items = [];
     for (const b of list) {
       const arr = await b.blob.arrayBuffer();
-      const hash = await window.CraftVaultStudio.calculateSha256(arr);
+      const hash = await window.CraftIndexStudio.calculateSha256(arr);
       items.push({
         name: b.name,
         category: b.category,
@@ -227,14 +227,14 @@ async function createFixtures() {
   console.log(' - Export Manifest Validation:              ', manifestFile ? '✅ PASS' : '❌ FAIL');
   console.log(' - Export Directory Architecture:          ', (exportedModFile && exportedRpFile) ? '✅ PASS' : '❌ FAIL');
   console.log(' - Bit-for-Bit Hash Match in Export Archive: ', (exportedModHash === fixtures.mod.hash && exportedRpHash === fixtures.resourcePack.hash) ? '✅ PASS' : '❌ FAIL');
-  console.log(' - Re-import Manifest Recognition:          ', reimportResult.craftvaultManifest ? '✅ PASS' : '❌ FAIL');
+  console.log(' - Re-import Manifest Recognition:          ', reimportResult.craftindexManifest ? '✅ PASS' : '❌ FAIL');
   console.log(' - Post Re-import IndexedDB Binary Integrity:', (modMatched && rpMatched) ? '✅ PASS' : '❌ FAIL');
   console.log('================================================================');
 
   await browser.close();
   const allPass = manifestFile && exportedModFile && exportedRpFile &&
     exportedModHash === fixtures.mod.hash && exportedRpHash === fixtures.resourcePack.hash &&
-    reimportResult.craftvaultManifest && modMatched && rpMatched;
+    reimportResult.craftindexManifest && modMatched && rpMatched;
   process.exit(allPass ? 0 : 1);
 })().catch(err => {
   console.error('Round-trip verification error:', err);

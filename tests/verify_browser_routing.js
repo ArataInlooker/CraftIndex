@@ -34,8 +34,8 @@ function httpGetStatus(urlPath) {
     { path: '/modloaders/', expectedTab: 'modloaders', check: async () => true },
     { path: '/launchers/', expectedTab: 'launchers', check: async () => true },
     { path: '/studio/', expectedTab: 'studio', check: async () => {
-      return await browser.evaluate(`Boolean(window.CraftVaultStudio)`);
-    }, note: 'CraftVaultStudio available' },
+      return await browser.evaluate(`Boolean(window.CraftIndexStudio)`);
+    }, note: 'CraftIndexStudio available' },
     { path: '/docs/', check: async () => {
       return await browser.evaluate(`Boolean(document.getElementById('aboutModal') && document.getElementById('aboutModal').classList.contains('open'))`);
     }, note: 'About/Docs modal opened' },

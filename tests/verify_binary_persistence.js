@@ -63,15 +63,15 @@ async function createTestFixtures() {
   await new Promise(r => setTimeout(r, 1000));
 
   // Confirm studio loaded
-  const studioExists = await browser.evaluate('Boolean(window.CraftVaultStudio)');
-  console.log('CraftVaultStudio initialized in browser:', studioExists);
-  if (!studioExists) throw new Error('CraftVaultStudio missing from window');
+  const studioExists = await browser.evaluate('Boolean(window.CraftIndexStudio)');
+  console.log('CraftIndexStudio initialized in browser:', studioExists);
+  if (!studioExists) throw new Error('CraftIndexStudio missing from window');
 
   // Convert fixtures to base64 for injection into browser context
   const fabricB64 = fixtures.fabric.buffer.toString('base64');
   const rpB64 = fixtures.resourcePack.buffer.toString('base64');
 
-  console.log('\n[Phase 2] Importing fixtures through CraftVault application engine...');
+  console.log('\n[Phase 2] Importing fixtures through CraftIndex application engine...');
   const importResult = await browser.evaluate(`(async () => {
     function b64ToBlob(b64, type) {
       const bin = atob(b64);
@@ -85,8 +85,8 @@ async function createTestFixtures() {
     const rpBlob = b64ToBlob("${rpB64}", "application/zip");
     rpBlob.name = "${fixtures.resourcePack.name}";
 
-    const res1 = await window.CraftVaultStudio.importZipArchive(fabricBlob);
-    const res2 = await window.CraftVaultStudio.importZipArchive(rpBlob);
+    const res1 = await window.CraftIndexStudio.importZipArchive(fabricBlob);
+    const res2 = await window.CraftIndexStudio.importZipArchive(rpBlob);
 
     return {
       res1,
@@ -102,13 +102,13 @@ async function createTestFixtures() {
   console.log('LocalStorage immediately post-import:', importResult.rawLs ? `${importResult.rawLs.length} chars` : 'null');
 
   // Query IndexedDB directly from browser context
-  console.log('\n[Phase 3] Querying IndexedDB CraftVaultDB directly from browser...');
+  console.log('\n[Phase 3] Querying IndexedDB CraftIndexDB directly from browser...');
   const initialDbBinaries = await browser.evaluate(`(async () => {
-    const list = await window.CraftVaultStudio.idbGetAllBinaries();
+    const list = await window.CraftIndexStudio.idbGetAllBinaries();
     const results = [];
     for (const b of list) {
       const arr = await b.blob.arrayBuffer();
-      const hash = await window.CraftVaultStudio.calculateSha256(arr);
+      const hash = await window.CraftIndexStudio.calculateSha256(arr);
       results.push({
         id: b.id,
         name: b.name,
@@ -137,11 +137,11 @@ async function createTestFixtures() {
   await browser.navigate('http://localhost:3000/studio/');
   await new Promise(r => setTimeout(r, 1000));
   const postRefreshBinaries = await browser.evaluate(`(async () => {
-    const list = await window.CraftVaultStudio.idbGetAllBinaries();
+    const list = await window.CraftIndexStudio.idbGetAllBinaries();
     const results = [];
     for (const b of list) {
       const arr = await b.blob.arrayBuffer();
-      const hash = await window.CraftVaultStudio.calculateSha256(arr);
+      const hash = await window.CraftIndexStudio.calculateSha256(arr);
       results.push({ id: b.id, name: b.name, size: b.size, calculatedHash: hash });
     }
     return results;
@@ -168,11 +168,11 @@ async function createTestFixtures() {
 
   console.log('\n[Phase 7] Reading IndexedDB binaries post-browser-shutdown...');
   const postShutdownBinaries = await browser.evaluate(`(async () => {
-    const list = await window.CraftVaultStudio.idbGetAllBinaries();
+    const list = await window.CraftIndexStudio.idbGetAllBinaries();
     const results = [];
     for (const b of list) {
       const arr = await b.blob.arrayBuffer();
-      const hash = await window.CraftVaultStudio.calculateSha256(arr);
+      const hash = await window.CraftIndexStudio.calculateSha256(arr);
       results.push({
         id: b.id,
         name: b.name,

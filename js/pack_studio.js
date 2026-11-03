@@ -8,10 +8,9 @@
   'use strict';
 
   // =========================================================================
-  // 1. PERSISTENT BINARY STORAGE (IndexedDB: CraftIndexDB, migrated from CraftVaultDB)
+  // 1. PERSISTENT BINARY STORAGE (IndexedDB: CraftIndexDB)
   // =========================================================================
 
-  const OLD_DB_NAME = 'CraftVaultDB';
   const DB_NAME = 'CraftIndexDB';
   const DB_VERSION = 1;
   const STORE_BINARIES = 'binaries';
@@ -19,150 +18,6 @@
 
   let dbPromise = null;
 
-  async function checkAndMigrateLegacyDB(newDb) {
-    if (!window.indexedDB) return;
-    try {
-      if (window.localStorage && (window.localStorage.getItem('cv_idb_migrated') === 'true' || window.localStorage.getItem('ci_idb_migrated') === 'true')) {
-        return;
-      }
-
-      let legacyDbExists = false;
-      if (typeof window.indexedDB.databases === 'function') {
-        const dbs = await window.indexedDB.databases();
-        legacyDbExists = Array.isArray(dbs) && dbs.some(d => d.name === OLD_DB_NAME);
-      } else {
-        legacyDbExists = true;
-      }
-
-      if (!legacyDbExists) {
-        if (window.localStorage) {
-          window.localStorage.setItem('cv_idb_migrated', 'true');
-          window.localStorage.setItem('ci_idb_migrated', 'true');
-        }
-        return;
-      }
-
-      const oldDb = await new Promise((res) => {
-        const r = window.indexedDB.open(OLD_DB_NAME);
-        r.onsuccess = (e) => res(e.target.result);
-        r.onerror = () => res(null);
-      });
-
-      if (!oldDb) return;
-
-      if (!oldDb.objectStoreNames.contains(STORE_BINARIES)) {
-        oldDb.close();
-        if (window.localStorage) window.localStorage.setItem('ci_idb_migrated', 'true');
-        return;
-      }
-
-      const oldRecords = await new Promise((res) => {
-        try {
-          const tx = oldDb.transaction(STORE_BINARIES, 'readonly');
-          const st = tx.objectStore(STORE_BINARIES);
-          const req = st.getAll();
-          req.onsuccess = () => res(req.result || []);
-          req.onerror = () => res([]);
-        } catch (_) {
-          res([]);
-        }
-      });
-
-      let oldConfigs = [];
-      if (oldDb.objectStoreNames.contains(STORE_PACK_CONFIG)) {
-        oldConfigs = await new Promise((res) => {
-          try {
-            const tx = oldDb.transaction(STORE_PACK_CONFIG, 'readonly');
-            const st = tx.objectStore(STORE_PACK_CONFIG);
-            const req = st.getAll();
-            req.onsuccess = () => res(req.result || []);
-            req.onerror = () => res([]);
-          } catch (_) {
-            res([]);
-          }
-        });
-      }
-
-      if (oldRecords.length > 0 || oldConfigs.length > 0) {
-        console.log(`[CraftIndex] Found ${oldRecords.length} binaries in legacy ${OLD_DB_NAME}. Migrating to ${DB_NAME}...`);
-        await new Promise((res) => {
-          try {
-            const tx = newDb.transaction([STORE_BINARIES, STORE_PACK_CONFIG], 'readwrite');
-            const bStore = tx.objectStore(STORE_BINARIES);
-            const cStore = tx.objectStore(STORE_PACK_CONFIG);
-            for (const rec of oldRecords) {
-              bStore.put(rec);
-            }
-            for (const cfg of oldConfigs) {
-              cStore.put(cfg);
-            }
-            tx.oncomplete = () => res(true);
-            tx.onerror = () => res(false);
-          } catch (e) {
-            console.error('[CraftIndex] Error migrating records to new DB:', e);
-            res(false);
-          }
-        });
-
-        // Full cryptographic verification across all migrated binary Blobs
-        const newRecords = await new Promise((res) => {
-          try {
-            const tx = newDb.transaction(STORE_BINARIES, 'readonly');
-            const st = tx.objectStore(STORE_BINARIES);
-            const req = st.getAll();
-            req.onsuccess = () => res(req.result || []);
-            req.onerror = () => res([]);
-          } catch (_) {
-            res([]);
-          }
-        });
-
-        let allVerified = newRecords.length === oldRecords.length;
-        if (allVerified && oldRecords.length > 0) {
-          for (const oldRec of oldRecords) {
-            const newRec = newRecords.find(r => r.id === oldRec.id);
-            if (!newRec || newRec.size !== oldRec.size || newRec.hash !== oldRec.hash) {
-              allVerified = false;
-              break;
-            }
-            if (newRec.blob && typeof newRec.blob.arrayBuffer === 'function') {
-              try {
-                const buf = await newRec.blob.arrayBuffer();
-                const computedHash = await calculateSha256(buf);
-                if (computedHash.toLowerCase() !== (oldRec.hash || '').toLowerCase() || buf.byteLength !== oldRec.size) {
-                  allVerified = false;
-                  break;
-                }
-              } catch (_) {
-                allVerified = false;
-                break;
-              }
-            }
-          }
-        }
-
-        if (allVerified) {
-          console.log(`[CraftIndex] Successfully migrated ${newRecords.length} binaries to ${DB_NAME} with 100% cryptographic SHA-256 and byte length verification.`);
-          if (window.localStorage) {
-            window.localStorage.setItem('cv_idb_migrated', 'true');
-            window.localStorage.setItem('ci_idb_migrated', 'true');
-          }
-        } else {
-          console.warn('[CraftIndex] Migration verification check did not match. Keeping migration open for retry.');
-        }
-      } else {
-        if (window.localStorage) {
-          window.localStorage.setItem('cv_idb_migrated', 'true');
-          window.localStorage.setItem('ci_idb_migrated', 'true');
-        }
-      }
-
-      // Old database retained intact for safekeeping
-      oldDb.close();
-    } catch (err) {
-      console.error('[CraftIndex] Legacy DB migration error:', err);
-    }
-  }
 
   function getDB() {
     if (dbPromise) return dbPromise;
@@ -181,9 +36,8 @@
           db.createObjectStore(STORE_PACK_CONFIG, { keyPath: 'id' });
         }
       };
-      req.onsuccess = async (e) => {
+      req.onsuccess = (e) => {
         const db = e.target.result;
-        await checkAndMigrateLegacyDB(db);
         resolve(db);
       };
       req.onerror = (e) => {
@@ -657,14 +511,13 @@
       } catch (e) {}
     }
 
-    // 1. Check for CraftIndex craftindex_manifest.json or legacy craftvault_manifest.json (Collection Archive Re-import)
-    const cvManifestFile = zip.files['craftindex_manifest.json'] || zip.files['craftvault_manifest.json'];
+    // 1. Check for CraftIndex craftindex_manifest.json (Collection Archive Re-import)
+    const cvManifestFile = zip.files['craftindex_manifest.json'];
     if (cvManifestFile) {
       try {
         const cvText = await cvManifestFile.async('string');
         const cv = JSON.parse(cvText);
         summary.craftindexManifest = cv;
-        summary.craftvaultManifest = cv; // Dual-support backwards compat
         const resList = cv.resources || cv.items || [];
 
         for (const res of resList) {
@@ -1183,7 +1036,6 @@
     // Embed craftindex_manifest.json
     const manifest = {
       schema_version: '1.1.0',
-      legacy_note: 'Formerly craftvault_manifest.json; CraftIndex maintains full dual-support for both manifest formats.',
       pack_name: packName,
       pack_description: packDesc,
       created_at: new Date().toISOString(),
@@ -1695,7 +1547,5 @@
     removeResource
   };
 
-  // Backward compatibility alias for existing callers
-  window.CraftVaultStudio = window.CraftIndexStudio;
 
 })(typeof window !== 'undefined' ? window : this);
