@@ -1,7 +1,7 @@
 {
   "name": "craftindex",
   "version": "2.6.0",
-  "description": "CraftIndex - Minimalist Cosmic Purple bulk downloader for Minecraft mods, plugins, resource packs, shaders, and data packs.",
+  "description": "CraftIndex is a Minecraft resource library and modpack builder for discovering, organizing, and bulk-downloading mods, plugins, resource packs, shaders, and data packs.",
   "main": "server.js",
   "homepage": "https://craftvault.inlooker.top",
   "repository": {
@@ -19,10 +19,14 @@
   "keywords": [
     "craftindex",
     "minecraft",
+    "resource-library",
+    "modpack-builder",
     "mods",
     "plugins",
+    "resource-packs",
     "shaders",
-    "cosmic-purple"
+    "data-packs",
+    "bulk-downloader"
   ],
   "author": "Arata Inlooker <aratainlooker@gmail.com>",
   "private": true,
