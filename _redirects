@@ -1,0 +1,8 @@
+# CraftIndex Cloudflare Pages Redirect & Canonical Rules
+# Pre-rendered static routes (/, /studio/, /docs/, /mods/, etc.) are served directly as static HTML
+# to preserve route-specific Open Graph, Twitter cards, and Schema.org metadata.
+
+# Canonical redirects for toolbar modal states
+/presets           /             301
+/history           /             301
+/settings          /             301

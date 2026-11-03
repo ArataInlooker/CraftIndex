@@ -1,0 +1,505 @@
+{
+  "title": "CraftIndex",
+  "sub": "",
+  "logo": "images/craftindex-logo.png",
+  "fav": "",
+  "desc": "Discover Minecraft mods, plugins, resource packs, shaders and datapacks from supported platforms. Explore resources, build your collection and download multiple selections together with CraftIndex.",
+  "og": "images/bigger-image.png",
+  "footer": "CraftIndex by Arata Inlooker",
+  "links": "",
+  "brand": "#b388ff",
+  "brand2": "#7c4dff",
+  "bg": "#0c0915",
+  "card": "#161126",
+  "text": "#e8e0f5",
+  "font": "Inter",
+  "radius": 14,
+  "css": "",
+  "sort": "relevance",
+  "per": 24,
+  "deb": 350,
+  "stats": true,
+  "author": true,
+  "fab": "📦 Export Collection",
+  "max": 0,
+  "deps": true,
+  "sep": true,
+  "zipName": "CraftIndex-Collection.zip",
+  "v": 2,
+  "autoLog": false,
+  "mode": "dark",
+  "defMc": "",
+  "bundles": [],
+  "hlinks": "",
+  "tSearch": "Search...",
+  "tSel": "Collection",
+  "tHist": "History",
+  "tReview": "📦 Review Collection",
+  "tClear": "🗑 Clear Collection",
+  "tAdd": "+ Add to Collection",
+  "tAdded": "✓ In Collection",
+  "tDl": "⬇ Export Collection",
+  "tMore": "Load more",
+  "tEmpty": "Nothing found.",
+  "readme": true,
+  "pages": [],
+  "preset": "medium",
+  "snaps": false,
+  "align": "left",
+  "gap": 20,
+  "maxw": 1720,
+  "cols": 0,
+  "layout": "grid",
+  "cfKey": "",
+  "cfProxy": "",
+  "repo": "https://github.com/ArataInlooker/CraftIndex",
+  "tabs": [
+    {
+      "id": "home",
+      "name": "Home",
+      "emoji": "🏠",
+      "kind": "home",
+      "cfClass": 0,
+      "ptype": "home",
+      "mode": "home",
+      "loaders": [],
+      "dir": "Home",
+      "sources": []
+    },
+    {
+      "id": "studio",
+      "name": "Pack Studio",
+      "emoji": "🛠️",
+      "kind": "studio",
+      "cfClass": 0,
+      "ptype": "studio",
+      "mode": "studio",
+      "loaders": [],
+      "dir": "PackStudio",
+      "sources": []
+    },
+    {
+      "id": "mods",
+      "name": "Mods",
+      "emoji": "",
+      "kind": "modrinth",
+      "cfClass": 6,
+      "ptype": "mod",
+      "mode": "mod",
+      "loaders": [
+        "fabric",
+        "forge",
+        "neoforge",
+        "quilt",
+        "liteloader",
+        "rift",
+        "modloader",
+        "babric",
+        "bta-babric",
+        "legacy-fabric",
+        "ornithe",
+        "nilloader",
+        "cleanroom",
+        "cauldron"
+      ],
+      "dir": "Mods",
+      "sources": [
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/mods"
+        },
+        {
+          "id": "curseforge",
+          "name": "CurseForge",
+          "url": "https://www.curseforge.com/minecraft/mc-mods"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://www.planetminecraft.com/mods/"
+        },
+        {
+          "id": "sponge",
+          "name": "Sponge",
+          "url": "https://ore.spongepowered.org/"
+        },
+        {
+          "id": "github",
+          "name": "GitHub",
+          "url": "https://github.com/"
+        }
+      ]
+    },
+    {
+      "id": "plugins",
+      "name": "Plugins",
+      "emoji": "",
+      "kind": "modrinth",
+      "cfClass": 5,
+      "ptype": "plugin",
+      "mode": "plugin",
+      "loaders": [
+        "paper",
+        "spigot",
+        "bukkit",
+        "purpur",
+        "folia",
+        "sponge",
+        "velocity",
+        "bungeecord",
+        "waterfall",
+        "leaves",
+        "pufferfish",
+        "glowstone",
+        "geyser"
+      ],
+      "dir": "Plugins",
+      "sources": [
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/plugins"
+        },
+        {
+          "id": "hangar",
+          "name": "Hangar/PaperMC",
+          "url": "https://hangar.papermc.io/"
+        },
+        {
+          "id": "spigotmc",
+          "name": "SpigotMC",
+          "url": "https://www.spigotmc.org/"
+        },
+        {
+          "id": "bukkit",
+          "name": "Bukkit",
+          "url": "https://dev.bukkit.org/"
+        },
+        {
+          "id": "curseforge",
+          "name": "CurseForge",
+          "url": "https://www.curseforge.com/minecraft/bukkit-plugins"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://www.planetminecraft.com/plugins/"
+        },
+        {
+          "id": "sponge",
+          "name": "Sponge",
+          "url": "https://ore.spongepowered.org/"
+        },
+        {
+          "id": "polymart",
+          "name": "Polymart",
+          "url": "https://polymart.org/"
+        }
+      ]
+    },
+    {
+      "id": "resourcepacks",
+      "name": "Resource Packs",
+      "emoji": "",
+      "kind": "modrinth",
+      "cfClass": 12,
+      "ptype": "resourcepack",
+      "mode": "resourcepack",
+      "loaders": [],
+      "dir": "Resource Packs",
+      "sources": [
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/resourcepacks"
+        },
+        {
+          "id": "curseforge",
+          "name": "CurseForge",
+          "url": "https://www.curseforge.com/minecraft/texture-packs"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://www.planetminecraft.com/texture-packs/"
+        },
+        {
+          "id": "smithed",
+          "name": "Smithed",
+          "url": "https://smithed.dev/"
+        },
+        {
+          "id": "github",
+          "name": "GitHub",
+          "url": "https://github.com/"
+        }
+      ]
+    },
+    {
+      "id": "shaders",
+      "name": "Shaders",
+      "emoji": "",
+      "kind": "modrinth",
+      "cfClass": 6552,
+      "ptype": "shader",
+      "mode": "none",
+      "loaders": [
+        "iris",
+        "optifine"
+      ],
+      "dir": "Shaders",
+      "sources": [
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/shaders"
+        },
+        {
+          "id": "curseforge",
+          "name": "CurseForge",
+          "url": "https://www.curseforge.com/minecraft/customization"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://www.planetminecraft.com/texture-packs/?tag=shaders"
+        },
+        {
+          "id": "github",
+          "name": "GitHub",
+          "url": "https://github.com/"
+        }
+      ]
+    },
+    {
+      "id": "datapacks",
+      "name": "Data Packs",
+      "emoji": "",
+      "kind": "modrinth",
+      "cfClass": 6945,
+      "ptype": "datapack",
+      "mode": "datapack",
+      "loaders": [],
+      "dir": "Data Packs",
+      "sources": [
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/datapacks"
+        },
+        {
+          "id": "curseforge",
+          "name": "CurseForge",
+          "url": "https://www.curseforge.com/minecraft/data-packs"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://www.planetminecraft.com/data-packs/"
+        },
+        {
+          "id": "smithed",
+          "name": "Smithed",
+          "url": "https://smithed.dev/"
+        },
+        {
+          "id": "github",
+          "name": "GitHub",
+          "url": "https://github.com/"
+        }
+      ]
+    },
+    {
+      "id": "modpacks",
+      "name": "Modpacks",
+      "emoji": "",
+      "kind": "modrinth",
+      "cfClass": 4471,
+      "ptype": "modpack",
+      "mode": "modpack",
+      "loaders": [
+        "fabric",
+        "forge",
+        "neoforge",
+        "quilt"
+      ],
+      "dir": "Modpacks",
+      "sources": [
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/modpacks"
+        },
+        {
+          "id": "curseforge",
+          "name": "CurseForge",
+          "url": "https://www.curseforge.com/minecraft/modpacks"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://www.planetminecraft.com/modpacks/"
+        }
+      ]
+    },
+    {
+      "id": "worlds",
+      "name": "Worlds",
+      "emoji": "",
+      "kind": "curseforge",
+      "cfClass": 17,
+      "ptype": "world",
+      "mode": "world",
+      "loaders": [],
+      "dir": "Worlds",
+      "sources": [
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/mods?f=categories:world"
+        },
+        {
+          "id": "curseforge",
+          "name": "CurseForge",
+          "url": "https://www.curseforge.com/minecraft/worlds"
+        },
+        {
+          "id": "minecraftmaps",
+          "name": "MinecraftMaps",
+          "url": "https://www.minecraftmaps.com/"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://www.planetminecraft.com/projects/tag/worlds/"
+        }
+      ]
+    },
+    {
+      "id": "serversoftwares",
+      "name": "Server Softwares",
+      "emoji": "",
+      "kind": "modrinth",
+      "cfClass": 5,
+      "ptype": "minecraft_java_server",
+      "mode": "serversoftware",
+      "loaders": [
+        "paper",
+        "purpur",
+        "folia",
+        "velocity",
+        "waterfall",
+        "sponge",
+        "spigot"
+      ],
+      "dir": "Server Softwares",
+      "sources": [
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/"
+        },
+        {
+          "id": "hangar",
+          "name": "Hangar/PaperMC",
+          "url": "https://hangar.papermc.io/"
+        },
+        {
+          "id": "sponge",
+          "name": "Sponge",
+          "url": "https://ore.spongepowered.org/"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://www.planetminecraft.com/"
+        },
+        {
+          "id": "github",
+          "name": "GitHub",
+          "url": "https://github.com/"
+        }
+      ]
+    },
+    {
+      "id": "modloaders",
+      "name": "Mod Loaders",
+      "emoji": "",
+      "kind": "modrinth",
+      "cfClass": 6,
+      "ptype": "mod",
+      "mode": "modloader",
+      "loaders": [
+        "fabric",
+        "forge",
+        "neoforge",
+        "quilt"
+      ],
+      "dir": "Mod Loaders",
+      "sources": [
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/"
+        },
+        {
+          "id": "curseforge",
+          "name": "CurseForge",
+          "url": "https://www.curseforge.com/"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://www.planetminecraft.com/"
+        },
+        {
+          "id": "github",
+          "name": "GitHub",
+          "url": "https://github.com/"
+        }
+      ]
+    },
+    {
+      "id": "launchers",
+      "name": "Minecraft Launchers",
+      "emoji": "🚀",
+      "kind": "launchers",
+      "cfClass": 0,
+      "ptype": "launcher",
+      "mode": "launcher",
+      "loaders": [
+        "premium",
+        "cracked"
+      ],
+      "dir": "Launchers",
+      "sources": [
+        {
+          "id": "official",
+          "name": "Official Sites",
+          "url": "https://minecraft.net"
+        },
+        {
+          "id": "github",
+          "name": "GitHub Releases",
+          "url": "https://github.com"
+        },
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/app"
+        },
+        {
+          "id": "curseforge",
+          "name": "CurseForge",
+          "url": "https://curseforge.com"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://planetminecraft.com"
+        }
+      ]
+    }
+  ]
+}

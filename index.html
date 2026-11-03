@@ -1,0 +1,1282 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <base href="/" />
+    <title>CraftIndex | Minecraft Resource Discovery, Modpack Builder & Resource Collections</title>
+    <meta name="author" content="Arata Inlooker" />
+    <link rel="canonical" href="https://craftvault.inlooker.top/" />
+    <meta
+      name="description"
+      content="CraftIndex: Lightning-fast bulk Minecraft resource downloader and Modpack Builder. Discover, curate, inspect and export mods, plugins, shaders, and resource packs with zero account friction."
+    />
+    <meta name="theme-color" content="#0c0915" />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://craftvault.inlooker.top/" />
+    <meta property="og:site_name" content="CraftIndex" />
+    <meta property="og:title" content="CraftIndex | Minecraft Resource Discovery, Modpack Builder & Resource Collections" />
+    <meta
+      property="og:description"
+      content="CraftIndex: Lightning-fast bulk Minecraft resource downloader and Modpack Builder. Discover, curate, inspect and export mods, plugins, shaders, and resource packs with zero account friction."
+    />
+    <meta property="og:image" content="https://craftvault.inlooker.top/images/bigger-image.png" />
+    <meta property="og:image:secure_url" content="https://craftvault.inlooker.top/images/bigger-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1672" />
+    <meta property="og:image:height" content="941" />
+    <meta property="og:image:alt" content="CraftIndex - Minecraft resource discovery, pack studio, and collection packager" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="CraftIndex | Minecraft Resource Discovery, Modpack Builder & Resource Collections" />
+    <meta name="twitter:description" content="CraftIndex: Lightning-fast Minecraft resource discovery engine, Pack Studio, and collection packager. Discover, curate, inspect and export mods, plugins, shaders, and resource packs with zero account friction." />
+    <meta name="twitter:image" content="https://craftvault.inlooker.top/images/bigger-image.png" />
+    <meta name="twitter:image:alt" content="CraftIndex - Minecraft resource discovery, pack studio, and collection packager" />
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="48x48" href="images/favicon-48x48.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png" />
+    <link id="ic" rel="icon" type="image/svg+xml" href="images/favicon.svg" />
+    <link rel="manifest" href="site.webmanifest" />
+
+    <!-- JSON-LD Structured Data: WebSite, SoftwareApplication, BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://craftvault.inlooker.top/#website",
+          "url": "https://craftvault.inlooker.top/",
+          "name": "CraftIndex",
+          "description": "Lightning-fast bulk Minecraft resource downloader and Modpack Builder. Discover, curate, inspect and export mods, plugins, shaders, and resource packs.",
+          "author": {
+            "@type": "Person",
+            "name": "Arata Inlooker",
+            "url": "https://inlooker.top",
+            "email": "aratainlooker@gmail.com"
+          },
+          "inLanguage": "en-US"
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://craftvault.inlooker.top/#software",
+          "name": "CraftIndex",
+          "applicationCategory": "UtilitiesApplication",
+          "operatingSystem": "Web, Windows, macOS, Linux",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "author": {
+            "@type": "Person",
+            "name": "Arata Inlooker"
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "https://craftvault.inlooker.top/#breadcrumbs",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://craftvault.inlooker.top/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Pack Studio",
+              "item": "https://craftvault.inlooker.top/studio/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Mods",
+              "item": "https://craftvault.inlooker.top/mods/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "name": "Documentation",
+              "item": "https://craftvault.inlooker.top/docs/"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <!-- JSZip for client-side bulk archiving -->
+    <script src="js/vendor/jszip.min.js"></script>
+
+    <!-- Dynamic Theme & Configuration Stylesheet hooks -->
+    <link rel="preload" href="fonts/inter/inter-latin.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <style id="st"></style>
+    <link rel="stylesheet" href="css/styles.css?v=2.6.0" />
+    <style id="lm"></style>
+    <!-- CraftIndex Boot Loading Screen: visible immediately, dismissed by app.js on init complete -->
+    <style id="ci-boot-style">
+      #ci-boot-screen {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        height: 100dvh !important;
+        min-height: 100dvh !important;
+        z-index: 2147483647 !important;
+        background: #0c0915 radial-gradient(circle at 50% 38%, #221445 0%, #160e2e 34%, #0e091b 70%, #07050d 100%) !important;
+        background-color: #0c0915 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: max(24px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)) !important;
+        box-sizing: border-box !important;
+        transition:
+          opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+          transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+          filter 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        transform: scale(1) translateY(0) !important;
+        filter: blur(0px) !important;
+        pointer-events: auto !important;
+        isolation: isolate !important;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important;
+        color: #fcf4ff !important;
+        overflow: hidden !important;
+      }
+      #ci-boot-screen.ci-boot-hide {
+        opacity: 0 !important;
+        transform: scale(1.04) translateY(-8px) !important;
+        filter: blur(8px) !important;
+        pointer-events: none !important;
+      }
+      #ci-boot-screen.ci-boot-done {
+        display: none !important;
+      }
+      .ci-boot-header-space {
+        flex: 0 0 10px;
+      }
+      .ci-boot-center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        max-width: 720px;
+        width: 100%;
+        margin: auto 0;
+      }
+      .ci-boot-icon-wrap {
+        position: relative;
+        margin-bottom: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .ci-boot-icon {
+        width: 76px;
+        height: 76px;
+        filter: drop-shadow(0 0 32px rgba(179, 136, 255, 0.65));
+        animation: ci-boot-float 3.5s ease-in-out infinite;
+      }
+      @keyframes ci-boot-float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
+      .ci-boot-title {
+        font-size: clamp(34px, 4.5vw, 46px);
+        font-weight: 800;
+        letter-spacing: -0.035em;
+        color: #fcf4ff;
+        margin: 0 0 8px 0;
+        line-height: 1.1;
+        text-shadow: 0 4px 24px rgba(0,0,0,0.7);
+      }
+      .ci-boot-tagline {
+        font-size: clamp(12px, 1.3vw, 14px);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: #c084fc;
+        margin-bottom: 18px;
+        text-shadow: 0 2px 10px rgba(192, 132, 252, 0.35);
+      }
+      .ci-boot-desc {
+        font-size: clamp(14px, 1.4vw, 16px);
+        line-height: 1.65;
+        color: #d1c5e3;
+        margin: 0 0 32px 0;
+        max-width: 580px;
+        text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      }
+      .ci-boot-bar {
+        width: 100%;
+        max-width: 420px;
+        height: 4px;
+        background: rgba(179, 136, 255, 0.18);
+        border-radius: 99px;
+        overflow: hidden;
+        position: relative;
+      }
+      .ci-boot-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #7c4dff, #a855f7, #c084fc, #f5d0fe);
+        background-size: 200% 100%;
+        border-radius: 99px;
+        box-shadow: 0 0 14px rgba(192, 132, 252, 0.7);
+        animation: ci-boot-fill 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards, ci-boot-shimmer 2s ease infinite;
+      }
+      @keyframes ci-boot-fill {
+        0%   { width: 0%; }
+        50%  { width: 70%; }
+        85%  { width: 90%; }
+        100% { width: 97%; }
+      }
+      @keyframes ci-boot-shimmer {
+        0%   { background-position: 100% 0; }
+        100% { background-position: -100% 0; }
+      }
+      .ci-boot-status {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        margin-top: 16px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #a79abf;
+      }
+      .ci-boot-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #34d399;
+        box-shadow: 0 0 10px #34d399;
+        animation: ci-boot-pulse 1.8s ease-in-out infinite;
+      }
+      @keyframes ci-boot-pulse {
+        0%, 100% { opacity: 0.45; transform: scale(0.9); }
+        50% { opacity: 1; transform: scale(1.2); }
+      }
+      .ci-boot-pillars {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(16px, 4vw, 48px);
+        margin-top: 36px;
+        width: 100%;
+        max-width: 900px;
+        flex-wrap: wrap;
+      }
+      .ci-boot-pillar {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        text-align: center;
+      }
+      .ci-boot-pillar-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #e9d5ff;
+        letter-spacing: -0.01em;
+      }
+      .ci-boot-pillar-sub {
+        font-size: 11.5px;
+        color: #9283a8;
+        letter-spacing: 0.02em;
+      }
+      .ci-boot-footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        width: 100%;
+        font-size: 11.5px;
+        font-weight: 600;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: rgba(156, 142, 181, 0.55);
+        padding-top: 20px;
+      }
+      .ci-boot-sep {
+        opacity: 0.35;
+      }
+      @media (max-width: 640px) {
+        .ci-boot-pillars { display: none; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #ci-boot-screen {
+          transition: opacity 0.2s linear !important;
+          transform: none !important;
+          filter: none !important;
+        }
+        #ci-boot-screen.ci-boot-hide {
+          opacity: 0 !important;
+          transform: none !important;
+          filter: none !important;
+        }
+        .ci-boot-icon {
+          animation: none !important;
+        }
+        .ci-boot-bar-fill {
+          animation: none !important;
+          width: 90% !important;
+        }
+        .ci-boot-dot {
+          animation: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+                <!-- CraftIndex Boot Screen: shown during JS init, dismissed immediately after app hydration -->
+    <div id="ci-boot-screen" role="status" aria-live="polite" aria-atomic="true" aria-label="CraftIndex Loading">
+      <div class="ci-boot-header-space"></div>
+      
+      <div class="ci-boot-center">
+        <div class="ci-boot-icon-wrap">
+          <img src="images/craftindex-logo.png" alt="CraftIndex Logo" class="ci-boot-icon" width="76" height="76" />
+        </div>
+        <h1 class="ci-boot-title">CraftIndex</h1>
+        <div class="ci-boot-tagline">Minecraft Resource Discovery &amp; Pack Studio</div>
+        <p class="ci-boot-desc">
+          Aggregating mods, plugins, shaders, and resource packs into unified collections with client-side packaging.
+        </p>
+        <div class="ci-boot-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="95" aria-label="Application initialization progress">
+          <div class="ci-boot-bar-fill"></div>
+        </div>
+        <div class="ci-boot-status">
+          <span class="ci-boot-dot" aria-hidden="true"></span>
+          <span id="ciBootStatusText">Initializing discovery engine &amp; catalog&hellip;</span>
+        </div>
+        <div class="ci-boot-pillars" aria-hidden="true">
+          <div class="ci-boot-pillar">
+            <span class="ci-boot-pillar-title">Multi-Platform Discovery</span>
+            <span class="ci-boot-pillar-sub">Modrinth &bull; CurseForge &bull; PlanetMinecraft</span>
+          </div>
+          <div class="ci-boot-pillar">
+            <span class="ci-boot-pillar-title">Pack Studio Engine</span>
+            <span class="ci-boot-pillar-sub">Client-side ZIP &amp; Dependency Bundler</span>
+          </div>
+          <div class="ci-boot-pillar">
+            <span class="ci-boot-pillar-title">Zero-Telemetry Core</span>
+            <span class="ci-boot-pillar-sub">Privacy-First &bull; Cryptographically Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ci-boot-footer" aria-hidden="true">
+        <span>CraftIndex v2.6.0</span>
+        <span class="ci-boot-sep">&bull;</span>
+        <span>100% Client-Side Discovery</span>
+        <span class="ci-boot-sep">&bull;</span>
+        <span>craftvault.inlooker.top</span>
+      </div>
+    </div>
+    <!-- Failsafe: if app.js fails to load or execute, remove boot screen after 4s -->
+    <script>
+      setTimeout(function() {
+        var boot = document.getElementById('ci-boot-screen');
+        if (boot) {
+          boot.classList.add('ci-boot-hide');
+          setTimeout(function() {
+            boot.style.display = 'none';
+            if (boot.parentNode) boot.parentNode.removeChild(boot);
+            var s = document.getElementById('ci-boot-style');
+            if (s) s.remove();
+          }, 650);
+        }
+      }, 4000);
+    </script>
+    <!-- Dynamic Ambient Video Background -->
+    <div class="bg-video-container" id="bgVideoContainer">
+      <video
+        id="bgVideoDark"
+        class="bg-video active"
+        autoplay
+        loop
+        muted
+        playsinline
+        preload="auto"
+      >
+        <source
+          src="media/rainy-evening-minecraft.mp4"
+          type="video/mp4"
+        />
+      </video>
+      <video
+        id="bgVideoLight"
+        class="bg-video"
+        autoplay
+        loop
+        muted
+        playsinline
+        preload="auto"
+      >
+        <source
+          src="media/sakura-forest-minecraft.mp4"
+          type="video/mp4"
+        />
+      </video>
+      <div class="bg-overlay dark" id="bgOverlay"></div>
+    </div>
+    <header>
+      <a href="/" class="lg" id="lg" aria-label="CraftIndex Home"><img src="images/craftindex-logo.png" alt="CraftIndex Logo" width="36" height="36" /><span>CraftIndex</span></a>
+      <span style="flex: 1"></span><span id="hl"></span><span id="pgb"></span>
+      <button class="btn theme-toggle-btn" id="mt" title="Switch to Light Mode (Daylight) ☀️" aria-label="Toggle theme">
+        <span class="theme-icon-stage">
+          <svg class="theme-svg theme-svg-moon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor">
+            <defs>
+              <linearGradient id="themeMoonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#c084fc" stop-opacity="0.9" />
+                <stop offset="100%" stop-color="#7c4dff" stop-opacity="0.95" />
+              </linearGradient>
+            </defs>
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="url(#themeMoonGrad)" stroke="#c4b5fd" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M18.5 3.5v2m-1-1h2" stroke="#f3e8ff" stroke-width="1.4" stroke-linecap="round" />
+            <circle cx="21" cy="8.5" r="0.85" fill="#f3e8ff" />
+            <circle cx="15.5" cy="1.8" r="0.65" fill="#f3e8ff" />
+          </svg>
+          <svg class="theme-svg theme-svg-sun" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor">
+            <defs>
+              <linearGradient id="themeSunGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fef08a" />
+                <stop offset="100%" stop-color="#f59e0b" />
+              </linearGradient>
+            </defs>
+            <circle cx="12" cy="12" r="4.5" fill="url(#themeSunGrad)" stroke="#d97706" stroke-width="1.6" />
+            <g stroke="#f59e0b" stroke-width="2" stroke-linecap="round">
+              <line x1="12" y1="1.5" x2="12" y2="4" />
+              <line x1="12" y1="20.5" x2="12" y2="22.5" />
+              <line x1="4.5" y1="4.5" x2="6.3" y2="6.3" />
+              <line x1="17.7" y1="17.7" x2="19.5" y2="19.5" />
+              <line x1="1.5" y1="12" x2="4" y2="12" />
+              <line x1="20" y1="12" x2="22.5" y2="12" />
+              <line x1="4.5" y1="19.5" x2="6.3" y2="17.7" />
+              <line x1="17.7" y1="6.3" x2="19.5" y2="4.5" />
+            </g>
+          </svg>
+        </span>
+      </button>
+      <button class="btn" id="pb">Presets</button>
+      <button class="btn" id="hb">History</button>
+      <button class="btn" id="setb" title="CraftIndex Settings">⚙️ Settings</button>
+      <button class="btn" id="ab" title="CraftIndex Documentation & About Center" aria-label="Documentation">⚡ Docs</button>
+      <button class="btn" id="cb">
+        Cart <span class="bdg" id="cc">0</span>
+      </button>
+    </header>
+    <main>
+      <div class="tabs" id="tabs" role="tablist" aria-label="Resource categories"></div>
+      <div class="subtabs-bar" id="subtabsBar" role="tablist" aria-label="Subcategories" style="display: none;"></div>
+      <div class="fl">
+        <input class="in sq" id="q" placeholder="Search..." aria-label="Search Minecraft resources" /><select
+          class="in"
+          id="src-filter"
+          title="Select Resource Source"
+          aria-label="Select Resource Source"
+          style="display:none!important;"
+          hidden
+          aria-hidden="true"
+          tabindex="-1"
+        >
+          <option value="all">All Sources</option>
+          <option value="modrinth">Modrinth</option>
+          <option value="curseforge">CurseForge</option></select
+        ><select
+          class="in"
+          id="fl"
+          aria-label="Filter by Mod Loader"
+          style="display:none!important;"
+          hidden
+          aria-hidden="true"
+          tabindex="-1"
+        ></select
+        ><select
+          class="in"
+          id="fv"
+          aria-label="Filter by Minecraft Version"
+          style="display:none!important;"
+          hidden
+          aria-hidden="true"
+          tabindex="-1"
+        >
+          <option value="">Any version</option></select
+        ><select
+          class="in"
+          id="so"
+          aria-label="Sort Order"
+          style="display:none!important;"
+          hidden
+          aria-hidden="true"
+          tabindex="-1"
+        >
+          <option value="relevance">Relevance</option>
+          <option value="downloads">Downloads</option>
+          <option value="follows">Follows</option>
+          <option value="newest">Newest</option>
+          <option value="updated">Updated</option></select
+        ><button class="btn" id="rf" title="Refresh search results" aria-label="Refresh search results">↻</button>
+      </div>
+      <div class="gr" id="g"></div>
+      <div style="text-align: center; margin: 32px 0 20px" id="mo-wrap">
+        <div id="auto-loader" class="auto-loader" style="display: none">
+          <div class="cyber-spinner"></div>
+          <span>Loading more items...</span>
+        </div>
+        <button class="btn" id="mo" style="display: none">Load more</button>
+      </div>
+    </main>
+    <footer id="ft" class="site-footer">
+      <div class="site-footer-brand">
+        <img src="images/craftindex-logo.png" alt="CraftIndex Logo" class="site-footer-logo" width="28" height="28">
+        <span class="site-footer-name">CraftIndex</span>
+      </div>
+      <div class="site-footer-author">
+        Engineered by <strong>Arata Inlooker</strong> &middot; 
+        <a href="https://inlooker.top" target="_blank" rel="noopener noreferrer">Portfolio</a> &middot; 
+        <a href="/socials/" id="footerSocialsLink" onclick="event.preventDefault(); if (typeof openSocialsModal === 'function') openSocialsModal();">Socials (DMs Open)</a> &middot; 
+        <a href="https://github.com/ArataInlooker/CraftIndex" target="_blank" rel="noopener noreferrer">GitHub</a> &middot; 
+        <a href="mailto:aratainlooker@gmail.com">aratainlooker@gmail.com</a>
+      </div>
+      <div class="site-footer-nav">
+        <a href="/docs/">Documentation</a>
+        <a href="/studio/">Pack Studio</a>
+        <a href="/mods/">Mods</a>
+        <a href="/plugins/">Plugins</a>
+        <a href="/resourcepacks/">Resource Packs</a>
+        <a href="/shaders/">Shaders</a>
+        <a href="/datapacks/">Datapacks</a>
+      </div>
+      <div class="site-footer-disclaimer">
+        CraftIndex is an independent, community-driven resource discovery platform and is not affiliated with, endorsed by, or associated with Mojang Studios, Microsoft, Modrinth, or CurseForge. Minecraft is a registered trademark of Mojang Studios / Microsoft. All mods, plugins, resource packs, shaders, and datapacks are copyright and intellectual property of their respective creators.
+      </div>
+      <div class="site-footer-privacy">
+        Privacy-first architecture: All collections, preferences, and binary archives are persisted strictly inside your browser (IndexedDB & LocalStorage). Zero telemetry, zero tracking.
+      </div>
+    </footer>
+    <div class="fabs h" id="fabs">
+      <button class="btn" id="fr">🛒 Review Cart</button
+      ><button class="btn d" id="fc">🗑 Clear all</button
+      ><button class="btn p big" id="fd"></button>
+    </div>
+    <div class="sc" id="sc"></div>
+    <aside class="dr" id="dr">
+      <div class="dr-header">
+        <b style="color: var(--w); font-size: 19px; font-weight: 800; letter-spacing: -0.01em; flex: 1">Cart</b>
+        <button class="btn d" id="dc">Clear</button>
+        <button class="dr-close" id="dx" title="Close Cart (Esc)" aria-label="Close Cart">✕</button>
+      </div>
+      <div class="dl" id="dl"></div>
+      <div class="dr-zip-box">
+        <label for="drZipName" class="dr-zip-label">ZIP Archive Name</label>
+        <div class="dr-zip-input-wrap">
+          <input type="text" id="drZipName" class="in dr-zip-input" value="CraftIndex.inlooker.top-Collection.zip" placeholder="CraftIndex.inlooker.top-Collection.zip" spellcheck="false" />
+        </div>
+      </div>
+      <div class="dr-footer">
+        <!-- Export Popover Container -->
+        <div class="cart-action-wrap" id="exportWrap">
+          <button class="btn dr-tool-btn" id="ce" title="Export cart" aria-label="Export cart" aria-haspopup="true" aria-expanded="false">⤓</button>
+          <div class="cart-popover-menu" id="exportMenu" role="menu">
+            <div class="cart-popover-head">
+              <span class="cph-title">Export Cart As</span>
+              <span class="cph-desc">Choose your format</span>
+            </div>
+            <div class="cart-popover-options">
+              <button class="cart-popover-item" id="opt-export-json" type="button" role="menuitem" aria-label="Export JSON Collection">
+                <span class="cpi-icon">📄</span>
+                <div class="cpi-body">
+                  <div class="cpi-row">
+                    <span class="cpi-title">JSON Collection</span>
+                    <span class="cpi-badge">.json</span>
+                  </div>
+                  <span class="cpi-desc">CraftIndex backup & shareable file</span>
+                </div>
+              </button>
+              <button class="cart-popover-item" id="opt-export-mrpack" type="button" role="menuitem" aria-label="Export Modrinth Modpack">
+                <span class="cpi-icon">📦</span>
+                <div class="cpi-body">
+                  <div class="cpi-row">
+                    <span class="cpi-title">Modrinth Modpack</span>
+                    <span class="cpi-badge mrpack">.mrpack</span>
+                  </div>
+                  <span class="cpi-desc">For Prism, Modrinth App, ATLauncher</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Import Popover Container -->
+        <div class="cart-action-wrap" id="importWrap">
+          <button class="btn dr-tool-btn" id="ci" title="Import cart" aria-label="Import cart" aria-haspopup="true" aria-expanded="false">⤒</button>
+          <input type="file" id="cif" aria-label="Choose JSON Collection file to import" accept=".json,application/json" style="display:none!important;" />
+          <input type="file" id="cifMrpack" aria-label="Choose Modrinth Modpack file to import" accept=".mrpack,application/zip,.zip" style="display:none!important;" />
+          <div class="cart-popover-menu" id="importMenu" role="menu">
+            <div class="cart-popover-head">
+              <span class="cph-title">Import Cart From</span>
+              <span class="cph-desc">Choose source format</span>
+            </div>
+            <div class="cart-popover-options">
+              <button class="cart-popover-item" id="opt-import-json" type="button" role="menuitem" aria-label="Import JSON Collection">
+                <span class="cpi-icon">📄</span>
+                <div class="cpi-body">
+                  <div class="cpi-row">
+                    <span class="cpi-title">JSON Collection</span>
+                    <span class="cpi-badge">.json</span>
+                  </div>
+                  <span class="cpi-desc">Restore CraftIndex cart export</span>
+                </div>
+              </button>
+              <button class="cart-popover-item" id="opt-import-mrpack" type="button" role="menuitem" aria-label="Import Modrinth Modpack">
+                <span class="cpi-icon">📦</span>
+                <div class="cpi-body">
+                  <div class="cpi-row">
+                    <span class="cpi-title">Modrinth Modpack</span>
+                    <span class="cpi-badge mrpack">.mrpack</span>
+                  </div>
+                  <span class="cpi-desc">Load mods from .mrpack zip</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn dr-tool-btn" id="cs" title="Copy share link" aria-label="Copy share link">🔗</button>
+        <button class="btn" id="am" style="flex: 1">+ Add more</button>
+        <button class="btn p" id="dd" style="flex: 1">⬇ Download</button>
+      </div>
+    </aside>
+
+    <!-- CraftIndex About & Documentation Center Modal -->
+    <div class="about-modal" id="aboutModal" role="dialog" aria-modal="true" aria-labelledby="aboutModalTitle" aria-hidden="true">
+      <div class="about-backdrop" id="aboutBackdrop"></div>
+      <div class="about-window">
+        <!-- About Header -->
+        <div class="about-header">
+          <div class="about-header-branding">
+            <img src="images/craftindex-logo.png" alt="CraftIndex Logo" class="about-header-logo" width="32" height="32" />
+            <div>
+              <h2 class="about-header-title" id="aboutModalTitle">CraftIndex About & Documentation</h2>
+              <span class="about-header-sub">Official Architecture, User Guide & Specifications</span>
+            </div>
+          </div>
+          <div class="about-header-actions">
+            <a href="/docs/" target="_blank" rel="noopener noreferrer" class="btn p about-full-docs-link">Read Documentation ↗</a>
+            <button class="btn about-mobile-nav-toggle" id="aboutMobileNavToggle" aria-label="Toggle Documentation Topics">
+              ☰ Topics
+            </button>
+            <button class="dr-close" id="aboutCloseBtn" title="Close About (Esc)" aria-label="Close About">✕</button>
+          </div>
+        </div>
+
+        <!-- About Layout: Left Vertical Sidebar + Right Content Area -->
+        <div class="about-body">
+          <aside class="about-sidebar" id="aboutSidebar" aria-label="Documentation Topics">
+            <div class="about-sidebar-list" id="aboutSidebarList" role="tablist" aria-orientation="vertical"></div>
+          </aside>
+          <article class="about-content" id="aboutContent" tabindex="0" role="tabpanel" aria-label="Documentation Details"></article>
+        </div>
+      </div>
+    </div>
+
+    <!-- CraftIndex Socials & Direct Contact Modal -->
+    <div class="about-modal socials-modal" id="socialsModal" role="dialog" aria-modal="true" aria-labelledby="socialsModalTitle" aria-hidden="true">
+      <div class="about-backdrop" id="socialsBackdrop"></div>
+      <div class="about-window socials-window">
+        <!-- Socials Header -->
+        <div class="about-header">
+          <div class="about-header-branding">
+            <img src="images/craftindex-logo.png" alt="CraftIndex Logo" class="about-header-logo" width="32" height="32" />
+            <div>
+              <h2 class="about-header-title" id="socialsModalTitle">Arata Inlooker &middot; Socials &amp; Direct Contact</h2>
+              <span class="about-header-sub">Direct Messages &amp; Inquiries Accepted &bull; Official Verified Channels</span>
+            </div>
+          </div>
+          <div class="about-header-actions">
+            <button class="dr-close" id="socialsCloseBtn" title="Close Socials (Esc)" aria-label="Close Socials">✕</button>
+          </div>
+        </div>
+
+        <!-- Socials Body -->
+        <div class="socials-body" id="socialsBody"></div>
+      </div>
+    </div>
+
+    <div class="md" id="md">
+      <div class="mx">
+        <div class="mh" id="mh"></div>
+        <div class="mbd" id="mb"></div>
+        <div class="mf" id="mf"></div>
+      </div>
+    </div>
+    <div class="tt" id="tt"></div>
+
+    <!-- Resource Detail Dashboard Modal -->
+    <div class="dash-modal" id="dashModal" role="dialog" aria-modal="true" aria-labelledby="dashHeader" aria-hidden="true">
+      <div class="dash-backdrop" id="dashBackdrop"></div>
+      <div class="dash-window">
+        <div class="dash-header" id="dashHeader"></div>
+        <div class="dash-metrics" id="dashMetrics"></div>
+        <div class="dash-nav" id="dashNav">
+          <button class="dash-tab active" data-tab="docs">📖 Documentation</button>
+          <button class="dash-tab" data-tab="versions">⚡ Versions & Single Download</button>
+          <button class="dash-tab" data-tab="gallery">🖼️ Screenshots</button>
+          <button class="dash-tab" data-tab="links">🌐 External Links & Reviews</button>
+        </div>
+        <div class="dash-content" id="dashContent"></div>
+      </div>
+    </div>
+
+    <!-- Image Lightbox Modal for Screenshots -->
+    <div class="dash-lightbox" id="dashLightbox" aria-hidden="true">
+      <div class="dash-lightbox-backdrop" id="dashLightboxBackdrop"></div>
+      <div class="dash-lightbox-content">
+        <button class="dash-lightbox-close" id="dashLightboxClose" aria-label="Close screenshot preview">✕</button>
+        <img id="dashLightboxImg" src="" alt="Screenshot" />
+        <div class="dash-lightbox-caption" id="dashLightboxCaption"></div>
+      </div>
+    </div>
+
+    <!-- Dependencies Resolution Modal Dialog -->
+    <div class="dep-modal" id="depModal" role="dialog" aria-modal="true" aria-labelledby="depDialogTitle" aria-hidden="true">
+      <div class="dep-backdrop" id="depBackdrop"></div>
+      <div class="dep-window">
+        <div class="dep-header">
+          <div class="dep-icon-wrap">⚡</div>
+          <div class="dep-header-text">
+            <h3 class="dep-title" id="depDialogTitle">Include Resource Dependencies?</h3>
+            <p class="dep-sub">CraftIndex detected resources in your cart that need dependencies to function properly in Minecraft.</p>
+          </div>
+          <button class="dr-close" id="depCloseBtn" title="Close (Skip)" aria-label="Close dependencies dialog">✕</button>
+        </div>
+        <div class="dep-body" id="depBody"></div>
+        <div class="dep-footer">
+          <button class="btn" id="depSkipBtn">Skip & Open Cart</button>
+          <button class="btn p" id="depConfirmBtn">✓ Add Dependencies & Open Cart</button>
+        </div>
+      </div>
+    </div>
+
+    <script id="cfg" type="application/json">
+{
+  "title": "CraftIndex",
+  "sub": "",
+  "logo": "images/craftindex-logo.png",
+  "fav": "",
+  "desc": "Discover Minecraft mods, plugins, resource packs, shaders and datapacks from supported platforms. Explore resources, build your collection and download multiple selections together with CraftIndex.",
+  "og": "images/bigger-image.png",
+  "footer": "CraftIndex by Arata Inlooker",
+  "links": "",
+  "brand": "#b388ff",
+  "brand2": "#7c4dff",
+  "bg": "#0c0915",
+  "card": "#161126",
+  "text": "#e8e0f5",
+  "font": "Inter",
+  "radius": 14,
+  "css": "",
+  "sort": "relevance",
+  "per": 24,
+  "deb": 350,
+  "stats": true,
+  "author": true,
+  "fab": "📦 Export Collection",
+  "max": 0,
+  "deps": true,
+  "sep": true,
+  "zipName": "CraftIndex-Collection.zip",
+  "v": 2,
+  "autoLog": false,
+  "mode": "dark",
+  "defMc": "",
+  "bundles": [],
+  "hlinks": "",
+  "tSearch": "Search...",
+  "tSel": "Collection",
+  "tHist": "History",
+  "tReview": "📦 Review Collection",
+  "tClear": "🗑 Clear Collection",
+  "tAdd": "+ Add to Collection",
+  "tAdded": "✓ In Collection",
+  "tDl": "⬇ Export Collection",
+  "tMore": "Load more",
+  "tEmpty": "Nothing found.",
+  "readme": true,
+  "pages": [],
+  "preset": "medium",
+  "snaps": false,
+  "align": "left",
+  "gap": 20,
+  "maxw": 1720,
+  "cols": 0,
+  "layout": "grid",
+  "cfKey": "",
+  "cfProxy": "",
+  "repo": "https://github.com/ArataInlooker/CraftIndex",
+  "tabs": [
+    {
+      "id": "home",
+      "name": "Home",
+      "emoji": "🏠",
+      "kind": "home",
+      "cfClass": 0,
+      "ptype": "home",
+      "mode": "home",
+      "loaders": [],
+      "dir": "Home",
+      "sources": []
+    },
+    {
+      "id": "studio",
+      "name": "Pack Studio",
+      "emoji": "🛠️",
+      "kind": "studio",
+      "cfClass": 0,
+      "ptype": "studio",
+      "mode": "studio",
+      "loaders": [],
+      "dir": "PackStudio",
+      "sources": []
+    },
+    {
+      "id": "mods",
+      "name": "Mods",
+      "emoji": "",
+      "kind": "modrinth",
+      "cfClass": 6,
+      "ptype": "mod",
+      "mode": "mod",
+      "loaders": [
+        "fabric",
+        "forge",
+        "neoforge",
+        "quilt",
+        "liteloader",
+        "rift",
+        "modloader",
+        "babric",
+        "bta-babric",
+        "legacy-fabric",
+        "ornithe",
+        "nilloader",
+        "cleanroom",
+        "cauldron"
+      ],
+      "dir": "Mods",
+      "sources": [
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/mods"
+        },
+        {
+          "id": "curseforge",
+          "name": "CurseForge",
+          "url": "https://www.curseforge.com/minecraft/mc-mods"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://www.planetminecraft.com/mods/"
+        },
+        {
+          "id": "sponge",
+          "name": "Sponge",
+          "url": "https://ore.spongepowered.org/"
+        },
+        {
+          "id": "github",
+          "name": "GitHub",
+          "url": "https://github.com/"
+        }
+      ]
+    },
+    {
+      "id": "plugins",
+      "name": "Plugins",
+      "emoji": "",
+      "kind": "modrinth",
+      "cfClass": 5,
+      "ptype": "plugin",
+      "mode": "plugin",
+      "loaders": [
+        "paper",
+        "spigot",
+        "bukkit",
+        "purpur",
+        "folia",
+        "sponge",
+        "velocity",
+        "bungeecord",
+        "waterfall",
+        "leaves",
+        "pufferfish",
+        "glowstone",
+        "geyser"
+      ],
+      "dir": "Plugins",
+      "sources": [
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/plugins"
+        },
+        {
+          "id": "hangar",
+          "name": "Hangar/PaperMC",
+          "url": "https://hangar.papermc.io/"
+        },
+        {
+          "id": "spigotmc",
+          "name": "SpigotMC",
+          "url": "https://www.spigotmc.org/"
+        },
+        {
+          "id": "bukkit",
+          "name": "Bukkit",
+          "url": "https://dev.bukkit.org/"
+        },
+        {
+          "id": "curseforge",
+          "name": "CurseForge",
+          "url": "https://www.curseforge.com/minecraft/bukkit-plugins"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://www.planetminecraft.com/plugins/"
+        },
+        {
+          "id": "sponge",
+          "name": "Sponge",
+          "url": "https://ore.spongepowered.org/"
+        },
+        {
+          "id": "polymart",
+          "name": "Polymart",
+          "url": "https://polymart.org/"
+        }
+      ]
+    },
+    {
+      "id": "resourcepacks",
+      "name": "Resource Packs",
+      "emoji": "",
+      "kind": "modrinth",
+      "cfClass": 12,
+      "ptype": "resourcepack",
+      "mode": "resourcepack",
+      "loaders": [],
+      "dir": "Resource Packs",
+      "sources": [
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/resourcepacks"
+        },
+        {
+          "id": "curseforge",
+          "name": "CurseForge",
+          "url": "https://www.curseforge.com/minecraft/texture-packs"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://www.planetminecraft.com/texture-packs/"
+        },
+        {
+          "id": "smithed",
+          "name": "Smithed",
+          "url": "https://smithed.dev/"
+        },
+        {
+          "id": "github",
+          "name": "GitHub",
+          "url": "https://github.com/"
+        }
+      ]
+    },
+    {
+      "id": "shaders",
+      "name": "Shaders",
+      "emoji": "",
+      "kind": "modrinth",
+      "cfClass": 6552,
+      "ptype": "shader",
+      "mode": "none",
+      "loaders": [
+        "iris",
+        "optifine"
+      ],
+      "dir": "Shaders",
+      "sources": [
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/shaders"
+        },
+        {
+          "id": "curseforge",
+          "name": "CurseForge",
+          "url": "https://www.curseforge.com/minecraft/customization"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://www.planetminecraft.com/texture-packs/?tag=shaders"
+        },
+        {
+          "id": "github",
+          "name": "GitHub",
+          "url": "https://github.com/"
+        }
+      ]
+    },
+    {
+      "id": "datapacks",
+      "name": "Data Packs",
+      "emoji": "",
+      "kind": "modrinth",
+      "cfClass": 6945,
+      "ptype": "datapack",
+      "mode": "datapack",
+      "loaders": [],
+      "dir": "Data Packs",
+      "sources": [
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/datapacks"
+        },
+        {
+          "id": "curseforge",
+          "name": "CurseForge",
+          "url": "https://www.curseforge.com/minecraft/data-packs"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://www.planetminecraft.com/data-packs/"
+        },
+        {
+          "id": "smithed",
+          "name": "Smithed",
+          "url": "https://smithed.dev/"
+        },
+        {
+          "id": "github",
+          "name": "GitHub",
+          "url": "https://github.com/"
+        }
+      ]
+    },
+    {
+      "id": "modpacks",
+      "name": "Modpacks",
+      "emoji": "",
+      "kind": "modrinth",
+      "cfClass": 4471,
+      "ptype": "modpack",
+      "mode": "modpack",
+      "loaders": [
+        "fabric",
+        "forge",
+        "neoforge",
+        "quilt"
+      ],
+      "dir": "Modpacks",
+      "sources": [
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/modpacks"
+        },
+        {
+          "id": "curseforge",
+          "name": "CurseForge",
+          "url": "https://www.curseforge.com/minecraft/modpacks"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://www.planetminecraft.com/modpacks/"
+        }
+      ]
+    },
+    {
+      "id": "worlds",
+      "name": "Worlds",
+      "emoji": "",
+      "kind": "curseforge",
+      "cfClass": 17,
+      "ptype": "world",
+      "mode": "world",
+      "loaders": [],
+      "dir": "Worlds",
+      "sources": [
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/mods?f=categories:world"
+        },
+        {
+          "id": "curseforge",
+          "name": "CurseForge",
+          "url": "https://www.curseforge.com/minecraft/worlds"
+        },
+        {
+          "id": "minecraftmaps",
+          "name": "MinecraftMaps",
+          "url": "https://www.minecraftmaps.com/"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://www.planetminecraft.com/projects/tag/worlds/"
+        }
+      ]
+    },
+    {
+      "id": "serversoftwares",
+      "name": "Server Softwares",
+      "emoji": "",
+      "kind": "modrinth",
+      "cfClass": 5,
+      "ptype": "minecraft_java_server",
+      "mode": "serversoftware",
+      "loaders": [
+        "paper",
+        "purpur",
+        "folia",
+        "velocity",
+        "waterfall",
+        "sponge",
+        "spigot"
+      ],
+      "dir": "Server Softwares",
+      "sources": [
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/"
+        },
+        {
+          "id": "hangar",
+          "name": "Hangar/PaperMC",
+          "url": "https://hangar.papermc.io/"
+        },
+        {
+          "id": "sponge",
+          "name": "Sponge",
+          "url": "https://ore.spongepowered.org/"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://www.planetminecraft.com/"
+        },
+        {
+          "id": "github",
+          "name": "GitHub",
+          "url": "https://github.com/"
+        }
+      ]
+    },
+    {
+      "id": "modloaders",
+      "name": "Mod Loaders",
+      "emoji": "",
+      "kind": "modrinth",
+      "cfClass": 6,
+      "ptype": "mod",
+      "mode": "modloader",
+      "loaders": [
+        "fabric",
+        "forge",
+        "neoforge",
+        "quilt"
+      ],
+      "dir": "Mod Loaders",
+      "sources": [
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/"
+        },
+        {
+          "id": "curseforge",
+          "name": "CurseForge",
+          "url": "https://www.curseforge.com/"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://www.planetminecraft.com/"
+        },
+        {
+          "id": "github",
+          "name": "GitHub",
+          "url": "https://github.com/"
+        }
+      ]
+    },
+    {
+      "id": "launchers",
+      "name": "Minecraft Launchers",
+      "emoji": "🚀",
+      "kind": "launchers",
+      "cfClass": 0,
+      "ptype": "launcher",
+      "mode": "launcher",
+      "loaders": [
+        "premium",
+        "cracked"
+      ],
+      "dir": "Launchers",
+      "sources": [
+        {
+          "id": "official",
+          "name": "Official Sites",
+          "url": "https://minecraft.net"
+        },
+        {
+          "id": "github",
+          "name": "GitHub Releases",
+          "url": "https://github.com"
+        },
+        {
+          "id": "modrinth",
+          "name": "Modrinth",
+          "url": "https://modrinth.com/app"
+        },
+        {
+          "id": "curseforge",
+          "name": "CurseForge",
+          "url": "https://curseforge.com"
+        },
+        {
+          "id": "planetminecraft",
+          "name": "PlanetMinecraft",
+          "url": "https://planetminecraft.com"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+
+    <script src="js/about_docs.js?v=2.6.0"></script>
+    <script src="js/pack_studio.js?v=2.6.0"></script>
+    <script src="js/app.js?v=2.6.0"></script>
+  </body>
+</html>

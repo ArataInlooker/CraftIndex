@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="12 11 40 42" width="100%" height="100%">
+  <!-- Isometric Craft Cube Outer Definition for high contrast on light & dark tabs -->
+  <polygon points="32,15 48,24 48,40 32,49 16,40 16,24" fill="none" stroke="#5a28b4" stroke-width="1.4" stroke-linejoin="round" />
+  <!-- Facet Faces -->
+  <polygon points="32,15 48,24 32,33 16,24" fill="#d1b3ff" />
+  <polygon points="16,24 32,33 32,49 16,40" fill="#9d65ff" />
+  <polygon points="32,33 48,24 48,40 32,49" fill="#7c4dff" />
+  <!-- Interior Facet Edges -->
+  <line x1="16" y1="24" x2="32" y2="33" stroke="#7c4dff" stroke-width="0.8" />
+  <line x1="48" y1="24" x2="32" y2="33" stroke="#7c4dff" stroke-width="0.8" />
+  <line x1="32" y1="33" x2="32" y2="49" stroke="#5a28b4" stroke-width="1.0" />
+  <!-- Center Cosmic Sparkle / Star -->
+  <circle cx="32" cy="33" r="2.2" fill="#ffffff" />
+  <path d="M 32,27.5 L 33.2,31.8 L 37.5,33 L 33.2,34.2 L 32,38.5 L 30.8,34.2 L 26.5,33 L 30.8,31.8 Z" fill="#ffffff" />
+</svg>

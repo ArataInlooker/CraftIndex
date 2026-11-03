@@ -1,0 +1,75 @@
+# Dependencies
+node_modules/
+
+# Local Scratch, Test Fixtures, Browser Profiles & Temporary Data
+scratch/
+scratch/**
+tests/test_profile*
+tests/test_profile*/**
+.test_profile*
+.test_profile*/**
+test_profile*
+test_profile*/**
+verify_profile*
+verify_profile*/**
+chrome_*
+*.tmp
+*.bak
+*.old
+
+# Environment / Local Secrets
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cloudflare Pages / Wrangler Artifacts
+.wrangler/
+.wrangler/**
+.mf/
+.mf/**
+
+# Build Outputs (rebuilt dynamically during deployment via `npm run build`)
+dist/pages/
+dist/pages/**
+dist/static_routes/
+dist/static_routes/**
+!dist/index.standalone.html
+
+# Conversation Exports, Reports & Private Legal / Transfer Documents
+Export.txt
+/Export.txt
+Report of Huge Prompt.txt
+/Report of Huge Prompt.txt
+ultimate_prompt_work_report.txt
+/ultimate_prompt_work_report.txt
+*ownership*
+*transfer*
+*agreement*
+*contract*
+*legal*
+*.pem
+*.key
+*.cert
+
+# Operating System Metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+
+# IDE / Editor Configurations
+.idea/
+.vscode/
