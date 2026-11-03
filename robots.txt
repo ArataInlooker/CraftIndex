@@ -3,4 +3,4 @@ Allow: /
 Disallow: /api/
 Disallow: /scratch/
 
-Sitemap: https://craftvault.inlooker.top/sitemap.xml
+Sitemap: https://craftindex.inlooker.top/sitemap.xml
