@@ -4,6 +4,18 @@
 
 📚 **Full Documentation:** See [docs/CRAFTINDEX_DOCUMENTATION.md](file:///c:/Users/yogde/OneDrive/Documents/REA/docs/CRAFTINDEX_DOCUMENTATION.md) for the complete 23-section architecture, API reference, and user guide.
 
+> **PROPRIETARY SOFTWARE · ALL RIGHTS RESERVED**
+>
+> CraftIndex is publicly viewable source-available software, not an open-source project.
+>
+> Copyright © 2026 Arata Inlooker. All rights reserved.
+>
+> Public visibility does not grant general permission to copy, modify, redistribute, rebrand, or commercially exploit CraftIndex.
+>
+> GitHub's platform terms permit viewing and forking public repositories. All other rights remain reserved, subject to applicable law and third-party licenses.
+>
+> See [LICENSE.md](LICENSE.md) for the copyright notice and permissions information.
+
 ---
 
 ## ✨ Features & Ambient Themes
