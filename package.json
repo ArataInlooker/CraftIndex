@@ -3,7 +3,7 @@
   "version": "2.6.0",
   "description": "CraftIndex is a Minecraft resource library and modpack builder for discovering, organizing, and bulk-downloading mods, plugins, resource packs, shaders, and data packs.",
   "main": "server.js",
-  "homepage": "https://craftvault.inlooker.top",
+  "homepage": "https://craftindex.inlooker.top",
   "repository": {
     "type": "git",
     "url": "https://github.com/ArataInlooker/CraftIndex.git"
