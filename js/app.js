@@ -126,7 +126,7 @@ const CraftIndexSanitizer = {
       return true;
     }
     try {
-      const parsed = new URL(trimmed, window.location.origin || "https://craftvault.inlooker.top");
+      const parsed = new URL(trimmed, window.location.origin || "https://craftindex.inlooker.top");
       if (["http:", "https:", "mailto:"].includes(parsed.protocol)) {
         return true;
       }
@@ -7535,7 +7535,7 @@ async function exportCartMrpack() {
     const z = new JSZip();
     z.file("modrinth.index.json", JSON.stringify(indexJson, null, 2));
     z.file("overrides/craftindex_manifest.json", JSON.stringify(itemsExport, safeCartJsonReplacer, 2));
-    z.file("overrides/README.txt", `Pack: ${cleanName}\nExported by CraftIndex (https://craftvault.inlooker.top)\nItems: ${mrpackFiles.length}\nMinecraft: ${targetMc}\nLoader: ${modLoader}\nGenerated: ${new Date().toISOString()}\n`);
+    z.file("overrides/README.txt", `Pack: ${cleanName}\nExported by CraftIndex (https://craftindex.inlooker.top)\nItems: ${mrpackFiles.length}\nMinecraft: ${targetMc}\nLoader: ${modLoader}\nGenerated: ${new Date().toISOString()}\n`);
 
     const blob = await z.generateAsync({ type: "blob" });
     const url = URL.createObjectURL(blob);
