@@ -2,7 +2,7 @@
 
 > **A Minimalist, Cosmic Purple bulk downloader for Minecraft mods, plugins, resource packs, shaders, and data packs.**
 
-📚 **Full Documentation:** See [docs/CRAFTINDEX_DOCUMENTATION.md](file:///c:/Users/yogde/OneDrive/Documents/REA/docs/CRAFTINDEX_DOCUMENTATION.md) for the complete 23-section architecture, API reference, and user guide.
+📚 **Full Documentation:** See [docs/CRAFTINDEX_DOCUMENTATION.md](docs/CRAFTINDEX_DOCUMENTATION.md) for the complete 23-section architecture, API reference, and user guide.
 
 > **PROPRIETARY SOFTWARE · ALL RIGHTS RESERVED**
 >
