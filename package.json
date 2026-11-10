@@ -1,6 +1,6 @@
 {
   "name": "craftindex",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "description": "CraftIndex is a Minecraft resource library and modpack builder for discovering, organizing, and bulk-downloading mods, plugins, resource packs, shaders, and data packs.",
   "main": "server.js",
   "homepage": "https://craftindex.inlooker.top",
@@ -21,7 +21,11 @@
     "test:zip": "node tests/verify_zip_roundtrip.js",
     "test:persistence": "node tests/verify_binary_persistence.js",
     "test:routing": "node tests/verify_browser_routing.js",
-    "test:visual": "node tests/verify_header_logo_and_favicon.js"
+    "test:visual": "node tests/verify_header_logo_and_favicon.js",
+    "test:contrast": "node tests/audit_light_theme_contrast.js",
+    "test:scroll-isolation": "node tests/test_scroll_isolation.js",
+    "test:release-routing": "node tests/release_gate_routing.js",
+    "test:qa-screenshots": "node tests/capture_remediation_screenshots.js"
   },
   "keywords": [
     "craftindex",

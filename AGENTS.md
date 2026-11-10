@@ -4,7 +4,7 @@
 **Authoritative Maintainer:** Arata Inlooker ([aratainlooker@gmail.com](mailto:aratainlooker@gmail.com))  
 **Repository:** [https://github.com/ArataInlooker/CraftIndex](https://github.com/ArataInlooker/CraftIndex)  
 **Primary Domain:** [https://craftindex.inlooker.top](https://craftindex.inlooker.top)  
-**Specification Version:** 2.6.0  
+**Specification Version:** 2.6.1
 **Status:** Mandatory Operating Standard for Human Developers & AI Agents
 
 ---

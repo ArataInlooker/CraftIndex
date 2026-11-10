@@ -1,0 +1,2423 @@
+{
+  "timestamp": "2026-11-10T14:34:07.910Z",
+  "specification": "WCAG 2.2 AA",
+  "totalAudited": 84,
+  "failuresCount": 0,
+  "verdict": "PASS",
+  "lowestFiveRatios": [
+    {
+      "component": "Modrinth Source Link",
+      "view": "Catalog Mods",
+      "contrastRatio": "4.53",
+      "rawRatio": 4.538518634205199,
+      "required": 4.5,
+      "fontSize": 13,
+      "fontWeight": 800,
+      "isLarge": false,
+      "fgHex": "#047857",
+      "bgHex": "#dceded"
+    },
+    {
+      "component": "Resource Packs Chip",
+      "view": "Resourcepacks",
+      "contrastRatio": "4.53",
+      "rawRatio": 4.538518634205199,
+      "required": 4.5,
+      "fontSize": 10,
+      "fontWeight": 600,
+      "isLarge": false,
+      "fgHex": "#047857",
+      "bgHex": "#dceded"
+    },
+    {
+      "component": "Mods Category Chip",
+      "view": "Catalog Mods",
+      "contrastRatio": "4.89",
+      "rawRatio": 4.890133884973827,
+      "required": 4.5,
+      "fontSize": 10,
+      "fontWeight": 600,
+      "isLarge": false,
+      "fgHex": "#0369a1",
+      "bgHex": "#dcebfa"
+    },
+    {
+      "component": "Datapacks Category Chip",
+      "view": "Datapacks",
+      "contrastRatio": "4.97",
+      "rawRatio": 4.973193502159789,
+      "required": 4.5,
+      "fontSize": 10,
+      "fontWeight": 600,
+      "isLarge": false,
+      "fgHex": "#be123c",
+      "bgHex": "#f8dee9"
+    },
+    {
+      "component": "Modpacks Category Chip",
+      "view": "Modpacks",
+      "contrastRatio": "5.05",
+      "rawRatio": 5.052712606594406,
+      "required": 4.5,
+      "fontSize": 10,
+      "fontWeight": 600,
+      "isLarge": false,
+      "fgHex": "#a21caf",
+      "bgHex": "#f4dffa"
+    }
+  ],
+  "evaluated": [
+    {
+      "view": "Homepage",
+      "route": "/",
+      "component": "Header Brand Name",
+      "sel": "#lg span",
+      "textSample": "CraftIndex",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 253,
+        "g": 252,
+        "b": 254,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 22,
+      "fontWeight": 800,
+      "tag": "span",
+      "isLarge": true,
+      "minRequired": 3,
+      "rawRatio": 18.155662726964895,
+      "formattedRatio": "18.15",
+      "pass": true
+    },
+    {
+      "view": "Homepage",
+      "route": "/",
+      "component": "Header Action Button",
+      "sel": "header .btn:not(#mt)",
+      "textSample": "Presets",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 253,
+        "g": 252,
+        "b": 254,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 500,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 18.155662726964895,
+      "formattedRatio": "18.15",
+      "pass": true
+    },
+    {
+      "view": "Homepage",
+      "route": "/",
+      "component": "Header Collection Button",
+      "sel": "#cb",
+      "textSample": "Collection 0",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 253,
+        "g": 252,
+        "b": 254,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 500,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 18.155662726964895,
+      "formattedRatio": "18.15",
+      "pass": true
+    },
+    {
+      "view": "Homepage",
+      "route": "/",
+      "component": "Promote Project Hero Action",
+      "sel": ".home-ad-btn",
+      "textSample": "Promote Your Project →",
+      "fg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "bg": {
+        "r": 147,
+        "g": 51,
+        "b": 234,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 14,
+      "fontWeight": 600,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 5.381521681093853,
+      "formattedRatio": "5.38",
+      "pass": true
+    },
+    {
+      "view": "Homepage",
+      "route": "/",
+      "component": "Explore Category Hero Action",
+      "sel": ".home-cat-btn",
+      "textSample": "Explore Category →",
+      "fg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "bg": {
+        "r": 147,
+        "g": 51,
+        "b": 234,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 600,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 5.381521681093853,
+      "formattedRatio": "5.38",
+      "pass": true
+    },
+    {
+      "view": "Homepage",
+      "route": "/",
+      "component": "Footer Text",
+      "sel": ".site-footer-author",
+      "textSample": "Engineered by Arata Inlooker · ",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 254,
+        "g": 253,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13,
+      "fontWeight": 500,
+      "tag": "div",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 18.311679347700007,
+      "formattedRatio": "18.31",
+      "pass": true
+    },
+    {
+      "view": "Homepage",
+      "route": "/",
+      "component": "Footer Link",
+      "sel": ".site-footer-author a",
+      "textSample": "Portfolio",
+      "fg": {
+        "r": 126,
+        "g": 34,
+        "b": 206,
+        "a": 1
+      },
+      "bg": {
+        "r": 254,
+        "g": 253,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13,
+      "fontWeight": 500,
+      "tag": "a",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 6.886275357822608,
+      "formattedRatio": "6.88",
+      "pass": true
+    },
+    {
+      "view": "Catalog Mods",
+      "route": "/mods/",
+      "component": "Active Category Tab (Mods)",
+      "sel": ".tb.on",
+      "textSample": "Mods▾",
+      "fg": {
+        "r": 107,
+        "g": 33,
+        "b": 168,
+        "a": 1
+      },
+      "bg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 600,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 8.720447908771723,
+      "formattedRatio": "8.72",
+      "pass": true
+    },
+    {
+      "view": "Catalog Mods",
+      "route": "/mods/",
+      "component": "Inactive Category Tab",
+      "sel": ".tb:not(.on)",
+      "textSample": "Home",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 252,
+        "g": 251,
+        "b": 254,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 500,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 18.01176631353611,
+      "formattedRatio": "18.01",
+      "pass": true
+    },
+    {
+      "view": "Catalog Mods",
+      "route": "/mods/",
+      "component": "Active Subtab (Mods)",
+      "sel": ".subtab-btn.on",
+      "textSample": "Mods",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 253,
+        "g": 252,
+        "b": 254,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13,
+      "fontWeight": 600,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 18.155662726964895,
+      "formattedRatio": "18.15",
+      "pass": true
+    },
+    {
+      "view": "Catalog Mods",
+      "route": "/mods/",
+      "component": "Inactive Subtab",
+      "sel": ".subtab-btn:not(.on)",
+      "textSample": "Modpacks",
+      "fg": {
+        "r": 75,
+        "g": 56,
+        "b": 105,
+        "a": 1
+      },
+      "bg": {
+        "r": 253,
+        "g": 252,
+        "b": 254,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13,
+      "fontWeight": 500,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 9.924399352285986,
+      "formattedRatio": "9.92",
+      "pass": true
+    },
+    {
+      "view": "Catalog Mods",
+      "route": "/mods/",
+      "component": "Mod Card Title",
+      "sel": ".cd h3 a",
+      "textSample": "Fabric API",
+      "fg": {
+        "r": 26,
+        "g": 15,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 244,
+        "b": 252,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 16,
+      "fontWeight": 700,
+      "tag": "a",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 16.790105454337233,
+      "formattedRatio": "16.79",
+      "pass": true
+    },
+    {
+      "view": "Catalog Mods",
+      "route": "/mods/",
+      "component": "Mod Card Author",
+      "sel": ".by",
+      "textSample": "by modmuss50",
+      "fg": {
+        "r": 115,
+        "g": 95,
+        "b": 142,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 244,
+        "b": 252,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 12,
+      "fontWeight": 400,
+      "tag": "span",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 5.1477379900359175,
+      "formattedRatio": "5.14",
+      "pass": true
+    },
+    {
+      "view": "Catalog Mods",
+      "route": "/mods/",
+      "component": "Mod Card Description",
+      "sel": ".ds",
+      "textSample": "Lightweight and modular API providing co",
+      "fg": {
+        "r": 67,
+        "g": 50,
+        "b": 92,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 244,
+        "b": 252,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 14,
+      "fontWeight": 400,
+      "tag": "div",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 10.455713257258955,
+      "formattedRatio": "10.45",
+      "pass": true
+    },
+    {
+      "view": "Catalog Mods",
+      "route": "/mods/",
+      "component": "Mods Category Chip",
+      "sel": ".cat-mods",
+      "textSample": "MOD",
+      "fg": {
+        "r": 3,
+        "g": 105,
+        "b": 161,
+        "a": 1
+      },
+      "bg": {
+        "r": 220,
+        "g": 235,
+        "b": 250,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 10,
+      "fontWeight": 600,
+      "tag": "span",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 4.890133884973827,
+      "formattedRatio": "4.89",
+      "pass": true
+    },
+    {
+      "view": "Catalog Mods",
+      "route": "/mods/",
+      "component": "Modrinth Source Link",
+      "sel": ".source-link.modrinth",
+      "textSample": "Modrinth ↗",
+      "fg": {
+        "r": 4,
+        "g": 120,
+        "b": 87,
+        "a": 1
+      },
+      "bg": {
+        "r": 220,
+        "g": 237,
+        "b": 237,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13,
+      "fontWeight": 800,
+      "tag": "a",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 4.538518634205199,
+      "formattedRatio": "4.53",
+      "pass": true
+    },
+    {
+      "view": "Catalog Mods",
+      "route": "/mods/",
+      "component": "Primary Add to Collection",
+      "sel": ".act .btn.ad",
+      "textSample": "+ Add to Collection",
+      "fg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "bg": {
+        "r": 147,
+        "g": 51,
+        "b": 234,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 600,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 5.381521681093853,
+      "formattedRatio": "5.38",
+      "pass": true
+    },
+    {
+      "view": "Catalog Mods",
+      "route": "/mods/",
+      "component": "Info Button",
+      "sel": ".btn-info",
+      "textSample": "ℹ",
+      "fg": {
+        "r": 126,
+        "g": 34,
+        "b": 206,
+        "a": 1
+      },
+      "bg": {
+        "r": 238,
+        "g": 225,
+        "b": 250,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 16,
+      "fontWeight": 700,
+      "tag": "a",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 5.581951431020345,
+      "formattedRatio": "5.58",
+      "pass": true
+    },
+    {
+      "view": "Plugins",
+      "route": "/plugins/",
+      "component": "Plugins Category Chip",
+      "sel": ".cat-plugins",
+      "textSample": "PLUGIN",
+      "fg": {
+        "r": 107,
+        "g": 33,
+        "b": 168,
+        "a": 1
+      },
+      "bg": {
+        "r": 236,
+        "g": 221,
+        "b": 250,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 10,
+      "fontWeight": 600,
+      "tag": "span",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 6.764401397476563,
+      "formattedRatio": "6.76",
+      "pass": true
+    },
+    {
+      "view": "Plugins",
+      "route": "/plugins/",
+      "component": "Plugins Resource Title",
+      "sel": ".cd h3 a",
+      "textSample": "VeinMiner",
+      "fg": {
+        "r": 26,
+        "g": 15,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 244,
+        "b": 252,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 16,
+      "fontWeight": 700,
+      "tag": "a",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 16.790105454337233,
+      "formattedRatio": "16.79",
+      "pass": true
+    },
+    {
+      "view": "Resourcepacks",
+      "route": "/resourcepacks/",
+      "component": "Resource Packs Chip",
+      "sel": ".cat-resourcepacks",
+      "textSample": "RESOURCE PACK",
+      "fg": {
+        "r": 4,
+        "g": 120,
+        "b": 87,
+        "a": 1
+      },
+      "bg": {
+        "r": 220,
+        "g": 237,
+        "b": 237,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 10,
+      "fontWeight": 600,
+      "tag": "span",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 4.538518634205199,
+      "formattedRatio": "4.53",
+      "pass": true
+    },
+    {
+      "view": "Resourcepacks",
+      "route": "/resourcepacks/",
+      "component": "Resourcepacks Resource Title",
+      "sel": ".cd h3 a",
+      "textSample": "Fresh Animations",
+      "fg": {
+        "r": 26,
+        "g": 15,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 244,
+        "b": 252,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 16,
+      "fontWeight": 700,
+      "tag": "a",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 16.790105454337233,
+      "formattedRatio": "16.79",
+      "pass": true
+    },
+    {
+      "view": "Shaders",
+      "route": "/shaders/",
+      "component": "Shaders Category Chip",
+      "sel": ".cat-shaders",
+      "textSample": "SHADER",
+      "fg": {
+        "r": 154,
+        "g": 52,
+        "b": 18,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 229,
+        "b": 224,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 10,
+      "fontWeight": 600,
+      "tag": "span",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 6.011052349745147,
+      "formattedRatio": "6.01",
+      "pass": true
+    },
+    {
+      "view": "Shaders",
+      "route": "/shaders/",
+      "component": "Shaders Resource Title",
+      "sel": ".cd h3 a",
+      "textSample": "Complementary Shaders - Reimagined",
+      "fg": {
+        "r": 26,
+        "g": 15,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 244,
+        "b": 252,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 16,
+      "fontWeight": 700,
+      "tag": "a",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 16.790105454337233,
+      "formattedRatio": "16.79",
+      "pass": true
+    },
+    {
+      "view": "Datapacks",
+      "route": "/datapacks/",
+      "component": "Datapacks Category Chip",
+      "sel": ".cat-datapacks",
+      "textSample": "DATA PACK",
+      "fg": {
+        "r": 190,
+        "g": 18,
+        "b": 60,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 222,
+        "b": 233,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 10,
+      "fontWeight": 600,
+      "tag": "span",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 4.973193502159789,
+      "formattedRatio": "4.97",
+      "pass": true
+    },
+    {
+      "view": "Datapacks",
+      "route": "/datapacks/",
+      "component": "Datapacks Resource Title",
+      "sel": ".cd h3 a",
+      "textSample": "VeinMiner",
+      "fg": {
+        "r": 26,
+        "g": 15,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 244,
+        "b": 252,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 16,
+      "fontWeight": 700,
+      "tag": "a",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 16.790105454337233,
+      "formattedRatio": "16.79",
+      "pass": true
+    },
+    {
+      "view": "Modpacks",
+      "route": "/modpacks/",
+      "component": "Modpacks Category Chip",
+      "sel": ".cat-modpacks",
+      "textSample": "MODPACK",
+      "fg": {
+        "r": 162,
+        "g": 28,
+        "b": 175,
+        "a": 1
+      },
+      "bg": {
+        "r": 244,
+        "g": 223,
+        "b": 250,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 10,
+      "fontWeight": 600,
+      "tag": "span",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 5.052712606594406,
+      "formattedRatio": "5.05",
+      "pass": true
+    },
+    {
+      "view": "Modpacks",
+      "route": "/modpacks/",
+      "component": "Modpacks Resource Title",
+      "sel": ".cd h3 a",
+      "textSample": "Fabulously Optimized",
+      "fg": {
+        "r": 26,
+        "g": 15,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 244,
+        "b": 252,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 16,
+      "fontWeight": 700,
+      "tag": "a",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 16.790105454337233,
+      "formattedRatio": "16.79",
+      "pass": true
+    },
+    {
+      "view": "Worlds",
+      "route": "/worlds/",
+      "component": "Worlds Category Chip",
+      "sel": ".cat-worlds",
+      "textSample": "WORLD",
+      "fg": {
+        "r": 133,
+        "g": 77,
+        "b": 14,
+        "a": 1
+      },
+      "bg": {
+        "r": 246,
+        "g": 235,
+        "b": 218,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 10,
+      "fontWeight": 600,
+      "tag": "span",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 5.811784721870839,
+      "formattedRatio": "5.81",
+      "pass": true
+    },
+    {
+      "view": "Worlds",
+      "route": "/worlds/",
+      "component": "Worlds Resource Title",
+      "sel": ".cd h3 a",
+      "textSample": "Diversity 3",
+      "fg": {
+        "r": 26,
+        "g": 15,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 244,
+        "b": 252,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 16,
+      "fontWeight": 700,
+      "tag": "a",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 16.790105454337233,
+      "formattedRatio": "16.79",
+      "pass": true
+    },
+    {
+      "view": "Server Software",
+      "route": "/serversoftwares/",
+      "component": "Server Software Chip",
+      "sel": ".cat-serversoftwares",
+      "textSample": "SERVER SOFTWARE",
+      "fg": {
+        "r": 7,
+        "g": 89,
+        "b": 133,
+        "a": 1
+      },
+      "bg": {
+        "r": 220,
+        "g": 235,
+        "b": 250,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 10,
+      "fontWeight": 600,
+      "tag": "span",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 6.232950008536978,
+      "formattedRatio": "6.23",
+      "pass": true
+    },
+    {
+      "view": "Server Software",
+      "route": "/serversoftwares/",
+      "component": "Server Software Resource Title",
+      "sel": ".cd h3 a",
+      "textSample": "Paper (PaperMC)",
+      "fg": {
+        "r": 26,
+        "g": 15,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 244,
+        "b": 252,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 16,
+      "fontWeight": 700,
+      "tag": "a",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 16.790105454337233,
+      "formattedRatio": "16.79",
+      "pass": true
+    },
+    {
+      "view": "Resource Detail",
+      "route": "/mods/sodium/",
+      "component": "Resource Breadcrumb Link",
+      "sel": ".rp-breadcrumb a",
+      "textSample": "Home",
+      "fg": {
+        "r": 107,
+        "g": 33,
+        "b": 168,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 244,
+        "b": 252,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13,
+      "fontWeight": 400,
+      "tag": "a",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 8.029962907815587,
+      "formattedRatio": "8.02",
+      "pass": true
+    },
+    {
+      "view": "Resource Detail",
+      "route": "/mods/sodium/",
+      "component": "Resource Breadcrumb Active Page",
+      "sel": ".rp-breadcrumb [aria-current=\"page\"]",
+      "textSample": "Sodium",
+      "fg": {
+        "r": 74,
+        "g": 56,
+        "b": 105,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 244,
+        "b": 252,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13,
+      "fontWeight": 400,
+      "tag": "span",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 9.383252604758594,
+      "formattedRatio": "9.38",
+      "pass": true
+    },
+    {
+      "view": "Resource Detail",
+      "route": "/mods/sodium/",
+      "component": "Dashboard Active Tab",
+      "sel": ".dash-tab.active",
+      "textSample": "📖 Documentation",
+      "fg": {
+        "r": 107,
+        "g": 33,
+        "b": 168,
+        "a": 1
+      },
+      "bg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 700,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 8.720447908771723,
+      "formattedRatio": "8.72",
+      "pass": true
+    },
+    {
+      "view": "Resource Detail",
+      "route": "/mods/sodium/",
+      "component": "Dashboard Inactive Tab",
+      "sel": ".dash-tab:not(.active)",
+      "textSample": "⚡ Versions & Single Download",
+      "fg": {
+        "r": 90,
+        "g": 72,
+        "b": 112,
+        "a": 1
+      },
+      "bg": {
+        "r": 249,
+        "g": 246,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 700,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 7.57200236519924,
+      "formattedRatio": "7.57",
+      "pass": true
+    },
+    {
+      "view": "Resource Detail",
+      "route": "/mods/sodium/",
+      "component": "Resource Author Label",
+      "sel": ".dash-author",
+      "textSample": "by LjcZDkRW • Mods",
+      "fg": {
+        "r": 90,
+        "g": 72,
+        "b": 112,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 244,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 400,
+      "tag": "div",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 7.464634536577765,
+      "formattedRatio": "7.46",
+      "pass": true
+    },
+    {
+      "view": "Resource Detail",
+      "route": "/mods/sodium/",
+      "component": "Resource Author Name",
+      "sel": ".dash-author b",
+      "textSample": "LjcZDkRW",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 244,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 700,
+      "tag": "b",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 17.13320327771817,
+      "formattedRatio": "17.13",
+      "pass": true
+    },
+    {
+      "view": "Resource Detail",
+      "route": "/mods/sodium/",
+      "component": "Dashboard Add to Cart Action",
+      "sel": "#dashCartBtn",
+      "textSample": "+ Add to Collection",
+      "fg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "bg": {
+        "r": 147,
+        "g": 51,
+        "b": 234,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 600,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 5.381521681093853,
+      "formattedRatio": "5.38",
+      "pass": true
+    },
+    {
+      "view": "Resource Detail",
+      "route": "/mods/sodium/",
+      "component": "Dashboard Close Button",
+      "sel": "#dashCloseBtn",
+      "textSample": "✕",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 242,
+        "g": 235,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 18,
+      "fontWeight": 400,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 16.007720619928,
+      "formattedRatio": "16.00",
+      "pass": true
+    },
+    {
+      "view": "Pack Studio",
+      "route": "/studio/",
+      "component": "Studio Main Heading",
+      "sel": ".studio-title",
+      "textSample": "Craft Your Own Modpack or Multi-Resource",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 244,
+        "b": 252,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 24,
+      "fontWeight": 800,
+      "tag": "h1",
+      "isLarge": true,
+      "minRequired": 3,
+      "rawRatio": 17.099295998844678,
+      "formattedRatio": "17.09",
+      "pass": true
+    },
+    {
+      "view": "Pack Studio",
+      "route": "/studio/",
+      "component": "Studio Subtitle",
+      "sel": ".studio-subtitle",
+      "textSample": "Discover, import, organize, and export s",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 244,
+        "b": 252,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 400,
+      "tag": "p",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 17.099295998844678,
+      "formattedRatio": "17.09",
+      "pass": true
+    },
+    {
+      "view": "Pack Studio",
+      "route": "/studio/",
+      "component": "Studio Section Heading",
+      "sel": ".studio-section-title",
+      "textSample": "⚙️ Pack Configuration",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 254,
+        "g": 253,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 18,
+      "fontWeight": 700,
+      "tag": "h2",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 18.311679347700007,
+      "formattedRatio": "18.31",
+      "pass": true
+    },
+    {
+      "view": "Pack Studio",
+      "route": "/studio/",
+      "component": "Studio Card Subtitle",
+      "sel": ".studio-card-sub",
+      "textSample": "Export metadata & loader settings",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 254,
+        "g": 253,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 12,
+      "fontWeight": 400,
+      "tag": "span",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 18.311679347700007,
+      "formattedRatio": "18.31",
+      "pass": true
+    },
+    {
+      "view": "Pack Studio",
+      "route": "/studio/",
+      "component": "Studio Primary Import Button",
+      "sel": "#studioImportBtn",
+      "textSample": "📁 Im",
+      "fg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "bg": {
+        "r": 147,
+        "g": 51,
+        "b": 234,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 600,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 5.381521681093853,
+      "formattedRatio": "5.38",
+      "pass": true
+    },
+    {
+      "view": "Pack Studio",
+      "route": "/studio/",
+      "component": "Studio Secondary Export Button",
+      "sel": "#studioExportBtn",
+      "textSample": "📦 Ex",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 254,
+        "g": 253,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 500,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 18.311679347700007,
+      "formattedRatio": "18.31",
+      "pass": true
+    },
+    {
+      "view": "Pack Studio",
+      "route": "/studio/",
+      "component": "Studio Destructive Clear Button",
+      "sel": "#studioClearBtn",
+      "textSample": "🗑️ C",
+      "fg": {
+        "r": 185,
+        "g": 28,
+        "b": 28,
+        "a": 1
+      },
+      "bg": {
+        "r": 253,
+        "g": 238,
+        "b": 240,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 500,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 5.7505134224021655,
+      "formattedRatio": "5.75",
+      "pass": true
+    },
+    {
+      "view": "Documentation",
+      "route": "/docs/",
+      "component": "Documentation Title",
+      "sel": ".doc-main-title",
+      "textSample": "CraftIndex Documentation",
+      "fg": {
+        "r": 30,
+        "g": 27,
+        "b": 75,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 244,
+        "b": 252,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 36,
+      "fontWeight": 800,
+      "tag": "h1",
+      "isLarge": true,
+      "minRequired": 3,
+      "rawRatio": 14.721040269578905,
+      "formattedRatio": "14.72",
+      "pass": true
+    },
+    {
+      "view": "Documentation",
+      "route": "/docs/",
+      "component": "Documentation Primary Link",
+      "sel": ".doc-pill-btn:not(.secondary)",
+      "textSample": "Portfolio ↗",
+      "fg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "bg": {
+        "r": 126,
+        "g": 34,
+        "b": 206,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13,
+      "fontWeight": 600,
+      "tag": "a",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 6.983283814899468,
+      "formattedRatio": "6.98",
+      "pass": true
+    },
+    {
+      "view": "Documentation",
+      "route": "/docs/",
+      "component": "Documentation Secondary Link",
+      "sel": ".doc-pill-btn.secondary",
+      "textSample": "GitHub ↗",
+      "fg": {
+        "r": 59,
+        "g": 7,
+        "b": 100,
+        "a": 1
+      },
+      "bg": {
+        "r": 235,
+        "g": 221,
+        "b": 252,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13,
+      "fontWeight": 600,
+      "tag": "a",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 11.62595264744044,
+      "formattedRatio": "11.62",
+      "pass": true
+    },
+    {
+      "view": "Advertise Modal",
+      "route": "modal:ad",
+      "component": "Modal Header Title",
+      "sel": "#mh",
+      "textSample": "Advertise on CraftIndex",
+      "fg": {
+        "r": 26,
+        "g": 15,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 246,
+        "g": 242,
+        "b": 253,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 16,
+      "fontWeight": 600,
+      "tag": "div",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 16.53011486050272,
+      "formattedRatio": "16.53",
+      "pass": true
+    },
+    {
+      "view": "Advertise Modal",
+      "route": "modal:ad",
+      "component": "Special Banner Lead Text",
+      "sel": ".ad-special-banner-lead",
+      "textSample": "Reach a wider audience of Minecraft play",
+      "fg": {
+        "r": 113,
+        "g": 63,
+        "b": 18,
+        "a": 1
+      },
+      "bg": {
+        "r": 250,
+        "g": 246,
+        "b": 215,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 500,
+      "tag": "span",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 7.939439711950618,
+      "formattedRatio": "7.93",
+      "pass": true
+    },
+    {
+      "view": "Advertise Modal",
+      "route": "modal:ad",
+      "component": "Special Rate Price Label",
+      "sel": ".ad-special-rate-text",
+      "textSample": "Starts at just $1/week",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 250,
+        "g": 246,
+        "b": 215,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 14,
+      "fontWeight": 600,
+      "tag": "span",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 17.003038714832144,
+      "formattedRatio": "17.00",
+      "pass": true
+    },
+    {
+      "view": "Advertise Modal",
+      "route": "modal:ad",
+      "component": "Special Rate Chip Badge",
+      "sel": ".ad-special-badge",
+      "textSample": "Special Rate",
+      "fg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "bg": {
+        "r": 4,
+        "g": 120,
+        "b": 87,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 11,
+      "fontWeight": 600,
+      "tag": "span",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 5.483924052498799,
+      "formattedRatio": "5.48",
+      "pass": true
+    },
+    {
+      "view": "Advertise Modal",
+      "route": "modal:ad",
+      "component": "Section Heading",
+      "sel": ".ad-section-heading",
+      "textSample": "What You Can Promote",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 248,
+        "b": 248,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 15,
+      "fontWeight": 600,
+      "tag": "h3",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 17.485274289710205,
+      "formattedRatio": "17.48",
+      "pass": true
+    },
+    {
+      "view": "Advertise Modal",
+      "route": "modal:ad",
+      "component": "Promote Item Tag Card",
+      "sel": ".ad-promote-card",
+      "textSample": "Minecraft Servers",
+      "fg": {
+        "r": 46,
+        "g": 16,
+        "b": 101,
+        "a": 1
+      },
+      "bg": {
+        "r": 245,
+        "g": 241,
+        "b": 254,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13,
+      "fontWeight": 600,
+      "tag": "div",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 13.710447944594804,
+      "formattedRatio": "13.71",
+      "pass": true
+    },
+    {
+      "view": "Advertise Modal",
+      "route": "modal:ad",
+      "component": "Placement Option Bullet",
+      "sel": ".ad-placement-list li",
+      "textSample": "Affordable Pricing: Starts at just $1/we",
+      "fg": {
+        "r": 74,
+        "g": 56,
+        "b": 105,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 248,
+        "b": 248,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13,
+      "fontWeight": 400,
+      "tag": "li",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 9.595058506205584,
+      "formattedRatio": "9.59",
+      "pass": true
+    },
+    {
+      "view": "Advertise Modal",
+      "route": "modal:ad",
+      "component": "Placement Option Bold Title",
+      "sel": ".ad-placement-list b",
+      "textSample": "Affordable Pricing:",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 248,
+        "b": 248,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13,
+      "fontWeight": 700,
+      "tag": "b",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 17.485274289710205,
+      "formattedRatio": "17.48",
+      "pass": true
+    },
+    {
+      "view": "Advertise Modal",
+      "route": "modal:ad",
+      "component": "How to Apply Title",
+      "sel": ".ad-apply-title",
+      "textSample": "How to Apply",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 246,
+        "g": 242,
+        "b": 253,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 14,
+      "fontWeight": 600,
+      "tag": "div",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 16.834517666571408,
+      "formattedRatio": "16.83",
+      "pass": true
+    },
+    {
+      "view": "Advertise Modal",
+      "route": "modal:ad",
+      "component": "How to Apply Description",
+      "sel": ".ad-apply-desc",
+      "textSample": "Send your project details, banner artwor",
+      "fg": {
+        "r": 74,
+        "g": 56,
+        "b": 105,
+        "a": 1
+      },
+      "bg": {
+        "r": 246,
+        "g": 242,
+        "b": 253,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13,
+      "fontWeight": 400,
+      "tag": "div",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 9.237955279292407,
+      "formattedRatio": "9.23",
+      "pass": true
+    },
+    {
+      "view": "Dependencies Modal",
+      "route": "modal:dep",
+      "component": "Dialog Heading Title",
+      "sel": ".dep-title",
+      "textSample": "Include Resource Dependencies?",
+      "fg": {
+        "r": 31,
+        "g": 16,
+        "b": 53,
+        "a": 1
+      },
+      "bg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 19,
+      "fontWeight": 600,
+      "tag": "h3",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 17.739693255074343,
+      "formattedRatio": "17.73",
+      "pass": true
+    },
+    {
+      "view": "Dependencies Modal",
+      "route": "modal:dep",
+      "component": "Dialog Subtitle Lead",
+      "sel": ".dep-sub",
+      "textSample": "CraftIndex detected resources in your ca",
+      "fg": {
+        "r": 74,
+        "g": 56,
+        "b": 105,
+        "a": 1
+      },
+      "bg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13,
+      "fontWeight": 500,
+      "tag": "p",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 10.190105047060957,
+      "formattedRatio": "10.19",
+      "pass": true
+    },
+    {
+      "view": "Dependencies Modal",
+      "route": "modal:dep",
+      "component": "Category Selection Lead",
+      "sel": ".dep-intro-text",
+      "textSample": "Check the resource categories you want C",
+      "fg": {
+        "r": 74,
+        "g": 56,
+        "b": 105,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 244,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13,
+      "fontWeight": 500,
+      "tag": "div",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 9.401859251653967,
+      "formattedRatio": "9.40",
+      "pass": true
+    },
+    {
+      "view": "Dependencies Modal",
+      "route": "modal:dep",
+      "component": "Checkbox Label Text",
+      "sel": ".dep-cb-label",
+      "textSample": "Include Dependencies for Mods",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 600,
+      "tag": "span",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 18.56963995306393,
+      "formattedRatio": "18.56",
+      "pass": true
+    },
+    {
+      "view": "Dependencies Modal",
+      "route": "modal:dep",
+      "component": "Category Count Badge",
+      "sel": ".dep-cb-count",
+      "textSample": "1 in cart",
+      "fg": {
+        "r": 107,
+        "g": 33,
+        "b": 168,
+        "a": 1
+      },
+      "bg": {
+        "r": 242,
+        "g": 231,
+        "b": 252,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 12,
+      "fontWeight": 600,
+      "tag": "span",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 7.313328751275058,
+      "formattedRatio": "7.31",
+      "pass": true
+    },
+    {
+      "view": "Dependencies Modal",
+      "route": "modal:dep",
+      "component": "Fabric API Callout Text",
+      "sel": ".dep-callout-text",
+      "textSample": "Fabric API: Will be automatically includ",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 12.5,
+      "fontWeight": 500,
+      "tag": "div",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 18.56963995306393,
+      "formattedRatio": "18.56",
+      "pass": true
+    },
+    {
+      "view": "Dependencies Modal",
+      "route": "modal:dep",
+      "component": "Fabric API Auto-include Text",
+      "sel": ".dep-callout-highlight",
+      "textSample": "Will be automatically included",
+      "fg": {
+        "r": 107,
+        "g": 33,
+        "b": 168,
+        "a": 1
+      },
+      "bg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 12.5,
+      "fontWeight": 600,
+      "tag": "span",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 8.720447908771723,
+      "formattedRatio": "8.72",
+      "pass": true
+    },
+    {
+      "view": "Dependencies Modal",
+      "route": "modal:dep",
+      "component": "Skip Action Button",
+      "sel": "#depSkipBtn",
+      "textSample": "Skip & Open Cart",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 500,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 18.56963995306393,
+      "formattedRatio": "18.56",
+      "pass": true
+    },
+    {
+      "view": "Dependencies Modal",
+      "route": "modal:dep",
+      "component": "Confirm Action Button",
+      "sel": "#depConfirmBtn",
+      "textSample": "✓ Add Dependencies & Open Cart",
+      "fg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "bg": {
+        "r": 147,
+        "g": 51,
+        "b": 234,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 600,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 5.381521681093853,
+      "formattedRatio": "5.38",
+      "pass": true
+    },
+    {
+      "view": "Socials Modal",
+      "route": "modal:socials",
+      "component": "Creator Profile Name",
+      "sel": ".creator-name",
+      "textSample": "Arata Inlooker",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 245,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 17,
+      "fontWeight": 600,
+      "tag": "h3",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 17.239925365504988,
+      "formattedRatio": "17.23",
+      "pass": true
+    },
+    {
+      "view": "Socials Modal",
+      "route": "modal:socials",
+      "component": "Creator Role Subtitle",
+      "sel": ".creator-role",
+      "textSample": "Creator & Maintainer • CraftIndex",
+      "fg": {
+        "r": 107,
+        "g": 33,
+        "b": 168,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 245,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 12.5,
+      "fontWeight": 600,
+      "tag": "span",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 8.096003556395985,
+      "formattedRatio": "8.09",
+      "pass": true
+    },
+    {
+      "view": "Socials Modal",
+      "route": "modal:socials",
+      "component": "Creator Bio Description",
+      "sel": ".creator-bio",
+      "textSample": "Independent developer building performan",
+      "fg": {
+        "r": 74,
+        "g": 56,
+        "b": 105,
+        "a": 1
+      },
+      "bg": {
+        "r": 248,
+        "g": 245,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13,
+      "fontWeight": 400,
+      "tag": "p",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 9.460423084239741,
+      "formattedRatio": "9.46",
+      "pass": true
+    },
+    {
+      "view": "Socials Modal",
+      "route": "modal:socials",
+      "component": "Social Platform Title",
+      "sel": ".social-platform-title",
+      "textSample": "Discord",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 15,
+      "fontWeight": 600,
+      "tag": "h4",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 18.56963995306393,
+      "formattedRatio": "18.56",
+      "pass": true
+    },
+    {
+      "view": "Socials Modal",
+      "route": "modal:socials",
+      "component": "Social Username Handle",
+      "sel": ".social-username",
+      "textSample": "arata_inlooker",
+      "fg": {
+        "r": 107,
+        "g": 33,
+        "b": 168,
+        "a": 1
+      },
+      "bg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13,
+      "fontWeight": 600,
+      "tag": "div",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 8.720447908771723,
+      "formattedRatio": "8.72",
+      "pass": true
+    },
+    {
+      "view": "Socials Modal",
+      "route": "modal:socials",
+      "component": "Social Card Description",
+      "sel": ".social-card-desc",
+      "textSample": "Send direct messages for inquiries, spon",
+      "fg": {
+        "r": 74,
+        "g": 56,
+        "b": 105,
+        "a": 1
+      },
+      "bg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 12.5,
+      "fontWeight": 400,
+      "tag": "p",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 10.190105047060957,
+      "formattedRatio": "10.19",
+      "pass": true
+    },
+    {
+      "view": "Settings Modal",
+      "route": "modal:settings",
+      "component": "Settings Modal Header",
+      "sel": ".mh",
+      "textSample": "⚙️ CraftIndex Settings v",
+      "fg": {
+        "r": 26,
+        "g": 15,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 246,
+        "g": 242,
+        "b": 253,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 16,
+      "fontWeight": 600,
+      "tag": "div",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 16.53011486050272,
+      "formattedRatio": "16.53",
+      "pass": true
+    },
+    {
+      "view": "Settings Modal",
+      "route": "modal:settings",
+      "component": "Settings Section Title",
+      "sel": ".settings-section-title",
+      "textSample": "🎨 Theme & Visual Style",
+      "fg": {
+        "r": 46,
+        "g": 16,
+        "b": 101,
+        "a": 1
+      },
+      "bg": {
+        "r": 254,
+        "g": 254,
+        "b": 254,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 800,
+      "tag": "div",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 15.108121431822934,
+      "formattedRatio": "15.10",
+      "pass": true
+    },
+    {
+      "view": "Settings Modal",
+      "route": "modal:settings",
+      "component": "Option Title Label",
+      "sel": ".settings-label",
+      "textSample": "Live Ambient Background Video",
+      "fg": {
+        "r": 30,
+        "g": 27,
+        "b": 75,
+        "a": 1
+      },
+      "bg": {
+        "r": 254,
+        "g": 254,
+        "b": 254,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 700,
+      "tag": "div",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 15.851405500196663,
+      "formattedRatio": "15.85",
+      "pass": true
+    },
+    {
+      "view": "Settings Modal",
+      "route": "modal:settings",
+      "component": "Option Description Text",
+      "sel": ".settings-desc",
+      "textSample": "Cinematic looping Minecraft visuals. Tur",
+      "fg": {
+        "r": 107,
+        "g": 33,
+        "b": 168,
+        "a": 1
+      },
+      "bg": {
+        "r": 254,
+        "g": 254,
+        "b": 254,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 12,
+      "fontWeight": 400,
+      "tag": "div",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 8.646549148184906,
+      "formattedRatio": "8.64",
+      "pass": true
+    },
+    {
+      "view": "Settings Modal",
+      "route": "modal:settings",
+      "component": "Settings Cancel Button",
+      "sel": "#set-cancel-btn",
+      "textSample": "Cancel",
+      "fg": {
+        "r": 24,
+        "g": 12,
+        "b": 46,
+        "a": 1
+      },
+      "bg": {
+        "r": 249,
+        "g": 245,
+        "b": 254,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 500,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 17.260977240196777,
+      "formattedRatio": "17.26",
+      "pass": true
+    },
+    {
+      "view": "Settings Modal",
+      "route": "modal:settings",
+      "component": "Settings Save Button",
+      "sel": "#set-save-btn",
+      "textSample": "Save & Apply",
+      "fg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "bg": {
+        "r": 147,
+        "g": 51,
+        "b": 234,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 600,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 5.381521681093853,
+      "formattedRatio": "5.38",
+      "pass": true
+    },
+    {
+      "view": "Cart Drawer",
+      "route": "drawer:cart",
+      "component": "Drawer Export Icon Button",
+      "sel": ".dr-tool-btn",
+      "textSample": "⤓",
+      "fg": {
+        "r": 46,
+        "g": 16,
+        "b": 101,
+        "a": 1
+      },
+      "bg": {
+        "r": 254,
+        "g": 253,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 13.5,
+      "fontWeight": 500,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 15.025576231546719,
+      "formattedRatio": "15.02",
+      "pass": true
+    },
+    {
+      "view": "Cart Drawer",
+      "route": "drawer:cart",
+      "component": "Add More Secondary Action",
+      "sel": "#am",
+      "textSample": "+ Add more",
+      "fg": {
+        "r": 46,
+        "g": 16,
+        "b": 101,
+        "a": 1
+      },
+      "bg": {
+        "r": 254,
+        "g": 253,
+        "b": 255,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 14,
+      "fontWeight": 600,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 15.025576231546719,
+      "formattedRatio": "15.02",
+      "pass": true
+    },
+    {
+      "view": "Cart Drawer",
+      "route": "drawer:cart",
+      "component": "Download Primary Action",
+      "sel": "#dd",
+      "textSample": "⬇ Download",
+      "fg": {
+        "r": 255,
+        "g": 255,
+        "b": 255,
+        "a": 1
+      },
+      "bg": {
+        "r": 147,
+        "g": 51,
+        "b": 234,
+        "a": 1
+      },
+      "effectiveOp": 1,
+      "fontSize": 14,
+      "fontWeight": 600,
+      "tag": "button",
+      "isLarge": false,
+      "minRequired": 4.5,
+      "rawRatio": 5.381521681093853,
+      "formattedRatio": "5.38",
+      "pass": true
+    }
+  ]
+}

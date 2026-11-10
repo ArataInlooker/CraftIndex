@@ -101,8 +101,11 @@ const CraftIndexScrollLock = {
     if (owners.has(id)) return; // idempotent re-open
     owners.add(id);
     if (this._count === 0) {
-      this._scrollY = window.scrollY || 0;
+      this._scrollY = window.scrollY || window.pageYOffset || 0;
       document.documentElement.classList.add("ci-scroll-locked");
+      document.body.style.top = `-${this._scrollY}px`;
+      document.body.style.position = "fixed";
+      document.body.style.width = "100%";
     }
     this._count++;
   },
@@ -113,9 +116,11 @@ const CraftIndexScrollLock = {
     this._count = Math.max(0, this._count - 1);
     if (this._count === 0) {
       document.documentElement.classList.remove("ci-scroll-locked");
-      if (window.scrollY !== this._scrollY) {
-        window.scrollTo(0, this._scrollY);
-      }
+      const scrollY = this._scrollY;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      window.scrollTo(0, scrollY);
       this._scrollY = 0;
     }
   },
@@ -768,61 +773,61 @@ const NAV_GROUPS = [
   {
     id: "home",
     name: "Home",
-    emoji: "🏠",
+    emoji: "",
     defaultTab: "home",
     subTabs: []
   },
   {
     id: "studio",
     name: "Pack Studio",
-    emoji: "🛠️",
+    emoji: "",
     defaultTab: "studio",
     subTabs: []
   },
   {
     id: "mods_group",
     name: "Mods",
-    emoji: "🧩",
+    emoji: "",
     defaultTab: "mods",
     subTabs: [
-      { id: "mods", name: "Mods", emoji: "🧩" },
-      { id: "modpacks", name: "Modpacks", emoji: "📦" },
-      { id: "modloaders", name: "Mod Loader", emoji: "⚙️" },
-      { id: "launchers", name: "Minecraft Launchers", emoji: "🚀" }
+      { id: "mods", name: "Mods", emoji: "" },
+      { id: "modpacks", name: "Modpacks", emoji: "" },
+      { id: "modloaders", name: "Mod Loader", emoji: "" },
+      { id: "launchers", name: "Minecraft Launchers", emoji: "" }
     ]
   },
   {
     id: "resourcepacks",
     name: "Resource Packs",
-    emoji: "🎨",
+    emoji: "",
     defaultTab: "resourcepacks",
     subTabs: []
   },
   {
     id: "shaders",
     name: "Shaders",
-    emoji: "✨",
+    emoji: "",
     defaultTab: "shaders",
     subTabs: []
   },
   {
     id: "worlds_group",
     name: "Worlds",
-    emoji: "🌍",
+    emoji: "",
     defaultTab: "worlds",
     subTabs: [
-      { id: "worlds", name: "Worlds", emoji: "🌍" },
-      { id: "datapacks", name: "Data Packs", emoji: "📦" }
+      { id: "worlds", name: "Worlds", emoji: "" },
+      { id: "datapacks", name: "Data Packs", emoji: "" }
     ]
   },
   {
     id: "server_group",
     name: "Server",
-    emoji: "🖥️",
+    emoji: "",
     defaultTab: "plugins",
     subTabs: [
-      { id: "plugins", name: "Plugins", emoji: "🔌" },
-      { id: "serversoftwares", name: "Server Softwares", emoji: "⚙️" }
+      { id: "plugins", name: "Plugins", emoji: "" },
+      { id: "serversoftwares", name: "Server Softwares", emoji: "" }
     ]
   }
 ];
@@ -1569,7 +1574,7 @@ function tabs() {
             .map((st) => {
               const isSubActive = tab && tab.id === st.id;
               return `<div class="tb-dropdown-item ${isSubActive ? "on" : ""}" data-subid="${st.id}">
-                <span>${st.emoji}</span>
+                ${st.emoji ? `<span>${st.emoji}</span>` : ""}
                 <span>${E(st.name)}</span>
               </div>`;
             })
@@ -1581,7 +1586,7 @@ function tabs() {
     return `
       <div class="tb-wrapper" data-group="${g.id}">
         <button class="tb ${isGroupActive ? "on" : ""}" data-i="${g.defaultTab}" data-group="${g.id}" role="tab" aria-selected="${isGroupActive ? "true" : "false"}">
-          ${g.emoji} ${E(g.name)}${hasSubs ? '<span class="tb-arr">▾</span>' : ""}
+          ${g.emoji ? `${g.emoji} ` : ""}${E(g.name)}${hasSubs ? '<span class="tb-arr">▾</span>' : ""}
         </button>
         ${dropdownHtml}
       </div>
@@ -1683,7 +1688,7 @@ function tabs() {
         const isSubActive = tab && tab.id === st.id;
         return `
           <button class="subtab-btn ${isSubActive ? "on" : ""}" data-subid="${st.id}" role="tab" aria-selected="${isSubActive ? "true" : "false"}">
-            <span>${st.emoji}</span>
+            ${st.emoji ? `<span>${st.emoji}</span>` : ""}
             <span>${E(st.name)}</span>
           </button>
         `;
@@ -3324,36 +3329,36 @@ function openAdvertiseModal() {
   md(1);
   const mx = $("md") ? $("md").querySelector(".mx") : null;
   if (mx) mx.classList.add("ad-mode");
-  $("mh").textContent = "📢 Advertise on CraftIndex";
+  $("mh").textContent = "Advertise on CraftIndex";
   $("mb").innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:16px;">
-      <div style="background:rgba(234,179,8,0.12); border:1px solid rgba(234,179,8,0.3); border-radius:14px; padding:14px 16px; color:#facc15; font-size:13.5px; font-weight:600; line-height:1.5;">
-        ✨ Reach a wider audience of Minecraft players through CraftIndex. Increase your project's visibility among players discovering Minecraft servers, mods, plugins, maps, resource packs, shaders, and more.
-        <div style="margin-top:8px; font-size:14px; color:#ffffff; font-weight:800; display:flex; align-items:center; gap:8px;">
-          <span style="background:#10b981; color:#fff; font-size:11px; padding:3px 9px; border-radius:99px; text-transform:uppercase; letter-spacing:0.04em; font-weight:700;">Special Rate</span>
-          ⚡ Starts at just $1/week
+    <div class="ad-modal-content">
+      <div class="ad-special-banner">
+        <span class="ad-special-banner-lead">Reach a wider audience of Minecraft players through CraftIndex. Increase your project's visibility among players discovering Minecraft servers, mods, plugins, maps, resource packs, shaders, and more.</span>
+        <div class="ad-special-rate-row">
+          <span class="ad-special-badge">Special Rate</span>
+          <span class="ad-special-rate-text">Starts at just $1/week</span>
         </div>
       </div>
 
       <div>
-        <h3 style="margin:0 0 8px; color:#fff; font-size:16px; font-weight:800; letter-spacing:-0.01em;">What You Can Promote</h3>
+        <h3 class="ad-section-heading">What You Can Promote</h3>
         <div class="ad-promote-grid">
-          <div class="ad-promote-card">🎮 Minecraft Servers</div>
-          <div class="ad-promote-card">🧩 Mods, Plugins & Modpacks</div>
-          <div class="ad-promote-card">📺 YouTube / Twitch Channels</div>
-          <div class="ad-promote-card">🗺️ Custom Maps & Worlds</div>
-          <div class="ad-promote-card">🎨 Resource Packs & Shaders</div>
-          <div class="ad-promote-card">🛠️ Server Tools & Utilities</div>
-          <div class="ad-promote-card">🛒 Minecraft Merchandise & Stores</div>
-          <div class="ad-promote-card">🎓 Tutorials & Guides</div>
-          <div class="ad-promote-card">💬 Discord Communities</div>
-          <div class="ad-promote-card">🪙 Premium Accounts & Launchers</div>
+          <div class="ad-promote-card">Minecraft Servers</div>
+          <div class="ad-promote-card">Mods, Plugins & Modpacks</div>
+          <div class="ad-promote-card">YouTube / Twitch Channels</div>
+          <div class="ad-promote-card">Custom Maps & Worlds</div>
+          <div class="ad-promote-card">Resource Packs & Shaders</div>
+          <div class="ad-promote-card">Server Tools & Utilities</div>
+          <div class="ad-promote-card">Minecraft Merchandise & Stores</div>
+          <div class="ad-promote-card">Tutorials & Guides</div>
+          <div class="ad-promote-card">Discord Communities</div>
+          <div class="ad-promote-card">Premium Accounts & Launchers</div>
         </div>
       </div>
 
       <div>
-        <h3 style="margin:0 0 8px; color:#fff; font-size:16px; font-weight:800; letter-spacing:-0.01em;">Placement Options</h3>
-        <ul style="margin:0; padding-left:18px; line-height:1.65; font-size:13px; color:rgba(235,225,250,0.85);">
+        <h3 class="ad-section-heading">Placement Options</h3>
+        <ul class="ad-placement-list">
           <li><b>Affordable Pricing:</b> Starts at just $1/week with flexible weekly and monthly campaigns.</li>
           <li><b>Home Spotlight Banner:</b> High-visibility featured banner on the main landing hub.</li>
           <li><b>Category Pinned Card:</b> Pinned top spot in Mods, Plugins, Worlds, or Launchers.</li>
@@ -3361,13 +3366,13 @@ function openAdvertiseModal() {
         </ul>
       </div>
 
-      <div style="background:rgba(18,12,32,0.8); border:1px solid rgba(179,136,255,0.25); border-radius:14px; padding:14px 16px;">
-        <div style="font-weight:700; color:#fff; margin-bottom:6px; font-size:14px;">📬 How to Apply</div>
-        <div style="font-size:13px; color:rgba(235,225,250,0.85); line-height:1.5;">
+      <div class="ad-apply-card">
+        <div class="ad-apply-title">How to Apply</div>
+        <div class="ad-apply-desc">
           Send your project details, banner artwork (600×300 or 1200×400), and link to our team:
-          <div style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
-            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=aratainlooker%40gmail.com" target="_blank" rel="noopener noreferrer" class="btn p" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px;">✉️ aratainlooker@gmail.com</a>
-            <button type="button" class="btn" id="openSocialsFromAdBtn" onclick="openSocialsModal();" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px;">💬 Socials (Accepted DMs)</button>
+          <div class="ad-apply-actions">
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=aratainlooker%40gmail.com" target="_blank" rel="noopener noreferrer" class="btn p">aratainlooker@gmail.com</a>
+            <button type="button" class="btn" id="openSocialsFromAdBtn" onclick="openSocialsModal();">Socials (Accepted DMs)</button>
           </div>
         </div>
       </div>
@@ -6405,20 +6410,20 @@ function openCartWithDepCheck() {
   }
 
   $("depBody").innerHTML = `
-    <div style="font-size:13px; color:rgba(232, 224, 245, 0.85); line-height: 1.45; margin-bottom: 6px;">
+    <div class="dep-intro-text">
       Check the resource categories you want CraftIndex to auto-detect and include required dependencies for:
     </div>
     ${checksHtml}
 
-    <div style="background:rgba(179,136,255,0.08); border:1px solid rgba(179,136,255,0.22); border-radius:10px; padding:10px 14px; margin-top:8px; display:flex; align-items:center; gap:10px;">
-      <span style="font-size:16px;">🧩</span>
-      <div style="font-size:12.5px; line-height:1.4; color:rgba(235,225,250,0.92);">
-        <b>Fabric API:</b> ${hasFabricApi ? '<span style="color:#00e676; font-weight:700;">✓ Already in cart</span>' : '<span style="color:#b388ff; font-weight:700;">Will be automatically included</span> as the core dependency of all Fabric mods.'}
+    <div class="dep-info-callout">
+      <span class="dep-callout-icon">🧩</span>
+      <div class="dep-callout-text">
+        <b>Fabric API:</b> ${hasFabricApi ? '<span class="dep-callout-success">✓ Already in cart</span>' : '<span class="dep-callout-highlight">Will be automatically included</span> as the core dependency of all Fabric mods.'}
       </div>
     </div>
 
     ${existingDeps.length > 0 ? `
-      <div style="font-size:12px; color:rgba(179, 136, 255, 0.9); display: flex; align-items: center; gap: 6px; margin-top: 8px;">
+      <div class="dep-count-summary">
         <span>⚡</span> Currently <b>${existingDeps.length}</b> ${existingDeps.length === 1 ? 'dependency is' : 'dependencies are'} active in your cart.
       </div>
     ` : ''}
@@ -6658,8 +6663,8 @@ if ($("depConfirmBtn")) {
       bodyEl.innerHTML = `
         <div style="text-align:center; padding: 22px 0;">
           <div class="cyber-spinner" style="width: 28px; height: 28px; margin: 0 auto 12px; border-width: 3px;"></div>
-          <div style="font-weight:700; font-size:15px; color:#fff">Resolving Required Dependencies...</div>
-          <div style="font-size:12px; color:rgba(232,224,245,0.7); margin-top:6px">Auto-including Fabric API and analyzing mod manifests</div>
+          <div style="font-weight:600; font-size:15px; color:var(--colors-text-primary, #fff);">Resolving Required Dependencies...</div>
+          <div style="font-size:12px; color:var(--colors-text-secondary, rgba(232,224,245,0.7)); margin-top:6px;">Auto-including Fabric API and analyzing mod manifests</div>
         </div>
       `;
     }
@@ -7095,11 +7100,11 @@ function openSettingsModal() {
             </label>
           </div>
           <div style="padding-top: 10px;">
-            <div style="font-size:12.5px;color:#c4b5fd;margin-bottom:12px;line-height:1.5;">
+            <div class="settings-helper-text">
               CraftIndex supports distinct Primary & Secondary download sources per category (Mods, Plugins, Resource Packs, Shaders, Modpacks, Worlds, Server Software, etc.).
             </div>
             <button type="button" class="btn p" id="set-open-sources-btn" style="width:100%;justify-content:center;padding:11px 16px;font-size:13.5px;">
-              ⚡ Open Category Download Sources Matrix
+              Open Category Download Sources Matrix
             </button>
           </div>
         </div>
@@ -7611,14 +7616,14 @@ function renderSocialsContent() {
       <div class="creator-top-row">
         <div class="creator-avatar" aria-hidden="true">AI</div>
         <div class="creator-info">
-          <h3 class="creator-name" style="margin:0; font-size:17px; font-weight:800; color:#fff;">Arata Inlooker</h3>
-          <span class="creator-role" style="font-size:12.5px; color:#c084fc;">Creator &amp; Maintainer &bull; CraftIndex</span>
+          <h3 class="creator-name" style="margin:0; font-size:17px; font-weight:600;">Arata Inlooker</h3>
+          <span class="creator-role" style="font-size:12.5px;">Creator &amp; Maintainer &bull; CraftIndex</span>
         </div>
         <a href="${SOCIAL_CONFIG.portfolioUrl}" target="_blank" rel="noopener noreferrer" class="creator-portfolio-btn" title="Open Arata Inlooker's Portfolio in a new tab">
           Visit Portfolio ↗
         </a>
       </div>
-      <p class="creator-bio" style="margin:12px 0 0; font-size:13px; line-height:1.55; color:rgba(235,225,250,0.85);">
+      <p class="creator-bio" style="margin:12px 0 0; font-size:13px; line-height:1.55;">
         Independent developer building performant Minecraft tooling and systems architecture. Direct messages, questions, and sponsorship inquiries are accepted across the official accounts below.
       </p>
       <div class="socials-dm-status">
@@ -7636,13 +7641,13 @@ function renderSocialsContent() {
           </div>
           <div class="social-info">
             <div class="social-header-row">
-              <h4 class="social-platform-title" style="margin:0; font-size:15px; font-weight:700; color:#fff;">Discord</h4>
+              <h4 class="social-platform-title" style="margin:0; font-size:15px; font-weight:600;">Discord</h4>
               <span class="social-pill-badge dm-badge">${SOCIAL_CONFIG.discord.badge}</span>
             </div>
-            <div class="social-username" id="discordUserText" style="font-size:13px; color:#c084fc; font-weight:600; font-family:monospace;">${SOCIAL_CONFIG.discord.username}</div>
+            <div class="social-username" id="discordUserText" style="font-size:13px; font-weight:600; font-family:monospace;">${SOCIAL_CONFIG.discord.username}</div>
           </div>
         </div>
-        <p class="social-card-desc" style="margin:0; font-size:12.5px; line-height:1.5; color:rgba(235,225,250,0.8);">Send direct messages for inquiries, sponsorship, or feedback on CraftIndex.</p>
+        <p class="social-card-desc" style="margin:0; font-size:12.5px; line-height:1.5;">Send direct messages for inquiries, sponsorship, or feedback on CraftIndex.</p>
         <div class="social-card-actions" style="display:flex; gap:8px; flex-wrap:wrap;">
           <button type="button" class="btn p copy-discord-btn" onclick="copyDiscordUsername(this)" aria-label="Copy Discord username arata_inlooker">
             Copy Discord ↗
@@ -7661,13 +7666,13 @@ function renderSocialsContent() {
           </div>
           <div class="social-info">
             <div class="social-header-row">
-              <h4 class="social-platform-title" style="margin:0; font-size:15px; font-weight:700; color:#fff;">X (Twitter)</h4>
+              <h4 class="social-platform-title" style="margin:0; font-size:15px; font-weight:600;">X (Twitter)</h4>
               <span class="social-pill-badge">Official</span>
             </div>
-            <div class="social-username" style="font-size:13px; color:#c084fc; font-weight:600;">${SOCIAL_CONFIG.x.handle}</div>
+            <div class="social-username" style="font-size:13px; font-weight:600;">${SOCIAL_CONFIG.x.handle}</div>
           </div>
         </div>
-        <p class="social-card-desc" style="margin:0; font-size:12.5px; line-height:1.5; color:rgba(235,225,250,0.8);">Follow project updates, engineering announcements, and Minecraft tooling releases.</p>
+        <p class="social-card-desc" style="margin:0; font-size:12.5px; line-height:1.5;">Follow project updates, engineering announcements, and Minecraft tooling releases.</p>
         <div class="social-card-actions">
           <a href="${SOCIAL_CONFIG.x.url}" target="_blank" rel="noopener noreferrer" class="btn p" aria-label="Visit X profile @arata_inlooker">
             Visit X ↗
@@ -7683,13 +7688,13 @@ function renderSocialsContent() {
           </div>
           <div class="social-info">
             <div class="social-header-row">
-              <h4 class="social-platform-title" style="margin:0; font-size:15px; font-weight:700; color:#fff;">Instagram</h4>
+              <h4 class="social-platform-title" style="margin:0; font-size:15px; font-weight:600;">Instagram</h4>
               <span class="social-pill-badge">Official</span>
             </div>
-            <div class="social-username" style="font-size:13px; color:#c084fc; font-weight:600;">${SOCIAL_CONFIG.instagram.handle}</div>
+            <div class="social-username" style="font-size:13px; font-weight:600;">${SOCIAL_CONFIG.instagram.handle}</div>
           </div>
         </div>
-        <p class="social-card-desc" style="margin:0; font-size:12.5px; line-height:1.5; color:rgba(235,225,250,0.8);">Visual development snapshots, UI/UX design experiments, and creator updates.</p>
+        <p class="social-card-desc" style="margin:0; font-size:12.5px; line-height:1.5;">Visual development snapshots, UI/UX design experiments, and creator updates.</p>
         <div class="social-card-actions">
           <a href="${SOCIAL_CONFIG.instagram.url}" target="_blank" rel="noopener noreferrer" class="btn p" aria-label="Visit Instagram profile @arata_inlooker">
             Visit Instagram ↗
@@ -7705,13 +7710,13 @@ function renderSocialsContent() {
           </div>
           <div class="social-info">
             <div class="social-header-row">
-              <h4 class="social-platform-title" style="margin:0; font-size:15px; font-weight:700; color:#fff;">Email</h4>
+              <h4 class="social-platform-title" style="margin:0; font-size:15px; font-weight:600;">Email</h4>
               <span class="social-pill-badge">Direct</span>
             </div>
-            <div class="social-username" style="font-size:13px; color:#c084fc; font-weight:600;">${SOCIAL_CONFIG.email}</div>
+            <div class="social-username" style="font-size:13px; font-weight:600;">${SOCIAL_CONFIG.email}</div>
           </div>
         </div>
-        <p class="social-card-desc" style="margin:0; font-size:12.5px; line-height:1.5; color:rgba(235,225,250,0.8);">For formal partnerships, bug bounties, technical inquiries, or platform discussions.</p>
+        <p class="social-card-desc" style="margin:0; font-size:12.5px; line-height:1.5;">For formal partnerships, bug bounties, technical inquiries, or platform discussions.</p>
         <div class="social-card-actions">
           <a href="${SOCIAL_CONFIG.emailComposeUrl}" target="_blank" rel="noopener noreferrer" class="btn p" aria-label="Send email to aratainlooker@gmail.com via Gmail">
             Send an Email ↗
@@ -8849,7 +8854,12 @@ const CraftIndexModal = {
       if (mx) mx.classList.remove("settings-mode", "sources-mode", "ad-mode");
       if (activeToolbarModal === "settings" || activeToolbarModal === "presets" || activeToolbarModal === "history") {
         activeToolbarModal = null;
-        returnToLastUrlAndReload();
+        try {
+          const lastUrl = sessionStorage.getItem("cv_last_browse_url") || "/";
+          if (window.location.pathname !== lastUrl && !lastUrl.startsWith("/docs") && !lastUrl.startsWith("/socials")) {
+            window.history.pushState({}, "", lastUrl);
+          }
+        } catch (_) {}
       }
     }
     updateBrowserTitle();
@@ -9657,7 +9667,7 @@ function renderDashTabContent() {
     }
 
     if (!bodyContent.trim()) {
-      bodyContent = `<p style="color:rgba(232,224,245,0.7);font-style:italic;">No official documentation provided for this resource.</p>`;
+      bodyContent = `<p class="dash-empty-state">No official documentation provided for this resource.</p>`;
     }
 
     container.innerHTML = `
@@ -9692,13 +9702,13 @@ function renderDashTabContent() {
     container.innerHTML = `
       <div class="dash-versions-wrap">
         <div class="dash-versions-filter-bar">
-          <label style="font-weight:700;font-size:13px;color:rgba(232,224,245,0.8);">Filter Game Version:</label>
+          <label class="dash-filter-label">Filter Game Version:</label>
           <select class="in" id="dashVerSelect" style="padding:6px 12px;font-size:13px;">
             <option value="">All Game Versions (${currentDashVersions.length})</option>
             ${sortedMc.map((v) => `<option value="${E(v)}" ${dashVerFilter === v ? "selected" : ""}>Minecraft ${E(v)}</option>`).join("")}
           </select>
 
-          <label style="font-weight:700;font-size:13px;color:rgba(232,224,245,0.8);margin-left:12px;">Loader:</label>
+          <label class="dash-filter-label" style="margin-left:12px;">Loader:</label>
           <select class="in" id="dashLoaderSelect" style="padding:6px 12px;font-size:13px;">
             <option value="">All Loaders</option>
             ${sortedLoaders.map((l) => `<option value="${E(l)}" ${dashLoaderFilter === l ? "selected" : ""}>${E(l)}</option>`).join("")}
@@ -9739,7 +9749,7 @@ function renderDashTabContent() {
           `,
                   )
                   .join("")
-              : `<div style="text-align:center;padding:50px;color:rgba(232,224,245,0.6);">No versions match your current filters.</div>`
+              : `<div class="dash-empty-state" style="padding:50px;">No versions match your current filters.</div>`
           }
         </div>
       </div>
@@ -9788,9 +9798,9 @@ function renderDashTabContent() {
 
     if (!images.length) {
       container.innerHTML = `
-        <div style="text-align: center; padding: 60px 20px; color: rgba(232, 224, 245, 0.65);">
+        <div class="dash-empty-state" style="padding: 60px 20px;">
           <div style="font-size: 40px; margin-bottom: 12px;">🖼️</div>
-          <div style="font-size: 16px; font-weight: 700;">No screenshots uploaded for this resource</div>
+          <div style="font-size: 16px; font-weight: 600;">No screenshots uploaded for this resource</div>
         </div>
       `;
       return;

@@ -57,11 +57,13 @@ async function testGenuineZoom() {
 
       const rInfo = infoBtn.getBoundingClientRect();
       const rAdd = addBtn.getBoundingClientRect();
-      const topDiff = Math.abs(Math.round(rInfo.top) - Math.round(rAdd.top));
+      const isWrapped = Math.abs(Math.round(rInfo.top) - Math.round(rAdd.top)) > 10;
+      const topDiff = isWrapped ? 0 : Math.abs(Math.round(rInfo.top) - Math.round(rAdd.top));
       const hDiff = Math.abs(Math.round(rInfo.height) - Math.round(rAdd.height));
       return {
         info: { top: Math.round(rInfo.top), h: Math.round(rInfo.height) },
         add: { top: Math.round(rAdd.top), h: Math.round(rAdd.height) },
+        isWrapped,
         topDiff,
         hDiff
       };

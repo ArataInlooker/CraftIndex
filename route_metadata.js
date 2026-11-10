@@ -666,44 +666,44 @@ function resolveRouteKey(cleanPath) {
 
 const SUBTAB_GROUPS = {
   mods: [
-    { id: "mods", name: "Mods", emoji: "🧩" },
-    { id: "modpacks", name: "Modpacks", emoji: "📦" },
-    { id: "modloaders", name: "Mod Loader", emoji: "⚙️" },
-    { id: "launchers", name: "Minecraft Launchers", emoji: "🚀" }
+    { id: "mods", name: "Mods" },
+    { id: "modpacks", name: "Modpacks" },
+    { id: "modloaders", name: "Mod Loader" },
+    { id: "launchers", name: "Minecraft Launchers" }
   ],
   modpacks: [
-    { id: "mods", name: "Mods", emoji: "🧩" },
-    { id: "modpacks", name: "Modpacks", emoji: "📦" },
-    { id: "modloaders", name: "Mod Loader", emoji: "⚙️" },
-    { id: "launchers", name: "Minecraft Launchers", emoji: "🚀" }
+    { id: "mods", name: "Mods" },
+    { id: "modpacks", name: "Modpacks" },
+    { id: "modloaders", name: "Mod Loader" },
+    { id: "launchers", name: "Minecraft Launchers" }
   ],
   modloaders: [
-    { id: "mods", name: "Mods", emoji: "🧩" },
-    { id: "modpacks", name: "Modpacks", emoji: "📦" },
-    { id: "modloaders", name: "Mod Loader", emoji: "⚙️" },
-    { id: "launchers", name: "Minecraft Launchers", emoji: "🚀" }
+    { id: "mods", name: "Mods" },
+    { id: "modpacks", name: "Modpacks" },
+    { id: "modloaders", name: "Mod Loader" },
+    { id: "launchers", name: "Minecraft Launchers" }
   ],
   launchers: [
-    { id: "mods", name: "Mods", emoji: "🧩" },
-    { id: "modpacks", name: "Modpacks", emoji: "📦" },
-    { id: "modloaders", name: "Mod Loader", emoji: "⚙️" },
-    { id: "launchers", name: "Minecraft Launchers", emoji: "🚀" }
+    { id: "mods", name: "Mods" },
+    { id: "modpacks", name: "Modpacks" },
+    { id: "modloaders", name: "Mod Loader" },
+    { id: "launchers", name: "Minecraft Launchers" }
   ],
   worlds: [
-    { id: "worlds", name: "Worlds", emoji: "🌍" },
-    { id: "datapacks", name: "Data Packs", emoji: "📦" }
+    { id: "worlds", name: "Worlds" },
+    { id: "datapacks", name: "Data Packs" }
   ],
   datapacks: [
-    { id: "worlds", name: "Worlds", emoji: "🌍" },
-    { id: "datapacks", name: "Data Packs", emoji: "📦" }
+    { id: "worlds", name: "Worlds" },
+    { id: "datapacks", name: "Data Packs" }
   ],
   plugins: [
-    { id: "plugins", name: "Plugins", emoji: "🔌" },
-    { id: "serversoftwares", name: "Server Software", emoji: "🖥️" }
+    { id: "plugins", name: "Plugins" },
+    { id: "serversoftwares", name: "Server Software" }
   ],
   serversoftwares: [
-    { id: "plugins", name: "Plugins", emoji: "🔌" },
-    { id: "serversoftwares", name: "Server Software", emoji: "🖥️" }
+    { id: "plugins", name: "Plugins" },
+    { id: "serversoftwares", name: "Server Software" }
   ]
 };
 
@@ -752,7 +752,7 @@ function injectRouteHtml(rawHtml, cleanPath) {
     if (subs) {
       const subButtons = subs.map(st => {
         const isSubActive = st.id === primaryTab;
-        return `<button class="subtab-btn ${isSubActive ? 'on' : ''}" data-subid="${st.id}" role="tab" aria-selected="${isSubActive ? 'true' : 'false'}"><span>${st.emoji}</span><span>${escapeHtml(st.name)}</span></button>`;
+        return `<button class="subtab-btn ${isSubActive ? 'on' : ''}" data-subid="${st.id}" role="tab" aria-selected="${isSubActive ? 'true' : 'false'}"><span>${escapeHtml(st.name)}</span></button>`;
       }).join('');
       html = html.replace(
         '<div class="subtabs-bar" id="subtabsBar" role="tablist" aria-label="Subcategories" style="display: none;"></div>',

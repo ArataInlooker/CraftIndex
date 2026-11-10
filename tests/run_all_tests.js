@@ -98,7 +98,7 @@ async function stopServer(serverInfo) {
 
 async function runMasterTestSuite() {
   console.log('################################################################');
-  console.log('CRAFTINDEX v2.6.0 MASTER VERIFICATION SUITE');
+  console.log('CRAFTINDEX v2.6.1 MASTER VERIFICATION SUITE');
   console.log(`Node.js Runtime: ${process.version}`);
   console.log(`Timestamp: ${new Date().toISOString()}`);
   console.log('################################################################\n');
@@ -137,6 +137,15 @@ async function runMasterTestSuite() {
 
     // 5d. Visual Header, Logo & Favicon Matrix
     suiteResults.push(await runNodeScript('tests/verify_header_logo_and_favicon.js'));
+
+    // 5e. Light Theme WCAG 2.2 AA Contrast & Readability Verification
+    suiteResults.push(await runNodeScript('tests/audit_light_theme_contrast.js'));
+
+    // 5f. Modal Dialog Scroll Isolation & Background Lock Verification
+    suiteResults.push(await runNodeScript('tests/test_scroll_isolation.js'));
+
+    // 5g. Release Gate History Traversal & Nested Locks Verification
+    suiteResults.push(await runNodeScript('tests/release_gate_routing.js'));
   } finally {
     if (serverInfo) {
       await stopServer(serverInfo);
