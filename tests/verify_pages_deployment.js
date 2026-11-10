@@ -191,7 +191,10 @@ async function runPreflightAudit() {
       await cdp.navigate(`http://localhost:${PORT}/studio/`);
       await new Promise(r => setTimeout(r, 1800));
       const studioAudit = await cdp.evaluate(`
-        (() => {
+        (async () => {
+          if (typeof window.ensurePackStudio === 'function') {
+            try { await window.ensurePackStudio(); } catch (_) {}
+          }
           return {
             tab: document.body.dataset.tab,
             hasStudio: typeof window.CraftIndexStudio !== 'undefined',

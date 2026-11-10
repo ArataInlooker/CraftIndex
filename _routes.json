@@ -1,7 +1,26 @@
 {
   "version": 1,
   "include": [
-    "/api/*"
+    "/api/*",
+    "/mods/*",
+    "/plugins/*",
+    "/resourcepacks/*",
+    "/shaders/*",
+    "/datapacks/*",
+    "/modpacks/*",
+    "/worlds/*"
   ],
-  "exclude": []
+  "exclude": [
+    "/mods/",
+    "/plugins/",
+    "/resourcepacks/",
+    "/shaders/",
+    "/datapacks/",
+    "/modpacks/",
+    "/worlds/",
+    "/mods/fabric/",
+    "/mods/neoforge/",
+    "/mods/forge/",
+    "/mods/quilt/"
+  ]
 }

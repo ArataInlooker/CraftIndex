@@ -89,6 +89,7 @@ function buildPages() {
     'favicon.ico',
     'robots.txt',
     'sitemap.xml',
+    'sitemap-resources.xml',
     'site.webmanifest',
     '_redirects',
     '_routes.json',

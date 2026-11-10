@@ -34,7 +34,12 @@ function httpGetStatus(urlPath) {
     { path: '/modloaders/', expectedTab: 'modloaders', check: async () => true },
     { path: '/launchers/', expectedTab: 'launchers', check: async () => true },
     { path: '/studio/', expectedTab: 'studio', check: async () => {
-      return await browser.evaluate(`Boolean(window.CraftIndexStudio)`);
+      return await browser.evaluate(`(async () => {
+        if (typeof window.ensurePackStudio === 'function') {
+          try { await window.ensurePackStudio(); } catch (_) {}
+        }
+        return Boolean(window.CraftIndexStudio);
+      })()`);
     }, note: 'CraftIndexStudio available' },
     { path: '/docs/', expectedTab: 'docs', check: async () => {
       return await browser.evaluate(`Boolean((document.getElementById('aboutModal') && document.getElementById('aboutModal').classList.contains('open')) || (document.getElementById('standaloneDocsView') && document.getElementById('standaloneDocsView').style.display !== 'none') || document.body.dataset.tab === 'docs')`);

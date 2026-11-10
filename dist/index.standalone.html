@@ -3,22 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>CraftIndex | Minecraft Resource Discovery, Modpack Builder & Resource Collections</title>
+        <title>CraftIndex | Minecraft Resource Discovery & Modpack Builder</title>
     <meta name="author" content="Arata Inlooker" />
     <link rel="canonical" href="https://craftindex.inlooker.top/" />
     <meta
       name="description"
-      content="CraftIndex: Lightning-fast bulk Minecraft resource downloader and Modpack Builder. Discover, curate, inspect and export mods, plugins, shaders, and resource packs with zero account friction."
+      content="CraftIndex: Lightning-fast Minecraft resource discovery engine, Pack Studio, and collection packager. Discover, curate, inspect and export mods, plugins, shaders, and resource packs with zero friction."
     />
     <meta name="theme-color" content="#0c0915" />
     <meta name="robots" content="index, follow" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://craftindex.inlooker.top/" />
     <meta property="og:site_name" content="CraftIndex" />
-    <meta property="og:title" content="CraftIndex | Minecraft Resource Discovery, Modpack Builder & Resource Collections" />
+    <meta property="og:title" content="CraftIndex | Minecraft Resource Discovery & Modpack Builder" />
     <meta
       property="og:description"
-      content="CraftIndex: Lightning-fast bulk Minecraft resource downloader and Modpack Builder. Discover, curate, inspect and export mods, plugins, shaders, and resource packs with zero account friction."
+      content="CraftIndex: Lightning-fast Minecraft resource discovery engine, Pack Studio, and collection packager. Discover, curate, inspect and export mods, plugins, shaders, and resource packs with zero friction."
     />
     <meta property="og:image" content="https://craftindex.inlooker.top/images/bigger-image.png" />
     <meta property="og:image:secure_url" content="https://craftindex.inlooker.top/images/bigger-image.png" />
@@ -27,8 +27,8 @@
     <meta property="og:image:height" content="941" />
     <meta property="og:image:alt" content="CraftIndex - Minecraft resource discovery, pack studio, and collection packager" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="CraftIndex | Minecraft Resource Discovery, Modpack Builder & Resource Collections" />
-    <meta name="twitter:description" content="CraftIndex: Lightning-fast Minecraft resource discovery engine, Pack Studio, and collection packager. Discover, curate, inspect and export mods, plugins, shaders, and resource packs with zero account friction." />
+    <meta name="twitter:title" content="CraftIndex | Minecraft Resource Discovery & Modpack Builder" />
+    <meta name="twitter:description" content="CraftIndex: Lightning-fast Minecraft resource discovery engine, Pack Studio, and collection packager. Discover, curate, inspect and export mods, plugins, shaders, and resource packs with zero friction." />
     <meta name="twitter:image" content="https://craftindex.inlooker.top/images/bigger-image.png" />
     <meta name="twitter:image:alt" content="CraftIndex - Minecraft resource discovery, pack studio, and collection packager" />
     <link rel="icon" type="image/svg+xml" href="../images/favicon.svg" />
@@ -50,12 +50,26 @@
           "@id": "https://craftindex.inlooker.top/#website",
           "url": "https://craftindex.inlooker.top/",
           "name": "CraftIndex",
-          "description": "Lightning-fast bulk Minecraft resource downloader and Modpack Builder. Discover, curate, inspect and export mods, plugins, shaders, and resource packs.",
+          "description": "Lightning-fast Minecraft resource discovery engine, Pack Studio, and collection packager.",
           "author": {
             "@type": "Person",
             "name": "Arata Inlooker",
             "url": "https://inlooker.top",
             "email": "aratainlooker@gmail.com"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "CraftIndex",
+            "url": "https://craftindex.inlooker.top",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://craftindex.inlooker.top/images/craftindex-logo.png"
+            }
+          },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://craftindex.inlooker.top/mods/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
           },
           "inLanguage": "en-US"
         },
@@ -72,7 +86,9 @@
           },
           "author": {
             "@type": "Person",
-            "name": "Arata Inlooker"
+            "name": "Arata Inlooker",
+            "url": "https://inlooker.top",
+            "email": "aratainlooker@gmail.com"
           }
         },
         {
@@ -84,24 +100,6 @@
               "position": 1,
               "name": "Home",
               "item": "https://craftindex.inlooker.top/"
-            },
-            {
-              "@type": "ListItem",
-              "position": 2,
-              "name": "Pack Studio",
-              "item": "https://craftindex.inlooker.top/studio/"
-            },
-            {
-              "@type": "ListItem",
-              "position": 3,
-              "name": "Mods",
-              "item": "https://craftindex.inlooker.top/mods/"
-            },
-            {
-              "@type": "ListItem",
-              "position": 4,
-              "name": "Documentation",
-              "item": "https://craftindex.inlooker.top/docs/"
             }
           ]
         }
@@ -109,8 +107,455 @@
     }
     </script>
 
-    <!-- JSZip for client-side bulk archiving -->
-    <script src="../js/vendor/jszip.min.js"></script>
+    <!-- Theme hint before any CSS: prevents a flash of the wrong theme. app.js
+         keeps cv_mode authoritative and re-syncs this attribute at boot. -->
+    <script>
+      (function () {
+        try {
+          var m = localStorage.getItem("cv_mode");
+          var l = m === "light" || (m === "auto" && matchMedia("(prefers-color-scheme:light)").matches);
+          if (l) document.documentElement.setAttribute("data-theme", "light");
+        } catch (e) {}
+      })();
+    </script>
+
+    <!-- Design tokens (primitives + semantics) load BEFORE the component
+         stylesheet so all rules resolve against the token source of truth. -->
+    <style>
+/* ==========================================================================
+   CraftIndex Design Tokens — single source of truth
+   --------------------------------------------------------------------------
+   Layers (in order):
+     1. Primitives  (--brand-*, --neutral-*, --green-*, ...)
+     2. Semantic    (--colors-*, --font-*, --space-*, --radius-*, --shadow-*)
+     3. Theme maps  (dark default on :root, light on body.light-mode)
+     4. Legacy aliases (--b/--bg/--r/--t/...) kept temporarily while the legacy
+        stylesheet migrates onto semantic tokens. Do not use them in new code.
+   Rule: components must consume semantic tokens (or legacy aliases that point
+   here); arbitrary hex values inside component rules are prohibited for new
+   code. See DESIGN.md for the full rulebook.
+   ========================================================================== */
+
+/* ------------------------------------------------------------------ */
+/* 1. Primitive palette — Tailwind-style scales                        */
+/* ------------------------------------------------------------------ */
+:root {
+  /* Brand (CraftIndex amethyst, hue ~262°) */
+  --brand-50: #f6f2ff;
+  --brand-100: #ede4ff;
+  --brand-200: #ddccff;
+  --brand-300: #c9aeff;
+  --brand-400: #b388ff;
+  --brand-500: #9d68ff;
+  --brand-600: #7c4dff;
+  --brand-700: #6a3ce8;
+  --brand-800: #5630bf;
+  --brand-900: #3c1f85;
+
+  /* Neutral (deep violet-tinted) */
+  --neutral-0: #ffffff;
+  --neutral-50: #f8f6fc;
+  --neutral-100: #efecf5;
+  --neutral-200: #dcd6e6;
+  --neutral-300: #b6aec6;
+  --neutral-400: #8b7ea6;
+  --neutral-500: #6b5f86;
+  --neutral-600: #4c4066;
+  --neutral-700: #362c4d;
+  --neutral-800: #241a38;
+  --neutral-850: #161126;
+  --neutral-900: #100b1e;
+  --neutral-950: #0c0915;
+
+  /* Red / danger */
+  --red-50: #fff1f4;
+  --red-100: #ffe0e7;
+  --red-300: #ff9db4;
+  --red-400: #ff6b8f;
+  --red-500: #f43f5e;
+  --red-800: #9f1239;
+
+  /* Green / success */
+  --green-50: #ecfdf5;
+  --green-100: #d1fae5;
+  --green-400: #34d399;
+  --green-500: #10b981;
+  --green-700: #047857;
+
+  /* Amber / warning */
+  --amber-50: #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-400: #fbbf24;
+  --amber-500: #f59e0b;
+  --amber-700: #b45309;
+
+  /* Blue / info */
+  --blue-50: #eff6ff;
+  --blue-100: #dbeafe;
+  --blue-400: #60a5fa;
+  --blue-500: #3b82f6;
+  --blue-700: #1d4ed8;
+}
+
+/* ------------------------------------------------------------------ */
+/* 2. Typography scale (Inter is the only permitted family)            */
+/* ------------------------------------------------------------------ */
+:root {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --text-xs: 0.75rem;      /* 12px — badges, fine print only          */
+  --text-sm: 0.8125rem;    /* 13px — secondary UI                     */
+  --text-base: 0.875rem;   /* 14px — app default body                 */
+  --text-lg: 1rem;         /* 16px — card titles, emphasized body     */
+  --text-xl: 1.125rem;     /* 18px — sub-headings                     */
+  --text-2xl: 1.375rem;    /* 22px — page/section headings           */
+  --text-3xl: 1.75rem;     /* 28px — hero titles                     */
+  --text-4xl: 2.25rem;     /* 36px — display (rare)                  */
+
+  /* Line heights paired to the size scale */
+  --leading-tight: 1.25;
+  --leading-snug: 1.4;
+  --leading-base: 1.55;
+  --leading-relaxed: 1.7;
+
+  /* Weights: 400 default, 500 sparse, 600 for real hierarchy only.
+     700+ is reserved for display sizes (>= --text-2xl) or numeric focus. */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  --tracking-tight: -0.01em;
+  --tracking-wide: 0.03em;
+
+  /* Legacy alias (must stay quoted the way app.js injects it) */
+  --font-title: var(--font-sans);
+  --font: var(--font-sans);
+}
+
+/* ------------------------------------------------------------------ */
+/* 3. Spacing scale — strict 4px grid                                  */
+/* ------------------------------------------------------------------ */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+}
+
+/* ------------------------------------------------------------------ */
+/* 4. Radius / elevation / motion                                      */
+/* ------------------------------------------------------------------ */
+:root {
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 14px;   /* legacy --rad alias keeps the 14px default */
+  --radius-xl: 18px;
+  --radius-full: 999px;
+
+  --shadow-1: 0 1px 2px rgba(6, 4, 14, 0.18);
+  --shadow-2: 0 2px 8px rgba(6, 4, 14, 0.22);
+  --shadow-3: 0 8px 24px -6px rgba(6, 4, 14, 0.35);
+  --shadow-4: 0 18px 48px -12px rgba(6, 4, 14, 0.45);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 120ms;
+  --duration-base: 160ms;
+  --duration-slow: 240ms;
+
+  /* Z-index elevation scale — single documented source of truth.
+     Overlays occupy the 100000+ band; lower values are page-level layers.
+     Toast is the topmost layer so it always renders above every overlay.
+     Component CSS must consume these tokens instead of scattering literals. */
+  --z-base: 1;
+  --z-header: 20;
+  --z-nav: 60;
+  --z-fab: 120;
+  --z-menu: 1000;      /* dropdowns, tooltips, popovers */
+  --z-backdrop: 99990; /* modal/drawer backdrop */
+  --z-drawer: 99999;
+  --z-modal-low: 100000; /* About center */
+  --z-modal: 100100;      /* generic modal (.md) */
+  --z-dialog: 100200;     /* dashboard, socials */
+  --z-lightbox: 100300;
+  --z-dialog-top: 100400; /* dependency-resolution modal */
+  --z-toast: 100500;
+}
+
+/* ------------------------------------------------------------------ */
+/* 5. Semantic tokens — DARK (default theme)                           */
+/*    Values preserve the existing CraftIndex "Cosmic Obsidian" look.  */
+/* ------------------------------------------------------------------ */
+:root {
+  /* Backgrounds & surfaces */
+  --colors-background: var(--neutral-950);
+  --colors-background-subtle: #110c1d;
+  --colors-surface: #161126;
+  --colors-surface-glass: rgba(28, 20, 48, 0.55);
+  --colors-surface-raised: #1c1530;
+  --colors-surface-overlay: #0a0712;
+
+  /* Text */
+  --colors-text-primary: #e8e0f5;
+  --colors-text-secondary: #c3b6dc;
+  --colors-text-muted: #8b7ea6;
+  --colors-text-disabled: rgba(232, 224, 245, 0.35);
+  --colors-text-inverse: #ffffff;
+
+  /* Interactive accent */
+  --colors-primary: var(--brand-400);
+  --colors-primary-hover: var(--brand-300);
+  --colors-primary-active: var(--brand-500);
+  --colors-primary-text: var(--brand-300);
+  --colors-primary-btn: linear-gradient(135deg, var(--brand-400), var(--brand-600));
+  --colors-primary-btn-hover: linear-gradient(135deg, var(--brand-300), var(--brand-500));
+  --colors-primary-btn-text: #ffffff;
+
+  /* Inputs */
+  --colors-input-bg: rgba(255, 255, 255, 0.05);
+  --colors-input-border: rgba(255, 255, 255, 0.12);
+  --colors-input-border-hover: rgba(179, 136, 255, 0.35);
+  --colors-input-border-focus: rgba(179, 136, 255, 0.65);
+
+  /* Borders */
+  --colors-border: rgba(179, 136, 255, 0.20);
+  --colors-border-subtle: rgba(255, 255, 255, 0.08);
+  --colors-border-strong: rgba(179, 136, 255, 0.45);
+
+  /* Focus */
+  --colors-focus-ring: var(--brand-400);
+
+  /* Feedback */
+  --colors-success: var(--green-500);
+  --colors-warning: var(--amber-500);
+  --colors-danger: var(--red-400);
+  --colors-info: var(--blue-400);
+
+  /* Overlays & glass */
+  --colors-overlay: rgba(4, 2, 10, 0.85);
+  --colors-overlay-blur: 12px;
+  --colors-scrim-hover: rgba(255, 255, 255, 0.06);
+}
+
+/* ------------------------------------------------------------------ */
+/* 6. Semantic tokens — LIGHT ("Daylight Crystal")                     */
+/*    Applied both to app.js's body.light-mode toggle and to the       */
+/*    pre-CSS html[data-theme="light"] hint that prevents FOUC.        */
+/* ------------------------------------------------------------------ */
+body.light-mode,
+html[data-theme="light"] body {
+  --colors-background: #f8f4fc;
+  --colors-background-subtle: #f3edfb;
+  --colors-surface: rgba(255, 255, 255, 0.72);
+  --colors-surface-glass: rgba(255, 255, 255, 0.72);
+  --colors-surface-raised: #ffffff;
+  --colors-surface-overlay: #1b1030;
+
+  --colors-text-primary: #3d2b56;
+  --colors-text-secondary: #5b4674;
+  --colors-text-muted: #816f9e;
+  --colors-text-disabled: rgba(61, 43, 86, 0.35);
+  --colors-text-inverse: #ffffff;
+
+  --colors-primary: #9333ea;
+  --colors-primary-hover: #a855f7;
+  --colors-primary-active: #7e22ce;
+  --colors-primary-text: #7e22ce;
+  --colors-primary-btn: linear-gradient(135deg, #a855f7, #9333ea);
+  --colors-primary-btn-hover: linear-gradient(135deg, #9333ea, #7e22ce);
+  --colors-primary-btn-text: #ffffff;
+
+  --colors-input-bg: rgba(255, 255, 255, 0.85);
+  --colors-input-border: rgba(93, 63, 148, 0.22);
+  --colors-input-border-hover: rgba(147, 51, 234, 0.4);
+  --colors-input-border-focus: rgba(147, 51, 234, 0.65);
+
+  --colors-border: rgba(93, 63, 148, 0.2);
+  --colors-border-subtle: rgba(93, 63, 148, 0.12);
+  --colors-border-strong: rgba(147, 51, 234, 0.4);
+
+  --colors-focus-ring: #7c4dff;
+
+  --colors-success: #059669;
+  --colors-warning: #b45309;
+  --colors-danger: #e11d48;
+  --colors-info: #2563eb;
+
+  --colors-overlay: rgba(27, 16, 48, 0.5);
+  --colors-overlay-blur: 10px;
+  --colors-scrim-hover: rgba(27, 16, 48, 0.05);
+}
+
+/* ------------------------------------------------------------------ */
+/* 7. Legacy aliases — consumed by the pre-existing stylesheet and     */
+/*    app.js's injected `#st` rules. Values follow the active theme.   */
+/* ------------------------------------------------------------------ */
+:root {
+  --b: var(--brand-400);
+  --b2: var(--brand-600);
+  --bg: var(--colors-background);
+  --r: var(--colors-surface);
+  /* Effective values carried over from the legacy stylesheet so component
+     rules keep their exact prior computed appearance. */
+  --r2: color-mix(in srgb, var(--r), #fff 10%);
+  --bd: color-mix(in srgb, var(--r), #fff 22%);
+  --t: var(--colors-text-primary);
+  --t-muted: var(--colors-text-muted);
+  --t-accent: var(--brand-400);
+  --w: #fcf4ff;
+  --on: #26102e;
+  --g: linear-gradient(135deg, var(--b2), var(--b));
+  --bd-focus: var(--colors-border-strong);
+  --rad: var(--radius-lg);
+  --green: var(--colors-success);
+  --amber: var(--colors-warning);
+  --red: var(--colors-danger);
+}
+body.light-mode,
+html[data-theme="light"] body {
+  --b: var(--colors-primary);
+  --b2: #c084fc;
+  --g: var(--colors-primary-btn);
+  --w: #180c2e;
+  --on: #ffffff;
+  --bd: rgba(225, 210, 240, 0.75);
+  --r2: rgba(255, 255, 255, 0.85);
+  --t-accent: var(--colors-primary);
+}
+
+/* ------------------------------------------------------------------ */
+/* 8. Scroll-lock helper — league of overlay managers (app.js)         */
+/*    html gets the class; stable page geometry, no layout shift.      */
+/* ------------------------------------------------------------------ */
+html.ci-scroll-locked {
+  overflow: hidden;
+}
+html.ci-scroll-locked body {
+  overflow: hidden;
+}
+
+/* Nesting safety: every independent scroll region inside an overlay
+   must contain its scrolling instead of chaining to the document. */
+.mbd, .dl, .dash-content, .about-content, .socials-body {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Standalone resource page host (client-rendered resource route). */
+#standaloneResourceView {
+  display: none;
+}
+#standaloneResourceView.active {
+  display: block;
+  max-width: 1080px;
+  margin: 20px auto 0;
+  padding: 0 16px 72px;
+}
+
+/* Breadcrumb + shell chrome for standalone resource pages. */
+.rp-shell {
+  display: block;
+}
+.rp-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--colors-text-muted);
+  margin: var(--space-2) 0 var(--space-5);
+}
+.rp-breadcrumb a {
+  color: var(--colors-primary-text);
+  text-decoration: none;
+  border-radius: 6px;
+  padding: 1px 2px;
+}
+.rp-breadcrumb a:focus-visible {
+  outline: 2px solid var(--colors-focus-ring);
+  outline-offset: 2px;
+}
+.rp-breadcrumb a:hover {
+  text-decoration: underline;
+}
+.rp-breadcrumb .rp-crumb-sep {
+  opacity: 0.45;
+}
+.rp-breadcrumb [aria-current="page"] {
+  color: var(--colors-text-secondary);
+}
+
+.rp-loading,
+.rp-notfound {
+  text-align: center;
+  padding: 72px 20px;
+  color: var(--colors-text-secondary);
+}
+.rp-notfound h1 {
+  font-size: var(--text-2xl);
+  font-weight: var(--fw-semibold);
+  color: var(--colors-text-primary);
+  margin: var(--space-2) 0 var(--space-3);
+  letter-spacing: var(--tracking-tight);
+}
+.rp-notfound p {
+  max-width: 520px;
+  margin: 0 auto var(--space-5);
+  line-height: var(--leading-relaxed);
+}
+.rp-notfound .rp-provider-status {
+  display: inline-block;
+  margin-top: var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--colors-text-muted);
+}
+
+/* When the dashboard window is hosted inline on a resource page it
+   becomes normal page flow instead of a fixed dialog: natural height,
+   the page scrolls, contents are fully exposed for reading. */
+.dash-modal.inline {
+  position: static;
+  display: block;
+  background: none;
+  backdrop-filter: none;
+  z-index: auto;
+}
+.dash-modal.inline .dash-backdrop {
+  display: none;
+}
+#standaloneResourceView.active .dash-window {
+  position: static;
+  width: 100%;
+  max-width: 1080px;
+  height: auto;
+  max-height: none;
+  overflow: visible;
+  transform: none;
+  transition: none;
+  box-shadow: var(--shadow-3);
+  margin: 0 auto;
+}
+#standaloneResourceView.active .dash-content {
+  flex: 0 1 auto;
+  max-height: none;
+  overflow: visible;
+  overscroll-behavior: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+  }
+}
+
+</style>
 
     <!-- Dynamic Theme & Configuration Stylesheet hooks -->
     <link rel="preload" href="../fonts/inter/inter-latin.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
@@ -123,7 +568,7 @@
   font-family: 'Inter';
   font-style: normal;
   font-weight: 100 900;
-  font-display: block;
+  font-display: swap;
   src: url('../fonts/inter/inter-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
@@ -131,34 +576,29 @@
   font-family: 'Inter';
   font-style: normal;
   font-weight: 100 900;
-  font-display: block;
+  font-display: swap;
   src: url('../fonts/inter/inter-latin-ext.woff2') format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
-:root {
-  --r2: color-mix(in srgb, var(--r), #fff 10%);
-  --bd: color-mix(in srgb, var(--r), #fff 22%);
-  --w: #fcf4ff;
-  --g: linear-gradient(135deg, var(--b2), var(--b));
-  --on: #26102e;
-  --red: #ff6b8f;
-}
+/* Legacy value block removed — legacy tokens (--r2/--bd/--w/--g/--on/--red)
+   now live only in css/tokens.css (§7) with the same effective values. */
 
 * {
   box-sizing: border-box;
 }
 
 html {
-  overflow-x: hidden;
-  max-width: 100vw;
+  overflow-x: clip;
+  max-width: 100%;
   width: 100%;
+  scrollbar-gutter: stable;
 }
 
 body {
   margin: 0;
-  overflow-x: hidden;
-  max-width: 100vw;
+  overflow-x: clip;
+  max-width: 100%;
   width: 100%;
   background: transparent;
   color: var(--t);
@@ -178,7 +618,7 @@ select {
 header {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: var(--z-header);
   background: color-mix(in srgb, var(--r), transparent 20%);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -313,6 +753,9 @@ main {
 
 .craftindex-card,
 .cd {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
   background: color-mix(in srgb, var(--r), transparent 22%);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -431,14 +874,64 @@ main {
   text-align: center;
   grid-column: 1/-1;
 }
-  grid-column: 1/-1;
+
+/* Loading skeleton: mirrors card geometry so the grid reserves its final
+   height before async results arrive (prevents CLS). Cells share the same
+   .cd grid tracks and stretch to the same row height as the real cards. */
+.skel-card {
+  pointer-events: none;
+  user-select: none;
+}
+.skel {
+  display: block;
+  background: color-mix(in srgb, var(--t-muted), transparent 80%);
+  border-radius: 8px;
+  animation: skel-pulse 1.4s ease-in-out infinite;
+}
+.skel-ic {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+}
+.skel-badge {
+  width: 64px;
+  height: 18px;
+  border-radius: 99px;
+}
+.skel-title {
+  width: 72%;
+  height: 18px;
+  margin: 8px 0 10px;
+}
+.skel-line {
+  width: 100%;
+  height: 12px;
+  margin-bottom: 8px;
+}
+.skel-line.short {
+  width: 55%;
+}
+.skel-actions {
+  margin-top: 2px;
+}
+.skel-btn {
+  width: 56px;
+  height: 24px;
+  border-radius: 6px;
+}
+@keyframes skel-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.85; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skel { animation: none; }
 }
 
 .fabs {
   position: fixed;
   right: 28px;
   bottom: 28px;
-  z-index: 120 !important;
+  z-index: var(--z-fab) !important;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -530,7 +1023,7 @@ body.light-mode .fabs .big {
   background: rgba(4, 2, 10, 0.88) !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
-  z-index: 99990 !important;
+  z-index: var(--z-backdrop) !important;
   display: none;
   opacity: 0;
   transition: opacity 0.28s ease;
@@ -556,7 +1049,7 @@ body.light-mode .sc {
   background: rgba(14, 10, 26, 0.985) !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
-  z-index: 99999 !important;
+  z-index: var(--z-drawer) !important;
   transform: translateX(100%);
   transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1) !important;
   display: flex;
@@ -681,6 +1174,7 @@ body.light-mode .dr-header #dc:hover {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+  overscroll-behavior: contain;
   padding: 16px 20px;
   display: flex;
   flex-direction: column;
@@ -918,10 +1412,6 @@ body.light-mode .rw b {
   /* animation removed */
 }
 
-/* @keyframes floatCart removed for minimal design standards */
-  100% { transform: translateY(-6px); }
-}
-
 body.light-mode .dr-empty-icon {
   background: rgba(147, 51, 234, 0.08);
   border-color: rgba(147, 51, 234, 0.22);
@@ -1006,7 +1496,7 @@ body.light-mode .dr-footer {
   transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
               visibility 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  z-index: 100050 !important;
+  z-index: var(--z-menu) !important;
 }
 
 /* Hover bridge between button and popover so mouse move never loses hover */
@@ -1343,11 +1833,31 @@ body.light-mode .dr-footer #dd {
   box-shadow: 0 4px 18px rgba(147, 51, 234, 0.35) !important;
 }
 
+.dr-footer {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+}
+
+.dr-footer .dr-tool-btn,
+.dr-footer #am,
+.dr-footer #dd {
+  height: 42px !important;
+  min-height: 42px !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+}
+
 /* Modals (Download, Presets, History) */
 .md {
   position: fixed;
   inset: 0;
-  z-index: 100100 !important;
+  z-index: var(--z-modal) !important;
   display: flex !important;
   align-items: center;
   justify-content: center;
@@ -1454,6 +1964,7 @@ body.light-mode .mh {
 .mx.sources-mode .mbd {
   max-height: 70vh;
   overflow-y: auto !important;
+  overscroll-behavior: contain;
 }
 
 .mf {
@@ -1517,7 +2028,7 @@ body.light-mode .mf {
   color: var(--w);
   padding: 9px 16px;
   border-radius: 99px;
-  z-index: 60;
+  z-index: var(--z-toast);
   display: none;
 }
 
@@ -1526,7 +2037,7 @@ body.light-mode .mf {
   outline-offset: 4px;
   border-radius: 8px;
   box-shadow: 0 0 0 7px color-mix(in srgb, var(--b), transparent 72%);
-  animation: hlp 1s ease-in-out infinite alternate;
+  animation: hlp 0.4s ease-in-out 2 alternate;
 }
 
 @keyframes hlp {
@@ -1620,20 +2131,21 @@ footer a {
   position: absolute;
   inset: 0;
   transition:
-    background 0.8s ease,
-    backdrop-filter 0.8s ease;
+    background 0.8s ease;
   pointer-events: none;
 }
 
-/* Dark mode video overlay - deep cosmic purple translucent scrim */
+/* Dark mode video overlay - deep cosmic purple translucent scrim.
+   Note: the full-viewport backdrop-filter was removed — measured ~3x
+   lower scroll frame-rate with it (13 vs 39 fps in headless Chrome) because
+   a full-page blur layer must re-composite every frame. The gradient scrim
+   (visual identity) and the localized header/card blurs are retained. */
 .bg-overlay.dark {
   background: radial-gradient(
     circle at 50% 20%,
     rgba(12, 9, 21, 0.55) 0%,
     rgba(12, 9, 21, 0.82) 100%
   );
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
 }
 
 /* Light mode video overlay - soft sakura translucent scrim */
@@ -1643,8 +2155,6 @@ footer a {
     rgba(255, 240, 248, 0.22) 0%,
     rgba(245, 235, 250, 0.42) 100%
   );
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
 }
 
 /* ========================================================
@@ -1711,16 +2221,17 @@ body.light-mode .tb {
 }
 
 body.light-mode .tb:hover {
-  background: rgba(255, 255, 255, 0.88);
-  color: #6b21a8;
+  background: rgba(147, 51, 234, 0.08) !important;
+  color: #4c1d95 !important;
 }
 
 body.light-mode .tb.on {
-  background: rgba(255, 255, 255, 0.94);
-  color: #7e22ce;
+  background: rgba(255, 255, 255, 0.96) !important;
+  color: #6b21a8 !important;
+  border-color: rgba(147, 51, 234, 0.5) !important;
   box-shadow:
-    0 4px 14px rgba(168, 85, 247, 0.25),
-    inset 0 0 0 2px #a855f7;
+    0 4px 16px rgba(147, 51, 234, 0.16),
+    inset 0 0 0 2px #9333ea !important;
 }
 
 body.light-mode .in {
@@ -1804,9 +2315,46 @@ header {
     inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-  padding: 14px 44px !important;
+  flex-wrap: nowrap;
+  gap: 12px;
+  padding: 10px 24px !important;
+}
+
+header .btn {
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 13.5px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
+  vertical-align: middle !important;
+}
+
+header #mt {
+  height: 38px !important;
+  min-height: 38px !important;
+  box-sizing: border-box !important;
+}
+
+header #cb {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+
+header #cb .bdg {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
 }
 
 .lg {
@@ -1859,6 +2407,7 @@ main {
 .tabs {
   display: inline-flex !important;
   max-width: 100% !important;
+  min-height: 49px;
   overflow-x: auto !important;
   flex-wrap: nowrap !important;
   scrollbar-width: none !important;
@@ -1899,8 +2448,8 @@ main {
 }
 
 .tb:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
-  color: #fff !important;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
   transform: translateY(-1px);
 }
 
@@ -1909,11 +2458,11 @@ main {
     135deg,
     rgba(179, 136, 255, 0.25),
     rgba(124, 77, 255, 0.4)
-  ) !important;
-  border-color: rgba(179, 136, 255, 0.5) !important;
-  color: #ffffff !important;
+  );
+  border-color: rgba(179, 136, 255, 0.5);
+  color: #ffffff;
   box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.25) !important;
+    inset 0 1px 1px rgba(255, 255, 255, 0.25);
 }
 
 /* Filter & Search Bar - Glass Cyber Dock */
@@ -2099,13 +2648,28 @@ main {
 /* Card Action Buttons Bar */
 .act {
   grid-column: 1/-1 !important;
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  align-items: center;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
   margin-top: 10px !important;
   padding-top: 12px !important;
   border-top: 1px solid rgba(179, 136, 255, 0.12) !important;
+}
+
+.act .btn.ad {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 16px !important;
+  font-size: 13.5px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
 }
 
 /* Futuristic Buttons */
@@ -2349,12 +2913,6 @@ body.light-mode #mo.retry-btn {
   border-color: rgba(239, 68, 68, 0.4) !important;
   color: #991b1b !important;
   box-shadow: 0 8px 25px rgba(239, 68, 68, 0.18) !important;
-}
-
-/* @keyframes pulseButton removed for minimal design standards */
-  50% {
-    transform: scale(1.03);
-  }
 }
 
 body.light-mode .auto-loader {
@@ -2653,6 +3211,11 @@ body.light-mode .glass-select-menu::-webkit-scrollbar-thumb {
   flex-shrink: 0;
 }
 
+/* Anchor variant renders the same button as a crawlable internal link. */
+a.btn-info {
+  text-decoration: none;
+}
+
 .btn-info:hover {
   background: rgba(179, 136, 255, 0.32);
   border-color: #b388ff;
@@ -2760,6 +3323,34 @@ body.light-mode .source-badge {
   box-shadow: 0 3px 12px rgba(251, 191, 36, 0.25);
   color: #ffffff;
   transform: translateY(-1.5px) scale(1.03);
+}
+
+body.light-mode .source-link.modrinth {
+  color: #047857;
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.35);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.12);
+}
+
+body.light-mode .source-link.modrinth:hover {
+  background: rgba(16, 185, 129, 0.22);
+  border-color: #059669;
+  color: #064e3b;
+  box-shadow: 0 3px 12px rgba(16, 185, 129, 0.22);
+}
+
+body.light-mode .source-link.curseforge {
+  color: #9a3412;
+  background: rgba(234, 88, 12, 0.12);
+  border-color: rgba(234, 88, 12, 0.35);
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.12);
+}
+
+body.light-mode .source-link.curseforge:hover {
+  background: rgba(234, 88, 12, 0.22);
+  border-color: #ea580c;
+  color: #7c2d12;
+  box-shadow: 0 3px 12px rgba(234, 88, 12, 0.22);
 }
 
 body.light-mode .source-link.bukkit {
@@ -3731,7 +4322,7 @@ body.light-mode .src-cat-manage-link:hover {
 .dash-modal {
   position: fixed;
   inset: 0;
-  z-index: 100200 !important;
+  z-index: var(--z-dialog) !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3861,24 +4452,42 @@ body.light-mode .dash-author {
 }
 
 .dash-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.dash-header-actions .btn {
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 13.5px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
 }
 
 .dash-close {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid rgba(179, 136, 255, 0.25);
-  background: rgba(179, 136, 255, 0.08);
-  color: var(--t);
-  font-size: 18px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  border-radius: 50% !important;
+  border: 1px solid rgba(179, 136, 255, 0.25) !important;
+  background: rgba(179, 136, 255, 0.08) !important;
+  color: var(--t) !important;
+  font-size: 18px !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  transition: all 0.2s ease !important;
 }
 
 .dash-close:hover {
@@ -3987,6 +4596,7 @@ body.light-mode .dash-tab.active {
 .dash-content {
   flex: 1;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 24px;
   color: var(--t);
   font-size: 14.5px;
@@ -4300,7 +4910,7 @@ body.light-mode .dash-gallery-title {
 .dash-lightbox {
   position: fixed;
   inset: 0;
-  z-index: 100300 !important;
+  z-index: var(--z-lightbox) !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4441,7 +5051,7 @@ body.light-mode .dash-link-sub {
 .dep-modal {
   position: fixed;
   inset: 0;
-  z-index: 100400 !important;
+  z-index: var(--z-dialog-top) !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4768,6 +5378,66 @@ body.light-mode .dr-zip-input {
   border-color: rgba(236, 72, 153, 0.6) !important;
   color: #f472b6 !important;
   box-shadow: none !important;
+}
+
+body.light-mode .cat-mods, body.light-mode .cart-cat-badge.mods {
+  background: rgba(14, 165, 233, 0.12) !important;
+  border-color: rgba(14, 165, 233, 0.35) !important;
+  color: #0369a1 !important;
+}
+
+body.light-mode .cat-plugins, body.light-mode .cart-cat-badge.plugins {
+  background: rgba(147, 51, 234, 0.12) !important;
+  border-color: rgba(147, 51, 234, 0.35) !important;
+  color: #6b21a8 !important;
+}
+
+body.light-mode .cat-resourcepacks, body.light-mode .cart-cat-badge.resourcepacks {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+  color: #047857 !important;
+}
+
+body.light-mode .cat-shaders, body.light-mode .cart-cat-badge.shaders {
+  background: rgba(249, 115, 22, 0.12) !important;
+  border-color: rgba(249, 115, 22, 0.35) !important;
+  color: #9a3412 !important;
+}
+
+body.light-mode .cat-datapacks, body.light-mode .cart-cat-badge.datapacks {
+  background: rgba(244, 63, 94, 0.12) !important;
+  border-color: rgba(244, 63, 94, 0.35) !important;
+  color: #be123c !important;
+}
+
+body.light-mode .cat-modpacks, body.light-mode .cart-cat-badge.modpacks {
+  background: rgba(217, 70, 239, 0.12) !important;
+  border-color: rgba(217, 70, 239, 0.35) !important;
+  color: #a21caf !important;
+}
+
+body.light-mode .cat-worlds, body.light-mode .cart-cat-badge.worlds {
+  background: rgba(234, 179, 8, 0.14) !important;
+  border-color: rgba(234, 179, 8, 0.4) !important;
+  color: #854d0e !important;
+}
+
+body.light-mode .cat-serversoftwares, body.light-mode .cart-cat-badge.serversoftwares {
+  background: rgba(14, 165, 233, 0.12) !important;
+  border-color: rgba(14, 165, 233, 0.35) !important;
+  color: #075985 !important;
+}
+
+body.light-mode .cat-modloaders, body.light-mode .cart-cat-badge.modloaders {
+  background: rgba(249, 115, 22, 0.12) !important;
+  border-color: rgba(249, 115, 22, 0.35) !important;
+  color: #9a3412 !important;
+}
+
+body.light-mode .cat-dependencies, body.light-mode .cart-cat-badge.dependencies {
+  background: rgba(236, 72, 153, 0.12) !important;
+  border-color: rgba(236, 72, 153, 0.35) !important;
+  color: #be185d !important;
 }
 
 /* Card Category Pill */
@@ -5601,7 +6271,7 @@ body.light-mode #mt:hover .theme-svg-sun {
   gap: 6px !important;
   white-space: nowrap !important;
   position: relative !important;
-  z-index: 60 !important;
+  z-index: var(--z-nav) !important;
 }
 
 .tb-wrapper {
@@ -5730,6 +6400,9 @@ body.light-mode .tb-dropdown-item.on {
 }
 
 /* Secondary Subtabs Pill Bar */
+.subtabs-bar:empty {
+  display: none !important;
+}
 .subtabs-bar {
   display: flex;
   align-items: center;
@@ -6298,9 +6971,24 @@ body.light-mode .settings-switch input:checked + .settings-slider {
 
 /* Action button row */
 .settings-action-bar {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  width: 100% !important;
+}
+
+.settings-action-bar .btn {
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 18px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 13.5px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
 }
 
 /* Light mode support for settings */
@@ -6558,8 +7246,8 @@ body {
   flex-shrink: 0 !important;
 }
 
-/* 5. Mobile & Small Screen Responsive Refinements (<= 768px) */
-@media (max-width: 768px) {
+/* 5. Mobile & Tablet Screen Responsive Refinements (<= 820px) */
+@media (max-width: 820px) {
   .tabs {
     overflow-x: auto !important;
     max-width: 100% !important;
@@ -6568,20 +7256,33 @@ body {
   }
 
   header {
-    padding: 10px 18px !important;
-    gap: 10px !important;
+    flex-wrap: wrap !important;
+    gap: 8px 8px !important;
+    padding: 8px 14px !important;
+  }
+
+  header #hl {
+    flex-basis: 100% !important;
+    height: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+  }
+
+  header .btn {
+    height: 34px !important;
+    min-height: 34px !important;
+    padding: 0 10px !important;
+    font-size: 12.5px !important;
+  }
+
+  header #mt {
+    height: 34px !important;
+    min-height: 34px !important;
+    width: 36px !important;
   }
 
   main {
     padding: 18px 16px 120px !important;
-  }
-
-  .btn,
-  .dr-tool-btn,
-  .dr-close,
-  .theme-toggle-btn,
-  #mt {
-    min-height: 42px;
   }
 
   .dr-tool-btn {
@@ -6604,6 +7305,20 @@ body {
   .lg img {
     width: 32px !important;
     height: 32px !important;
+  }
+
+  .act {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .act-right {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  .act .btn.ad {
+    width: 100% !important;
   }
 
   .dr {
@@ -6679,8 +7394,25 @@ body {
 /* 7. Narrow Phone Refinements (<= 480px, including 320px, 360px, 375px, 390px, 430px) */
 @media (max-width: 480px) {
   header {
-    padding: 8px 12px !important;
-    gap: 6px !important;
+    padding: 6px 8px !important;
+    gap: 4px !important;
+  }
+
+  header #lg span {
+    display: none !important;
+  }
+
+  header .btn {
+    padding: 0 6px !important;
+    font-size: 11.5px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+  }
+
+  header #mt {
+    height: 32px !important;
+    min-height: 32px !important;
+    width: 34px !important;
   }
 
   .lg {
@@ -6713,7 +7445,8 @@ body {
     gap: 10px !important;
   }
 
-  .cd img {
+  .cd img,
+  .skel-ic {
     width: 68px !important;
     height: 68px !important;
   }
@@ -6735,17 +7468,61 @@ body {
 /* 8. Ultra-Compact Mobile (<= 360px, e.g. 320px iPhone SE) */
 @media (max-width: 360px) {
   header {
-    padding: 6px 8px !important;
-    gap: 4px !important;
+    padding: 4px 4px !important;
+    gap: 3px !important;
+  }
+
+  header #lg span {
+    display: none !important;
+  }
+
+  header .btn {
+    padding: 0 4px !important;
+    font-size: 10.5px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+  }
+
+  header #mt {
+    height: 30px !important;
+    min-height: 30px !important;
+    width: 28px !important;
+  }
+
+  .lg img {
+    width: 26px !important;
+    height: 26px !important;
   }
 
   .lg {
-    font-size: 16px !important;
+    font-size: 15px !important;
   }
 
   .btn {
     padding: 6px 8px !important;
     font-size: 12px !important;
+  }
+
+  .dr-footer {
+    gap: 6px !important;
+    padding: 8px 8px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .dr-footer .dr-tool-btn {
+    min-width: 32px !important;
+    height: 36px !important;
+    padding: 0 4px !important;
+    font-size: 13px !important;
+  }
+
+  .dr-footer #am,
+  .dr-footer #dd {
+    flex: 1 1 100% !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    font-size: 12px !important;
+    padding: 0 8px !important;
   }
 
   .cd {
@@ -6757,6 +7534,16 @@ body {
   .cd img {
     width: 56px !important;
     height: 56px !important;
+  }
+
+  .cart-popover-menu {
+    width: calc(100vw - 40px) !important;
+    max-width: 275px !important;
+    left: 0 !important;
+  }
+
+  #importWrap .cart-popover-menu {
+    left: -42px !important;
   }
 }
 
@@ -6789,7 +7576,7 @@ body {
 .about-modal {
   position: fixed;
   inset: 0;
-  z-index: 100000 !important;
+  z-index: var(--z-modal-low) !important;
   display: none;
   align-items: center;
   justify-content: center;
@@ -6994,6 +7781,7 @@ body.light-mode .about-nav-item.active {
 .about-content {
   flex: 1;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 28px 36px 60px;
   color: #e8e0f5;
   font-size: 14.5px;
@@ -7749,7 +8537,9 @@ body.light-mode .doc-faq-item p {
   display: flex !important;
   align-items: center !important;
   gap: 10px !important;
-  padding: 9px 12px !important;
+  padding: 0 14px !important;
+  height: 50px !important;
+  min-height: 50px !important;
   border-radius: 10px !important;
   text-align: left !important;
   width: 100% !important;
@@ -7771,6 +8561,18 @@ body.light-mode .doc-faq-item p {
 .studio-action-tool-btn.danger:hover {
   background: rgba(239, 68, 68, 0.18) !important;
   border-color: rgba(239, 68, 68, 0.6) !important;
+}
+
+body.light-mode .studio-action-tool-btn.danger {
+  color: #b91c1c !important;
+  border-color: rgba(239, 68, 68, 0.45) !important;
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+
+body.light-mode .studio-action-tool-btn.danger:hover {
+  background: rgba(239, 68, 68, 0.16) !important;
+  border-color: #dc2626 !important;
+  color: #b91c1c !important;
 }
 
 .studio-action-icon {
@@ -8645,23 +9447,41 @@ body.light-mode .doc-creator-tag {
 }
 
 .doc-creator-actions {
-  display: flex;
-  gap: 10px;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 
 .doc-pill-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: none;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 0 16px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
   background: var(--b2);
   color: #fff;
   border: 1px solid var(--b);
   transition: all 0.15s ease;
+}
+
+body.light-mode .doc-pill-btn {
+  background: #7e22ce !important;
+  border-color: #6b21a8 !important;
+  color: #ffffff !important;
+}
+
+body.light-mode .doc-pill-btn:hover {
+  background: #6b21a8 !important;
+  border-color: #581c87 !important;
+  color: #ffffff !important;
 }
 
 .doc-pill-btn:hover {
@@ -8678,14 +9498,15 @@ body.light-mode .doc-creator-tag {
 }
 
 body.light-mode .doc-pill-btn.secondary {
-  background: rgba(147, 51, 234, 0.08);
-  border-color: rgba(147, 51, 234, 0.25);
-  color: #3b0764;
+  background: rgba(147, 51, 234, 0.08) !important;
+  border-color: rgba(147, 51, 234, 0.25) !important;
+  color: #3b0764 !important;
 }
 
-.doc-pill-btn.secondary:hover {
-  background: rgba(179, 136, 255, 0.15);
-  color: var(--w);
+body.light-mode .doc-pill-btn.secondary:hover {
+  background: rgba(147, 51, 234, 0.18) !important;
+  border-color: #7e22ce !important;
+  color: #1e1b4b !important;
 }
 
 .doc-layout-grid {
@@ -9120,7 +9941,7 @@ body.light-mode .ad-promote-card:hover {
 .socials-modal {
   position: fixed;
   inset: 0;
-  z-index: 100200 !important;
+  z-index: var(--z-dialog) !important;
   display: none;
   align-items: center;
   justify-content: center;
@@ -9550,6 +10371,16 @@ body.light-mode .social-icon-box.x {
         font-size: 13px;
         font-weight: 500;
         color: #a79abf;
+        min-height: 18px;
+        width: 100%;
+        max-width: 320px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      #ciBootStatusText {
+        display: inline-block;
+        min-width: 250px;
+        text-align: left;
       }
       .ci-boot-dot {
         width: 7px;
@@ -9641,7 +10472,7 @@ body.light-mode .social-icon-box.x {
       
       <div class="ci-boot-center">
         <div class="ci-boot-icon-wrap">
-          <img src="../images/craftindex-logo.png" alt="CraftIndex Logo" class="ci-boot-icon" width="76" height="76" />
+          <img src="../images/craftindex-logo.webp" alt="CraftIndex Logo" class="ci-boot-icon" width="76" height="76" />
         </div>
         <h1 class="ci-boot-title">CraftIndex</h1>
         <div class="ci-boot-tagline">Minecraft Resource Discovery &amp; Pack Studio</div>
@@ -9698,36 +10529,28 @@ body.light-mode .social-icon-box.x {
     <div class="bg-video-container" id="bgVideoContainer">
       <video
         id="bgVideoDark"
-        class="bg-video active"
-        autoplay
+        class="bg-video"
         loop
         muted
         playsinline
-        preload="auto"
-      >
-        <source
-          src="../media/rainy-evening-minecraft.mp4"
-          type="video/mp4"
-        />
-      </video>
+        preload="none"
+        data-src="../media/rainy-evening-minecraft.opt.mp4"
+        aria-hidden="true"
+      ></video>
       <video
         id="bgVideoLight"
         class="bg-video"
-        autoplay
         loop
         muted
         playsinline
-        preload="auto"
-      >
-        <source
-          src="../media/sakura-forest-minecraft.mp4"
-          type="video/mp4"
-        />
-      </video>
+        preload="none"
+        data-src="../media/sakura-forest-minecraft.opt.mp4"
+        aria-hidden="true"
+      ></video>
       <div class="bg-overlay dark" id="bgOverlay"></div>
     </div>
     <header>
-      <a href="/" class="lg" id="lg" aria-label="CraftIndex Home"><img src="../images/craftindex-logo.png" alt="CraftIndex Logo" width="36" height="36" /><span>CraftIndex</span></a>
+      <a href="/" class="lg" id="lg" aria-label="CraftIndex Home"><img src="../images/craftindex-logo.webp" alt="CraftIndex Logo" width="36" height="36" /><span>CraftIndex</span></a>
       <span style="flex: 1"></span><span id="hl"></span><span id="pgb"></span>
       <button class="btn theme-toggle-btn" id="mt" title="Switch to Light Mode (Daylight) ☀️" aria-label="Toggle theme">
         <span class="theme-icon-stage">
@@ -9832,10 +10655,14 @@ body.light-mode .social-icon-box.x {
         </div>
         <button class="btn" id="mo" style="display: none">Load more</button>
       </div>
+      <!-- Standalone resource page host: populated client-side for
+           /<category>/<slug>/ routes; the dashboard window is re-parented
+           into this container instead of rendering as a modal. -->
+      <div id="standaloneResourceView" class="standalone-resource-container" aria-live="polite"></div>
     </main>
     <footer id="ft" class="site-footer">
       <div class="site-footer-brand">
-        <img src="../images/craftindex-logo.png" alt="CraftIndex Logo" class="site-footer-logo" width="28" height="28">
+        <img src="../images/craftindex-logo.webp" alt="CraftIndex Logo" class="site-footer-logo" width="28" height="28">
         <span class="site-footer-name">CraftIndex</span>
       </div>
       <div class="site-footer-author">
@@ -9962,7 +10789,7 @@ body.light-mode .social-icon-box.x {
         <!-- About Header -->
         <div class="about-header">
           <div class="about-header-branding">
-            <img src="../images/craftindex-logo.png" alt="CraftIndex Logo" class="about-header-logo" width="32" height="32" />
+            <img src="../images/craftindex-logo.webp" alt="CraftIndex Logo" class="about-header-logo" width="32" height="32" />
             <div>
               <h2 class="about-header-title" id="aboutModalTitle">CraftIndex About & Documentation</h2>
               <span class="about-header-sub">Official Architecture, User Guide & Specifications</span>
@@ -9994,7 +10821,7 @@ body.light-mode .social-icon-box.x {
         <!-- Socials Header -->
         <div class="about-header">
           <div class="about-header-branding">
-            <img src="../images/craftindex-logo.png" alt="CraftIndex Logo" class="about-header-logo" width="32" height="32" />
+            <img src="../images/craftindex-logo.webp" alt="CraftIndex Logo" class="about-header-logo" width="32" height="32" />
             <div>
               <h2 class="about-header-title" id="socialsModalTitle">Arata Inlooker &middot; Socials &amp; Direct Contact</h2>
               <span class="about-header-sub">Direct Messages &amp; Inquiries Accepted &bull; Official Verified Channels</span>
@@ -10069,7 +10896,7 @@ body.light-mode .social-icon-box.x {
 {
   "title": "CraftIndex",
   "sub": "",
-  "logo": "../images/craftindex-logo.png",
+  "logo": "../images/craftindex-logo.webp",
   "fav": "",
   "desc": "Discover Minecraft mods, plugins, resource packs, shaders and datapacks from supported platforms. Explore resources, build your collection and download multiple selections together with CraftIndex.",
   "og": "../images/bigger-image.png",
@@ -11356,7 +12183,7 @@ if (typeof module !== "undefined" && module.exports) {
 }
 
 </script>
-    <script>
+<script>
 /**
  * CraftIndex - Pack Studio, Native ZIP Import/Export & Persistent Binary Storage Engine
  * Author: Arata Inlooker <aratainlooker@gmail.com>
@@ -11791,6 +12618,9 @@ if (typeof module !== "undefined" && module.exports) {
   // =========================================================================
 
   async function importZipArchive(file) {
+    if (window.ensureJSZip) {
+      try { await window.ensureJSZip(); } catch (e) {}
+    }
     if (!window.JSZip) {
       throw new Error('JSZip is not available.');
     }
@@ -12274,6 +13104,9 @@ if (typeof module !== "undefined" && module.exports) {
   // =========================================================================
 
   async function exportCollectionZip(customOptions) {
+    if (window.ensureJSZip) {
+      try { await window.ensureJSZip(); } catch (e) {}
+    }
     if (!window.JSZip) {
       throw new Error('JSZip is not available.');
     }
@@ -12812,10 +13645,10 @@ if (typeof module !== "undefined" && module.exports) {
   }
 
   function showImportSummaryModal(res) {
-    if (!window.md || !window.mf || !window.$) return;
+    if (!window.md || !window.mf) return;
     window.md(1);
-    window.$('mh').textContent = '📁 ZIP Import Summary';
-    window.$('mb').innerHTML = `
+    document.getElementById('mh').textContent = '📁 ZIP Import Summary';
+    document.getElementById('mb').innerHTML = `
       <div style="display:flex; flex-direction:column; gap:14px; padding:6px 0;">
         <div style="background:rgba(124,77,255,0.14); border:1px solid rgba(179,136,255,0.35); border-radius:12px; padding:14px; color:#e9d5ff; font-size:13.5px;">
           ✨ Archive inspection completed successfully! Identified binaries have been securely stored in persistent IndexedDB.
@@ -12910,7 +13743,7 @@ if (typeof module !== "undefined" && module.exports) {
 })(typeof window !== 'undefined' ? window : this);
 
 </script>
-    <script>
+<script>
 // --- CraftIndex Safe Storage Migration Layer ---
 (function migrateLegacyStorage() {
   try {
@@ -12995,6 +13828,132 @@ const safeStorage = {
     }
   }
 };
+
+/* --- Centralized overlay scroll-lock manager (Phase 5) ------------------
+   Any overlay (modal, dashboard, drawer, lightbox) acquires the lock on
+   open and releases it on close. A reference counter keeps the document
+   locked while nested overlays are open, so individual overlays can open
+   and close independently without ever accidentally unlocking the page.
+   Scroll position is preserved (overflow hidden keeps scrollTop) and the
+   document offset is re-asserted after unlock in case the UA reset it. */
+const CraftIndexScrollLock = {
+  _count: 0,
+  _scrollY: 0,
+  acquire(id) {
+    if (document.documentElement.__ciLockOwners === undefined) {
+      document.documentElement.__ciLockOwners = new Set();
+    }
+    const owners = document.documentElement.__ciLockOwners;
+    if (owners.has(id)) return; // idempotent re-open
+    owners.add(id);
+    if (this._count === 0) {
+      this._scrollY = window.scrollY || 0;
+      document.documentElement.classList.add("ci-scroll-locked");
+    }
+    this._count++;
+  },
+  release(id) {
+    const owners = document.documentElement.__ciLockOwners;
+    if (!owners || !owners.has(id)) return;
+    owners.delete(id);
+    this._count = Math.max(0, this._count - 1);
+    if (this._count === 0) {
+      document.documentElement.classList.remove("ci-scroll-locked");
+      if (window.scrollY !== this._scrollY) {
+        window.scrollTo(0, this._scrollY);
+      }
+      this._scrollY = 0;
+    }
+  },
+  has(id) {
+    const owners = document.documentElement.__ciLockOwners;
+    return Boolean(owners && owners.has(id));
+  }
+};
+window.CraftIndexScrollLock = CraftIndexScrollLock;
+
+/* --- Lazy JSZip loader (Phase 2) ----------------------------------------
+   The vendor bundle is no longer render-blocking in <head>. It is fetched
+   on demand the first time a ZIP operation actually runs (bulk archive,
+   Pack Studio import/export). Standalone dist pages sit one level deeper,
+   so both relative bases are attempted. */
+let _jsZipPromise = null;
+function ensureJSZip() {
+  if (typeof JSZip !== "undefined") return Promise.resolve(window.JSZip);
+  if (_jsZipPromise) return _jsZipPromise;
+  const bases = ["js/vendor/jszip.min.js", "../js/vendor/jszip.min.js"];
+  _jsZipPromise = new Promise((resolve, reject) => {
+    let i = 0;
+    (function tryNext() {
+      if (i >= bases.length) {
+        _jsZipPromise = null;
+        reject(new Error("JSZip failed to load"));
+        return;
+      }
+      const s = document.createElement("script");
+      s.src = bases[i++];
+      s.async = true;
+      s.onload = () => (typeof JSZip !== "undefined" ? resolve(window.JSZip) : tryNext());
+      s.onerror = () => {
+        s.remove();
+        tryNext();
+      };
+      document.head.appendChild(s);
+    })();
+  });
+  return _jsZipPromise;
+}
+window.ensureJSZip = ensureJSZip;
+
+/* --- Lazy feature-script loaders (Phase 2) -------------------------------
+   Pack Studio (pack_studio.js, ~60 KB) and the About/Docs center
+   (about_docs.js, ~41 KB) are heavy, self-contained modules whose globals
+   (window.CraftIndexStudio, ABOUT_DOCS) are referenced everywhere through
+   guarded `typeof` checks. Loading them on first need (Studio tab, Docs
+   route/modal) removes ~100 KB of script parsing from the initial page
+   load. In the standalone dist, these globals are already inlined, so the
+   loaders resolve immediately without any network fetch. */
+let _aboutDocsPromise = null;
+function ensureAboutDocs() {
+  if (typeof ABOUT_DOCS !== "undefined") return Promise.resolve(window.ABOUT_DOCS || ABOUT_DOCS);
+  if (_aboutDocsPromise) return _aboutDocsPromise;
+  const bases = ["/js/about_docs.js", "js/about_docs.js", "../js/about_docs.js"];
+  _aboutDocsPromise = new Promise((resolve, reject) => {
+    let i = 0;
+    (function tryNext() {
+      if (i >= bases.length) { _aboutDocsPromise = null; reject(new Error("about_docs.js failed to load")); return; }
+      const s = document.createElement("script");
+      s.src = bases[i++];
+      s.async = true;
+      s.onload = () => (typeof ABOUT_DOCS !== "undefined" ? resolve() : tryNext());
+      s.onerror = () => { s.remove(); tryNext(); };
+      document.body.appendChild(s);
+    })();
+  });
+  return _aboutDocsPromise;
+}
+window.ensureAboutDocs = ensureAboutDocs;
+
+let _packStudioPromise = null;
+function ensurePackStudio() {
+  if (window.CraftIndexStudio) return Promise.resolve(window.CraftIndexStudio);
+  if (_packStudioPromise) return _packStudioPromise;
+  const bases = ["/js/pack_studio.js", "js/pack_studio.js", "../js/pack_studio.js"];
+  _packStudioPromise = new Promise((resolve, reject) => {
+    let i = 0;
+    (function tryNext() {
+      if (i >= bases.length) { _packStudioPromise = null; reject(new Error("pack_studio.js failed to load")); return; }
+      const s = document.createElement("script");
+      s.src = bases[i++];
+      s.async = true;
+      s.onload = () => (window.CraftIndexStudio ? resolve(window.CraftIndexStudio) : tryNext());
+      s.onerror = () => { s.remove(); tryNext(); };
+      document.body.appendChild(s);
+    })();
+  });
+  return _packStudioPromise;
+}
+window.ensurePackStudio = ensurePackStudio;
 
 // --- CraftIndex Independent Sanitization & Markdown Engine ---
 const CraftIndexSanitizer = {
@@ -13497,11 +14456,23 @@ const T = (id) => C.tabs.find((t) => t.id === id) || {},
       dependencies: "DEPENDENCY",
     };
     return map[id] || (T(id).name ? T(id).name.toUpperCase() : String(id || "").toUpperCase());
-  },
-  api = async (p, signal) => {
+  };
+const _apiCache = new Map();
+const api = async (p, signal) => {
+    if (!signal && _apiCache.has(p)) {
+      const cached = _apiCache.get(p);
+      if (Date.now() - cached.time < 60000) {
+        return cached.data;
+      }
+    }
     const r = await fetch(A + p, signal ? { signal } : {});
     if (!r.ok) throw Error("API " + r.status);
-    return r.json();
+    const data = await r.json();
+    if (!signal) {
+      if (_apiCache.size > 100) _apiCache.clear();
+      _apiCache.set(p, { time: Date.now(), data });
+    }
+    return data;
   };
 const toast = (m) => {
   $("tt").textContent = m;
@@ -13711,6 +14682,10 @@ function updateBrowserTitle(customContext = null) {
       document.title = `${dashTitle} | CraftIndex`;
       return;
     }
+    if ($("dashModal") && $("dashModal").classList.contains("inline") && typeof currentDashItem !== "undefined" && currentDashItem && typeof rpTitle === "function") {
+      document.title = rpTitle(currentDashItem);
+      return;
+    }
     if ($("dr") && $("dr").classList.contains("o")) {
       const count = (window.cart && window.cart.size !== undefined ? window.cart.size : (window.cart && window.cart.length ? window.cart.length : 0));
       document.title = `Collection (${count}) | CraftIndex`;
@@ -13880,6 +14855,297 @@ function switchTab(tObj, skipUrlUpdate = false) {
   updateBrowserTitle();
 }
 
+/* ========================================================
+   STANDALONE RESOURCE PAGES (Phase 1)
+  Permanent URLs: /<category>/<slug>/ for provider-resolvable
+   resources. The existing Resource Detail Dashboard window is
+   re-parented into #standaloneResourceView (inline mode) instead
+   of being a modal, so direct navigation, refresh, sharing and
+   crawling all work against real URLs.
+   ======================================================== */
+const RP_CATS = new Set([
+  "mods", "plugins", "resourcepacks", "shaders", "datapacks", "modpacks", "worlds",
+]);
+const RP_LINKABLE_SOURCES = new Set(["modrinth", "curseforge", "bukkit", "hangar", "github"]);
+const RP_GITHUB_SEP = "--";
+// Search-result hits handed to openStandaloneResource without a re-resolve.
+const _pendingResourceHits = new Map();
+let _rpNavToken = 0; // invalidates stale async resolution when the user navigates on
+let dashInline = null; // non-null while the dashboard window is hosted on a resource page
+
+function rpResourceUrl(tabId, slug) {
+  return "/" + tabId + "/" + String(slug).toLowerCase() + "/";
+}
+
+function rpParseResourceRoute(pathname) {
+  const m = pathname.match(
+    /^\/(mods|plugins|resourcepacks|shaders|datapacks|modpacks|worlds)\/([a-z0-9][a-z0-9_-]*)$/,
+  );
+  if (!m) return null;
+  // /mods/<loader>/ is the loader-filter route, never a resource page
+  // (fabric, neoforge, forge, quilt are reserved under /mods/).
+  if (m[1] === "mods" && ML.includes(m[2])) return null;
+  return { tabId: m[1], slug: m[2] };
+}
+
+// A search hit can be linked to a standalone page when its identity can be
+// re-resolved against a provider from URL alone. GitHub hits use owner--repo.
+function rpCardHref(h) {
+  if (!h || !h.tab || !RP_CATS.has(h.tab)) return null;
+  if (h.tab === "mods" && ML.includes(String(h.slug || ""))) return null;
+  if (h.source === "github") {
+    if (!h.id || !String(h.id).includes("/")) return null;
+    return rpResourceUrl(h.tab, String(h.id).replace("/", RP_GITHUB_SEP));
+  }
+  if (!RP_LINKABLE_SOURCES.has(h.source)) return null;
+  const slug = String(h.slug || "");
+  if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/.test(slug)) return null;
+  return rpResourceUrl(h.tab, slug);
+}
+
+function rpTitle(h) {
+  const cat = (T(h.tab) && T(h.tab).name) || h.tab || "Resource";
+  return `${h.title || "Resource"} — ${cat} | CraftIndex`;
+}
+
+function rpBreadcrumb(h) {
+  const cat = (T(h.tab) && T(h.tab).name) || h.tab;
+  return `
+    <nav class="rp-breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a><span class="rp-crumb-sep">›</span>
+      <a href="/${E(h.tab)}/">${E(cat)}</a><span class="rp-crumb-sep">›</span>
+      <span aria-current="page">${E(h.title || h.slug)}</span>
+    </nav>`;
+}
+
+function rpNotFoundShell(tabId, slug, notes) {
+  const cat = (T(tabId) && T(tabId).name) || tabId;
+  return `
+    <div class="rp-notfound" role="alert">
+      <div style="font-size:38px;margin-bottom:10px;">🗂️</div>
+      <h1>Resource not found</h1>
+      <p>No <b>${E(cat)}</b> resource matching <code>${E(slug)}</code> could be
+      resolved on the supported providers. The resource may have been renamed,
+      delisted, or the URL may contain a typo.</p>
+      <a class="btn p" href="/${E(tabId)}/">Browse all ${E(cat)}</a>
+      <span class="rp-provider-status">${E(notes || "")}</span>
+    </div>`;
+}
+
+// Resolution chain for a URL slug against live provider APIs.
+// Chain: Modrinth slug → CurseForge exact-slug (needs server key) → GitHub owner--repo.
+// Providers requiring per-resource numeric lookup or missing keys degrade to null;
+// the page then shows an honest not-found state (no fabricated metadata).
+async function rpResolveResource(tabId, slug) {
+  const t = T(tabId) || {};
+
+  // 1. Modrinth: /project/{slug} accepts the canonical project slug.
+  try {
+    const d = await api("/project/" + encodeURIComponent(slug));
+    if (d && d.id) {
+      const hit = {
+        k: "mr:" + d.id,
+        id: d.id,
+        tab: tabId,
+        source: "modrinth",
+        sourceName: "Modrinth",
+        websiteUrl: `https://modrinth.com/${d.project_type || t.ptype || "mod"}/${d.slug || d.id}`,
+        title: d.title || slug,
+        icon: d.icon_url,
+        author: d.organization || "",
+        desc: d.description || "",
+        dl: d.downloads,
+        fo: d.followers,
+        slug: d.slug || slug,
+        pt: d.project_type || t.ptype,
+        tags: (d.categories || []).slice(0, 2),
+        cf: 0,
+        _rpProj: d, // already fetched — the dashboard reuses it
+      };
+      return hit;
+    }
+  } catch (e) { /* fall through to next provider */ }
+
+  // 2. CurseForge: search by the slug and require an exact-slug match.
+  if (t.cfClass) {
+    try {
+      const d = await cfa(
+        "/v1/mods/search?gameId=432&classId=" + encodeURIComponent(t.cfClass) +
+        "&pageSize=8&searchFilter=" + encodeURIComponent(slug),
+      );
+      const exact = (d.data || []).find((m) => m.slug === slug);
+      if (exact) {
+        const catSlug =
+          tabId === "mods" ? "mc-mods"
+          : tabId === "resourcepacks" ? "texture-packs"
+          : tabId === "shaders" ? "shaders"
+          : tabId === "datapacks" ? "data-packs"
+          : tabId === "modpacks" ? "modpacks"
+          : tabId === "worlds" ? "worlds"
+          : "bukkit-plugins";
+        return {
+          k: "cf:" + exact.id,
+          id: exact.id,
+          tab: tabId,
+          source: "curseforge",
+          sourceName: "CurseForge",
+          websiteUrl: (exact.links && exact.links.websiteUrl)
+            ? exact.links.websiteUrl
+            : `https://www.curseforge.com/minecraft/${catSlug}/${exact.slug || exact.id}`,
+          title: exact.name,
+          icon: exact.logo ? exact.logo.thumbnailUrl || exact.logo.url : null,
+          author: exact.authors && exact.authors[0] ? exact.authors[0].name : "",
+          desc: exact.summary,
+          dl: exact.downloadCount,
+          fo: exact.thumbsUpCount || 0,
+          slug: exact.slug,
+          pt: t.ptype,
+          tags: (exact.categories || []).slice(0, 2).map((c) => c.name),
+          cf: 1,
+        };
+      }
+    } catch (e) { /* fall through to next provider */ }
+  }
+
+  // 3. GitHub: owner--repo identity.
+  if (slug.indexOf(RP_GITHUB_SEP) !== -1) {
+    const seg = slug.split(RP_GITHUB_SEP);
+    if (seg.length === 2 && seg[0] && seg[1]) {
+      try {
+        const baseUrl = window.location.protocol.startsWith("http")
+          ? "/api/github"
+          : "https://api.github.com";
+        const r = await fetch(baseUrl + "/repos/" + seg[0] + "/" + seg[1], {
+          headers: { Accept: "application/vnd.github.v3+json" },
+        });
+        if (r.ok) {
+          const repo = await r.json();
+          return {
+            k: "gh:" + repo.full_name,
+            id: repo.full_name,
+            tab: tabId,
+            source: "github",
+            sourceName: "GitHub",
+            websiteUrl: repo.html_url || `https://github.com/${seg[0]}/${seg[1]}`,
+            title: repo.name || slug,
+            icon: (repo.owner && repo.owner.avatar_url) || null,
+            author: (repo.owner && repo.owner.login) || "",
+            desc: repo.description || "",
+            dl: null,
+            fo: repo.stargazers_count || 0,
+            slug: slug,
+            pt: t.ptype,
+            tags: (repo.topics || []).slice(0, 2),
+            cf: 0,
+          };
+        }
+      } catch (e) { /* fall through */ }
+    }
+  }
+
+  return null;
+}
+
+function rpCloseToCategory() {
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    window.location.assign("/" + (currentDashItem && currentDashItem.tab ? currentDashItem.tab : "") + "/");
+  }
+}
+
+// Move the dashboard window back into #dashModal and clear the page host.
+function restoreInlineDashHost() {
+  const host = $("standaloneResourceView");
+  const modal = $("dashModal");
+  // Rescue the dashboard window out of the page host BEFORE wiping the host,
+  // otherwise the window (with its content) is destroyed along with it.
+  const orphan = host && host.querySelector(".dash-window");
+  if (orphan && modal && !modal.contains(orphan)) modal.appendChild(orphan);
+  if (host) {
+    host.classList.remove("active");
+    host.innerHTML = "";
+  }
+  _pendingResourceHits.clear();
+}
+
+// Render + hydrate a standalone resource page at /<category>/<slug>/.
+async function openStandaloneResource(tabId, slug, opts = {}) {
+  const token = ++_rpNavToken;
+  const host = $("standaloneResourceView");
+  if (!host) return;
+
+  document.body.dataset.tab = tabId;
+  if (typeof tabs === "function") tabs();
+  if (typeof lf === "function") lf();
+  if ($("fl") && $("fl").parentElement) $("fl").parentElement.style.display = "none";
+  if ($("mo-wrap")) $("mo-wrap").style.display = "none";
+  if ($("fabs")) $("fabs").classList.add("h");
+  if ($("g")) $("g").style.display = "none";
+  if ($("standaloneDocsView")) $("standaloneDocsView").style.display = "none";
+  if ($("standaloneSocialsView")) $("standaloneSocialsView").style.display = "none";
+
+  host.classList.add("active");
+  const catLabel = (T(tabId) && T(tabId).name) || tabId;
+  host.innerHTML = `
+    <div class="rp-shell">
+      <nav class="rp-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a><span class="rp-crumb-sep">›</span>
+        <a href="/${E(tabId)}/">${E(catLabel)}</a><span class="rp-crumb-sep">›</span>
+        <span aria-current="page">${E(slug)}</span>
+      </nav>
+      <div class="rp-loading">
+        <div class="cyber-spinner" style="margin: 0 auto 14px;"></div>
+        <div style="color: var(--colors-text-muted); font-size: 14px;">Resolving “${E(slug)}” on ${E(catLabel)} providers…</div>
+      </div>
+    </div>`;
+  document.title = `Loading ${E(slug)} | CraftIndex`;
+
+  // Fast path: a search hit rendered moments ago can skip provider resolution.
+  const key = rpResourceUrl(tabId, slug);
+  const hit = _pendingResourceHits.get(key) || _pendingResourceHits.get(key.replace(/\/$/, ""));
+  if (hit) {
+    _pendingResourceHits.delete(key);
+    _pendingResourceHits.delete(key.replace(/\/$/, ""));
+  }
+
+  // SSR fast path: the dynamic server embeds the resolved identity in
+  // data-rp on #g content — reuse it and preserve a single upstream fetch.
+  let ssrPayload = null;
+  try {
+    const el = document.querySelector("#g .rp-ssr[data-rp]");
+    if (el) ssrPayload = JSON.parse(decodeURIComponent(el.getAttribute("data-rp")));
+  } catch (e) {
+    ssrPayload = null;
+  }
+
+  let resolved = hit || ssrPayload;
+  if (!resolved) {
+    try {
+      resolved = await rpResolveResource(tabId, slug);
+    } catch (e) {
+      resolved = null;
+    }
+  }
+  if (token !== _rpNavToken) return; // a newer navigation superseded this one
+
+  if (!resolved) {
+    let notes = "";
+    if (!T(tabId).cfClass) notes = "Note: CurseForge resolution is unavailable for this category in this browser session.";
+    host.innerHTML = `<div class="rp-shell">${rpBreadcrumb({ tab: tabId, title: slug })}${rpNotFoundShell(tabId, slug, notes)}</div>`;
+    document.title = `Not found: ${E(slug)} | CraftIndex`;
+    return;
+  }
+
+  currentDashItem = resolved;
+  currentDashData = null;
+  currentDashVersions = [];
+  currentDashTab = "docs";
+  dashVerFilter = "";
+  dashLoaderFilter = "";
+  await openResourceDash(resolved, { inline: true });
+}
+
 function handleRouteFromUrl(isPopState = false) {
   try {
     let path = window.location.pathname.toLowerCase().replace(/\/+$/, "");
@@ -13897,17 +15163,26 @@ function handleRouteFromUrl(isPopState = false) {
       if ($("fabs")) $("fabs").classList.add("h");
       if ($("g")) $("g").style.display = "none";
       if ($("standaloneSocialsView")) $("standaloneSocialsView").style.display = "none";
-      if (!$("standaloneDocsView")) {
-        renderStandaloneDocsView();
+      // Leave any inline resource page cleanly (window restored, locks released)
+      if (typeof closeDashModal === "function" && $("dashModal") && $("dashModal").classList.contains("inline")) {
+        closeDashModal();
       }
-      if ($("standaloneDocsView")) {
-        $("standaloneDocsView").style.display = "block";
-        if (hash) {
-          const targetEl = document.getElementById(hash) || document.getElementById(hash.replace(/^\d+-/, "")) || document.getElementById("0" + hash);
-          if (targetEl) targetEl.scrollIntoView({ behavior: "smooth" });
+      ensureAboutDocs().then(() => {
+        if (!$("standaloneDocsView")) {
+          renderStandaloneDocsView();
         }
-      }
-      updateBrowserTitle();
+        if ($("standaloneDocsView")) {
+          $("standaloneDocsView").style.display = "block";
+          if (hash) {
+            const targetEl = document.getElementById(hash) || document.getElementById(hash.replace(/^\d+-/, "")) || document.getElementById("0" + hash);
+            if (targetEl) targetEl.scrollIntoView({ behavior: "smooth" });
+          }
+        }
+        updateBrowserTitle();
+      }).catch(() => {
+        if (!$("standaloneDocsView")) renderStandaloneDocsView();
+        updateBrowserTitle();
+      });
       return;
     }
 
@@ -13922,6 +15197,9 @@ function handleRouteFromUrl(isPopState = false) {
       if ($("fabs")) $("fabs").classList.add("h");
       if ($("g")) $("g").style.display = "none";
       if ($("standaloneDocsView")) $("standaloneDocsView").style.display = "none";
+      if (typeof closeDashModal === "function" && $("dashModal") && $("dashModal").classList.contains("inline")) {
+        closeDashModal();
+      }
       if ($("standaloneSocialsView")) {
         $("standaloneSocialsView").style.display = "block";
       } else if (typeof openSocialsModal === "function") {
@@ -13945,15 +15223,14 @@ function handleRouteFromUrl(isPopState = false) {
     if (typeof closeSocialsModal === "function" && $("socialsModal") && $("socialsModal").classList.contains("open")) {
       closeSocialsModal(true);
     }
-    if (typeof closeDashModal === "function" && $("dashModal") && $("dashModal").classList.contains("open")) {
+    if (typeof closeDashModal === "function" && $("dashModal") && ($("dashModal").classList.contains("open") || $("dashModal").classList.contains("inline"))) {
       closeDashModal();
     }
     if (typeof closeSettingsModal === "function" && $("settingsModal") && $("settingsModal").classList.contains("open")) {
       closeSettingsModal();
     }
     if ($("dr") && $("dr").classList.contains("o")) {
-      $("dr").classList.remove("o");
-      if ($("sc")) $("sc").classList.remove("o");
+      dr(0);
     }
     recordCurrentBrowseUrl();
 
@@ -13967,9 +15244,10 @@ function handleRouteFromUrl(isPopState = false) {
       }
     }
 
-    // 3. Subloader route: e.g. /mods/fabric/
+    // 3. Subloader route: e.g. /mods/fabric/ — reserved loader names only,
+    //    so resource slugs like /mods/sodium/ fall through to case 3b.
     const modsMatch = path.match(/^\/mods\/([a-z0-9_-]+)$/);
-    if (modsMatch) {
+    if (modsMatch && ML.includes(modsMatch[1])) {
       const loader = modsMatch[1];
       const modsTab = T("mods");
       if (modsTab && modsTab.id) {
@@ -13984,6 +15262,14 @@ function handleRouteFromUrl(isPopState = false) {
         updateBrowserTitle();
         return;
       }
+    }
+
+    // 3b. Standalone resource page route: e.g. /mods/sodium/
+    // (loader names are reserved under /mods/ and handled above)
+    const rpRoute = rpParseResourceRoute(path);
+    if (rpRoute) {
+      openStandaloneResource(rpRoute.tabId, rpRoute.slug);
+      return;
     }
 
     // 4. Resource tab route: /mods, /plugins, /resourcepacks, /shaders, /worlds, etc.
@@ -16502,9 +17788,13 @@ async function go(reset, force, signal) {
     if ($("mo-wrap")) $("mo-wrap").style.display = "none";
     if ($("mo")) $("mo").style.display = "none";
     if ($("auto-loader")) $("auto-loader").style.display = "none";
-    if (window.CraftIndexStudio && window.CraftIndexStudio.renderStudioView) {
-      window.CraftIndexStudio.renderStudioView($("g"));
-    }
+    ensurePackStudio().then(() => {
+      // Re-check the target container and tab so a fast switch away from
+      // Studio does not paint a stale studio view into a hidden grid.
+      if (window.CraftIndexStudio && window.CraftIndexStudio.renderStudioView && $("g") && document.body.dataset.tab === "studio") {
+        window.CraftIndexStudio.renderStudioView($("g"));
+      }
+    }).catch(() => {});
     return;
   }
 
@@ -16678,7 +17968,7 @@ async function go(reset, force, signal) {
   }
 
   if (tab.kind === "github") {
-    $("g").innerHTML = '<div class="em">Loading...</div>';
+    renderGridSkeleton($("g"));
     hits = await gh(force);
     const q = $("q").value.toLowerCase();
     hits = hits.filter(
@@ -16705,7 +17995,7 @@ async function go(reset, force, signal) {
     neoforge: 6,
   };
 
-  if (reset) $("g").innerHTML = '<div class="em">Loading...</div>';
+  if (reset) renderGridSkeleton($("g"));
 
   const searchModrinth = async (limit, offset) => {
     const f = [];
@@ -17061,7 +18351,9 @@ async function go(reset, force, signal) {
           sourceName: "Sponge",
           websiteUrl: `https://ore.spongepowered.org/${p.namespace ? p.namespace.owner : ""}/${p.namespace ? p.namespace.slug : p.plugin_id}`,
           title: p.name,
-          icon: p.icon_url,
+          // Ore API returns http:// icon URLs which violate the CSP (img-src
+          // https:) — upgrade the scheme so cards render instead of erroring.
+          icon: p.icon_url ? String(p.icon_url).replace(/^http:\/\//i, "https://") : null,
           author: p.namespace ? p.namespace.owner : "",
           desc: p.description,
           dl: p.stats ? p.stats.downloads : 0,
@@ -18351,7 +19643,11 @@ function renderCatalogGrid(itemsList, container) {
           </div>
         </div>
         <div class="act craftindex-card-actions">
-          <button class="btn-info craftindex-btn-info" data-info="${i}" title="View documentation, screenshots, and single downloads" aria-label="View details for ${E(h.title)}">ℹ</button>
+          ${
+            rpCardHref(h)
+              ? `<a class="btn-info craftindex-btn-info" href="${E(rpCardHref(h))}" data-info="${i}" title="Open the full resource page for ${E(h.title)}" aria-label="Open full resource page for ${E(h.title)}">ℹ</a>`
+              : `<button class="btn-info craftindex-btn-info" data-info="${i}" title="View documentation, screenshots, and single downloads" aria-label="View details for ${E(h.title)}">ℹ</button>`
+          }
           ${
             h.sources && h.sources.length > 1
               ? `<div class="source-badge multi-source">
@@ -18446,7 +19742,19 @@ function renderCatalogGrid(itemsList, container) {
     (b) =>
       (b.onclick = (e) => {
         e.stopPropagation();
-        openResourceDash(hits[b.dataset.info]);
+        const hit = hits[b.dataset.info];
+        if (!hit) return;
+        const href = rpCardHref(hit);
+        if (href) {
+          // Real navigation to the permanent resource page. The hit object is
+          // stashed so the route reuses it instead of re-resolving.
+          e.preventDefault();
+          _pendingResourceHits.set(href, hit);
+          window.history.pushState({}, "", href);
+          handleRouteFromUrl(false);
+        } else {
+          openResourceDash(hit);
+        }
       }),
   );
 
@@ -18499,6 +19807,32 @@ function renderCatalogGrid(itemsList, container) {
   setTimeout(() => {
     $("g").dataset.anim = "";
   }, 1100);
+}
+
+// Render a skeleton card grid mirroring the real card geometry so the
+// container reserves its final height before async results arrive.
+// This prevents CLS: skeleton cells use the same .cd grid tracks and
+// stretch to the same row height as the cards they stand in for.
+function renderGridSkeleton(target) {
+  const el = target || $("g");
+  if (!el) return;
+  const n = C && C.per && C.per > 0 ? Math.min(C.per, 24) : 12;
+  let html = "";
+  for (let i = 0; i < n; i++) {
+    html += `
+      <article class="cd craftindex-card skel-card" aria-hidden="true">
+        <div class="craftindex-card-icon skel skel-ic"></div>
+        <div class="craftindex-card-content">
+          <div class="card-top-row craftindex-card-badges"><span class="skel skel-badge"></span></div>
+          <div class="skel skel-title"></div>
+          <div class="skel skel-line"></div>
+          <div class="skel skel-line short"></div>
+          <div class="skel skel-line"></div>
+          <div class="card-top-row craftindex-card-badges skel-actions"><span class="skel skel-btn"></span><span class="skel skel-btn"></span></div>
+        </div>
+      </article>`;
+  }
+  el.innerHTML = html;
 }
 
 function draw() {
@@ -18717,6 +20051,8 @@ const CraftIndexDrawer = {
       drawerEl.classList.toggle("o", Boolean(isOpen));
       drawerEl.classList.toggle("is-open", Boolean(isOpen));
       drawerEl.setAttribute("aria-hidden", isOpen ? "false" : "true");
+      if (isOpen) CraftIndexScrollLock.acquire("drawer");
+      else CraftIndexScrollLock.release("drawer");
     }
     if (scrimEl) {
       scrimEl.classList.toggle("o", Boolean(isOpen));
@@ -18834,6 +20170,7 @@ function openCartWithDepCheck() {
     ` : ''}
   `;
 
+  CraftIndexScrollLock.acquire("dep");
   modal.classList.add("open");
   modal.setAttribute("aria-hidden", "false");
 }
@@ -19034,6 +20371,7 @@ if ($("depSkipBtn")) {
     if (modal) {
       modal.classList.remove("open");
       modal.setAttribute("aria-hidden", "true");
+      CraftIndexScrollLock.release("dep");
     }
     dr(1);
   };
@@ -19046,6 +20384,7 @@ if ($("depCloseBtn")) {
       if (modal) {
         modal.classList.remove("open");
         modal.setAttribute("aria-hidden", "true");
+        CraftIndexScrollLock.release("dep");
       }
       if (activeToolbarModal === "collection") {
         activeToolbarModal = null;
@@ -19088,6 +20427,7 @@ if ($("depConfirmBtn")) {
     if (modal) {
       modal.classList.remove("open");
       modal.setAttribute("aria-hidden", "true");
+      CraftIndexScrollLock.release("dep");
     }
     $("depConfirmBtn").disabled = false;
     $("depSkipBtn").disabled = false;
@@ -19837,21 +21177,26 @@ function openAboutModal(targetCatId = "overview", skipUrlUpdate = false) {
   const modal = $("aboutModal");
   if (!modal) return;
   lastFocusedBeforeAbout = document.activeElement;
-  modal.classList.add("open");
-  modal.setAttribute("aria-hidden", "false");
-  renderAboutSidebar(targetCatId);
-  showAboutCategory(targetCatId);
-  updateBrowserTitle();
-  const closeBtn = $("aboutCloseBtn");
-  if (closeBtn) closeBtn.focus();
-  if (!skipUrlUpdate) {
-    const targetUrl = targetCatId && targetCatId !== "overview" ? `/docs/#${targetCatId}` : "/docs/";
-    if (window.location.pathname !== "/docs" && window.location.pathname !== "/docs/") {
-      try {
-        window.history.pushState({ modal: "docs", docId: targetCatId }, "", targetUrl);
-      } catch (_) {}
+  // Ensure the heavy Docs module is loaded before rendering its sidebar/content,
+  // so the modal never opens blank on a cold page load.
+  ensureAboutDocs().finally(() => {
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    CraftIndexScrollLock.acquire("about");
+    renderAboutSidebar(targetCatId);
+    showAboutCategory(targetCatId);
+    updateBrowserTitle();
+    const closeBtn = $("aboutCloseBtn");
+    if (closeBtn) closeBtn.focus();
+    if (!skipUrlUpdate) {
+      const targetUrl = targetCatId && targetCatId !== "overview" ? `/docs/#${targetCatId}` : "/docs/";
+      if (window.location.pathname !== "/docs" && window.location.pathname !== "/docs/") {
+        try {
+          window.history.pushState({ modal: "docs", docId: targetCatId }, "", targetUrl);
+        } catch (_) {}
+      }
     }
-  }
+  });
 }
 
 function closeAboutModal(skipUrlUpdate = false) {
@@ -19860,6 +21205,7 @@ function closeAboutModal(skipUrlUpdate = false) {
   if (!modal) return;
   modal.classList.remove("open");
   modal.setAttribute("aria-hidden", "true");
+  CraftIndexScrollLock.release("about");
   updateBrowserTitle();
   const sidebar = $("aboutSidebar");
   if (sidebar) sidebar.classList.remove("mobile-open");
@@ -20130,6 +21476,7 @@ function openSocialsModal(skipUrlUpdate = false) {
   lastFocusedBeforeSocials = document.activeElement;
   modal.classList.add("open");
   modal.setAttribute("aria-hidden", "false");
+  CraftIndexScrollLock.acquire("socials");
   renderSocialsContent();
   const closeBtn = $("socialsCloseBtn");
   if (closeBtn) closeBtn.focus();
@@ -20147,6 +21494,7 @@ function closeSocialsModal(skipUrlUpdate = false) {
   if (!modal) return;
   modal.classList.remove("open");
   modal.setAttribute("aria-hidden", "true");
+  CraftIndexScrollLock.release("socials");
   updateBrowserTitle();
   if (lastFocusedBeforeSocials && typeof lastFocusedBeforeSocials.focus === "function") {
     lastFocusedBeforeSocials.focus();
@@ -20999,6 +22347,7 @@ addEventListener("keydown", (e) => {
     } else if (depModal && depModal.classList.contains("open")) {
       depModal.classList.remove("open");
       depModal.setAttribute("aria-hidden", "true");
+      CraftIndexScrollLock.release("dep");
       if (activeToolbarModal === "collection") {
         activeToolbarModal = null;
         returnToLastUrlAndReload();
@@ -21027,6 +22376,10 @@ function applyAppMode(targetMode) {
     m === "light" ||
     (m === "auto" && matchMedia("(prefers-color-scheme:light)").matches);
   document.body.classList.toggle("light-mode", l);
+  // Keep the pre-CSS theme hint attribute in sync so tokens.css matches
+  // the body class mechanism exactly (no double source of truth).
+  if (l) document.documentElement.setAttribute("data-theme", "light");
+  else document.documentElement.removeAttribute("data-theme");
   if ($("mt")) {
     $("mt").title = l ? "Switch to Night Mode (Dark) 🌙" : "Switch to Day Mode (Light) ☀️";
     $("mt").setAttribute("aria-label", $("mt").title);
@@ -21038,6 +22391,17 @@ function applyAppMode(targetMode) {
   const vLight = $("bgVideoLight");
   const overlay = $("bgOverlay");
   const isVideoEnabled = safeStorage.getItem("cv_ambient_video") !== "0";
+  // Performance gate: no ambient download on Save-Data connections or for
+  // users who prefer reduced motion. The static gradient fallback renders
+  // instead and the identity stays intact.
+  const prefersReducedMotion =
+    matchMedia("(prefers-reduced-motion: reduce)").matches || false;
+  let dataSaver = false;
+  try {
+    const conn = navigator.connection || {};
+    dataSaver = Boolean(conn.saveData) || /2g/.test(conn.effectiveType || "");
+  } catch (e) {}
+  const shouldLoadVideo = isVideoEnabled && !prefersReducedMotion && !dataSaver;
 
   if (vDark && vLight && overlay) {
     if (!isVideoEnabled) {
@@ -21047,16 +22411,37 @@ function applyAppMode(targetMode) {
       try { vLight.pause(); } catch (e) {}
       overlay.className = l ? "bg-overlay light no-video" : "bg-overlay dark no-video";
     } else {
-      if (l) {
-        vLight.classList.add("active");
-        vDark.classList.remove("active");
-        overlay.className = "bg-overlay light";
-        vLight.play().catch(() => {});
+      // Load-at-most-one: only the active theme's video receives a source
+      // (both <video> elements ship with preload="none" and no <source>).
+      const active = l ? vLight : vDark;
+      const idle = l ? vDark : vLight;
+      overlay.className = l ? "bg-overlay light" : "bg-overlay dark";
+      if (shouldLoadVideo && !active.dataset.loaded) {
+        active.dataset.loaded = "1";
+        // Keep preload="none" until the browser is idle so the ~10 MB video
+        // fetch never competes with initial HTML/CSS/JS parsing for LCP/FCP.
+        const startVideo = () => {
+          active.preload = "auto";
+          active.innerHTML =
+            '<source src="' + (active.dataset.src || "") + '" type="video/mp4" />';
+          active.load();
+          active.classList.add("active");
+          active.play().catch(() => {});
+        };
+        const defer = (typeof requestIdleCallback === "function" ? requestIdleCallback : (cb) => setTimeout(cb, 0));
+        defer(() => {
+          // Do not start playback if the overlay was turned off meanwhile.
+          if (safeStorage.getItem("cv_ambient_video") !== "0") startVideo();
+        }, { timeout: 1500 });
+      } else if (!shouldLoadVideo) {
+        active.classList.remove("active");
+        try { active.pause(); } catch (e) {}
+        overlay.className = l ? "bg-overlay light no-video" : "bg-overlay dark no-video";
       } else {
-        vDark.classList.add("active");
-        vLight.classList.remove("active");
-        overlay.className = "bg-overlay dark";
-        vDark.play().catch(() => {});
+        // Video already attached — resume the active theme's playback
+        // (e.g. after a theme re-toggle), never double-fetch.
+        active.classList.add("active");
+        try { active.play().catch(() => {}); } catch (e) {}
       }
     }
   }
@@ -21069,6 +22454,17 @@ if ($("mt")) {
     applyAppMode(cur === "light" ? "dark" : "light");
   };
 }
+// Pause ambient video when the tab is hidden / page is being unloaded to save
+// bandwidth and avoid background decode work; resume only on visible.
+const _pauseAmbient = () => {
+  const vD = $("bgVideoDark"), vL = $("bgVideoLight");
+  try { if (vD) vD.pause(); } catch (e) {}
+  try { if (vL) vL.pause(); } catch (e) {}
+};
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") _pauseAmbient();
+});
+window.addEventListener("pagehide", _pauseAmbient);
 async function getFile(url, label, h) {
   const fn = decodeURIComponent(url.split("/").pop().split("?")[0]) || label;
   try {
@@ -21191,6 +22587,8 @@ const CraftIndexModal = {
     modalEl.classList.toggle("o", Boolean(isOpen));
     modalEl.classList.toggle("is-open", Boolean(isOpen));
     modalEl.setAttribute("aria-hidden", isOpen ? "false" : "true");
+    if (isOpen) CraftIndexScrollLock.acquire("md");
+    else CraftIndexScrollLock.release("md");
 
     if (!isOpen) {
       const mx = modalEl.querySelector(".mx");
@@ -21584,7 +22982,11 @@ function show() {
   $("b2").onclick = zip;
 }
 async function zip() {
-  if (typeof JSZip === "undefined") return toast("JSZip failed to load");
+  try {
+    await ensureJSZip();
+  } catch (err) {
+    return toast("JSZip failed to load");
+  }
   busy = 1;
   const rs = res.filter((r) => r.f);
   if (!rs.length) {
@@ -21709,49 +23111,54 @@ $("md").onclick = (e) => {
   if (e.target === $("md") && !busy) md(0);
 };
 (async () => {
-  tabs();
-  lf();
-  upd();
-  try {
-    GV = await api("/tag/game_version");
-    const rel = GV.filter(
-      (v) =>
-        v.version_type === "release" ||
-        (C.snaps && v.version_type === "snapshot"),
-    );
-    cfg.mc =
-      C.defMc && GV.some((v) => v.version === C.defMc)
-        ? C.defMc
-        : GV.find((v) => v.version_type === "release").version;
-    $("fv").innerHTML =
-      '<option value="">Any version</option>' +
-      rel.map((v) => `<option>${v.version}</option>`).join("");
-  } catch (e) {}
-  
-  // Canonical Route Dispatcher from Initial Browser URL
+  // Canonical Route Dispatcher from Initial Browser URL:
+  // Must execute immediately to hydrate the exact requested route first,
+  // preventing home-mode flicker, filter bar collapse, and layout shift.
   handleRouteFromUrl(false);
+  upd();
 
-  // Dismiss the boot loading screen now that the app is fully hydrated
+  // Load game versions asynchronously in background without blocking initial route rendering
+  api("/tag/game_version")
+    .then((gv) => {
+      GV = gv || [];
+      const rel = GV.filter(
+        (v) =>
+          v.version_type === "release" ||
+          (C.snaps && v.version_type === "snapshot"),
+      );
+      if (GV.length) {
+        cfg.mc =
+          C.defMc && GV.some((v) => v.version === C.defMc)
+            ? C.defMc
+            : (GV.find((v) => v.version_type === "release") || {}).version || "";
+        if ($("fv")) {
+          $("fv").innerHTML =
+            '<option value="">Any version</option>' +
+            rel.map((v) => `<option>${v.version}</option>`).join("");
+        }
+      }
+    })
+    .catch(() => {});
+
+  // Dismiss the boot loading screen now that the app is fully hydrated.
+  // No simulated progress or artificial delay: the bar completes and the
+  // screen exits immediately when initialization actually finishes.
   (function dismissBootScreen() {
     const boot = document.getElementById("ci-boot-screen");
     if (!boot) return;
-    // Immediately complete the progress bar fill and update status
     const fill = boot.querySelector(".ci-boot-bar-fill");
-    if (fill) fill.style.cssText = "width:100%;transition:width 0.2s ease;box-shadow:0 0 18px rgba(192,132,252,0.95);";
+    if (fill) fill.style.cssText = "width:100%;transition:width 0.15s ease;";
     const bar = boot.querySelector(".ci-boot-bar");
     if (bar) bar.setAttribute("aria-valuenow", "100");
     const statusText = document.getElementById("ciBootStatusText");
     if (statusText) statusText.textContent = "Ready";
-    // Brief pause so user sees 100%, then trigger smooth exit animation
+    boot.classList.add("ci-boot-hide");
     setTimeout(() => {
-      boot.classList.add("ci-boot-hide");
-      setTimeout(() => {
-        boot.style.display = "none";
-        if (boot.parentNode) boot.parentNode.removeChild(boot);
-        const bootStyle = document.getElementById("ci-boot-style");
-        if (bootStyle) bootStyle.remove();
-      }, 620);
-    }, 160);
+      boot.style.display = "none";
+      if (boot.parentNode) boot.parentNode.removeChild(boot);
+      const bootStyle = document.getElementById("ci-boot-style");
+      if (bootStyle) bootStyle.remove();
+    }, 400);
   })();
 })();
 
@@ -21791,9 +23198,13 @@ function closeDashModal() {
   const modal = $("dashModal");
   if (!modal) return;
   modal.classList.remove("open");
+  modal.classList.remove("inline");
   modal.setAttribute("aria-hidden", "true");
-  updateBrowserTitle();
-  document.body.style.overflow = "";
+  if (dashInline) {
+    restoreInlineDashHost();
+    dashInline = null;
+  }
+  CraftIndexScrollLock.release("dash");
   updateBrowserTitle();
 }
 
@@ -21804,6 +23215,7 @@ function openLightbox(url, caption) {
   $("dashLightboxCaption").textContent = caption || "";
   box.classList.add("open");
   box.setAttribute("aria-hidden", "false");
+  CraftIndexScrollLock.acquire("dash-lightbox");
 }
 
 function closeLightbox() {
@@ -21812,6 +23224,7 @@ function closeLightbox() {
   box.classList.remove("open");
   box.setAttribute("aria-hidden", "true");
   $("dashLightboxImg").src = "";
+  CraftIndexScrollLock.release("dash-lightbox");
 }
 
 function renderDashHeader(h) {
@@ -22293,7 +23706,8 @@ function renderDashTabContent() {
   }
 }
 
-async function openResourceDash(h) {
+async function openResourceDash(h, opts = {}) {
+  const inline = Boolean(opts.inline);
   currentDashItem = h;
   currentDashTab = "docs";
   dashVerFilter = "";
@@ -22302,14 +23716,52 @@ async function openResourceDash(h) {
   const modal = $("dashModal");
   if (!modal) return;
 
-  modal.classList.add("open");
-  modal.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
+  if (inline && !$("standaloneResourceView")) {
+    // No page host available (e.g. very old markup) — degrade to modal.
+    inline = false;
+  }
+
+  if (inline) {
+    dashInline = { url: window.location.pathname, tab: h.tab, slug: h.slug };
+    modal.classList.add("inline");
+    const host = $("standaloneResourceView");
+    host.innerHTML = `
+      <div class="rp-shell">
+        ${rpBreadcrumb(h)}
+        <div class="rp-dash-mount"></div>
+      </div>`;
+    const win = modal.querySelector(".dash-window");
+    const mount = host.querySelector(".rp-dash-mount");
+    if (win && mount && !mount.contains(win)) mount.appendChild(win);
+    // The window leaves `.open` modal flow: remove modal display state so
+    // backdrop/pointer-events stay inert while inline.
+    modal.classList.remove("open");
+  } else {
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    CraftIndexScrollLock.acquire("dash");
+  }
+
   updateBrowserTitle();
+  if (inline) document.title = rpTitle(h);
 
   renderDashHeader(h);
   renderDashMetrics(h, null);
   renderDashNav();
+
+  if (inline) {
+    // Rebind the header close button to a real history back-navigation so the
+    // browser restores the previous scroll position cleanly.
+    const closeBtn = $("dashCloseBtn");
+    if (closeBtn) {
+      closeBtn.title = "Back";
+      closeBtn.setAttribute("aria-label", "Back to " + ((T(h.tab) && T(h.tab).name) || h.tab));
+      closeBtn.onclick = (e) => {
+        e.preventDefault();
+        rpCloseToCategory();
+      };
+    }
+  }
 
   $("dashContent").innerHTML = `
     <div style="text-align: center; padding: 70px 20px;">
@@ -22622,7 +24074,7 @@ async function openResourceDash(h) {
             versionNumber: rel.tag_name || "1.0.0",
             type: rel.prerelease ? "beta" : "release",
             gameVersions: [],
-            loaders: [tab.id],
+            loaders: [h.tab],
             date: rel.published_at ? new Date(rel.published_at).toLocaleDateString() : "",
             downloads: asset.download_count || 0,
             fileName: asset.name,
@@ -22638,7 +24090,7 @@ async function openResourceDash(h) {
           versionNumber: repo.default_branch || "main",
           type: "release",
           gameVersions: [],
-          loaders: [tab.id],
+          loaders: [h.tab],
           date: repo.updated_at ? new Date(repo.updated_at).toLocaleDateString() : "",
           downloads: repo.stargazers_count || 0,
           fileName: `${h.title}.zip`,
@@ -22667,15 +24119,23 @@ async function openResourceDash(h) {
         descriptionHtml: descData.data || mod.summary || "",
       };
       const catSlug =
-        tab.id === "mods"
+        h.tab === "mods"
           ? "mc-mods"
-          : tab.id === "resourcepacks"
+          : h.tab === "resourcepacks"
             ? "texture-packs"
-            : tab.id === "shaders"
+            : h.tab === "shaders"
               ? "shaders"
-              : tab.id === "datapacks"
+              : h.tab === "datapacks"
                 ? "data-packs"
-                : "bukkit-plugins";
+                : h.tab === "modpacks"
+                  ? "modpacks"
+                  : h.tab === "worlds"
+                    ? "worlds"
+                    : h.tab === "serversoftwares"
+                      ? "mc-mods"
+                      : h.tab === "modloaders"
+                        ? "mc-mods"
+                        : "bukkit-plugins";
 
       currentDashVersions = (filesData.data || []).map((f) => {
         const typeMap = { 1: "release", 2: "beta", 3: "alpha" };
@@ -22741,6 +24201,9 @@ document.addEventListener("keydown", (e) => {
       closeLightbox();
     } else if ($("dashModal") && $("dashModal").classList.contains("open")) {
       closeDashModal();
+    } else if ($("dashModal") && $("dashModal").classList.contains("inline") && typeof rpCloseToCategory === "function") {
+      // Inline resource page: Escape goes back like the header ✕ button does.
+      rpCloseToCategory();
     }
   }
 });

@@ -265,7 +265,10 @@ async function runSuite() {
     await new Promise(r => setTimeout(r, 1200));
 
     const studioState = await cdp.evaluate(`
-      (() => {
+      (async () => {
+        if (typeof window.ensurePackStudio === 'function') {
+          try { await window.ensurePackStudio(); } catch (_) {}
+        }
         return {
           tab: document.body.dataset.tab,
           hasStudio: typeof window.CraftIndexStudio !== 'undefined',

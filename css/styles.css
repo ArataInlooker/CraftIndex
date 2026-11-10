@@ -5,7 +5,7 @@
   font-family: 'Inter';
   font-style: normal;
   font-weight: 100 900;
-  font-display: block;
+  font-display: swap;
   src: url('../fonts/inter/inter-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
@@ -13,34 +13,29 @@
   font-family: 'Inter';
   font-style: normal;
   font-weight: 100 900;
-  font-display: block;
+  font-display: swap;
   src: url('../fonts/inter/inter-latin-ext.woff2') format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
-:root {
-  --r2: color-mix(in srgb, var(--r), #fff 10%);
-  --bd: color-mix(in srgb, var(--r), #fff 22%);
-  --w: #fcf4ff;
-  --g: linear-gradient(135deg, var(--b2), var(--b));
-  --on: #26102e;
-  --red: #ff6b8f;
-}
+/* Legacy value block removed — legacy tokens (--r2/--bd/--w/--g/--on/--red)
+   now live only in css/tokens.css (§7) with the same effective values. */
 
 * {
   box-sizing: border-box;
 }
 
 html {
-  overflow-x: hidden;
-  max-width: 100vw;
+  overflow-x: clip;
+  max-width: 100%;
   width: 100%;
+  scrollbar-gutter: stable;
 }
 
 body {
   margin: 0;
-  overflow-x: hidden;
-  max-width: 100vw;
+  overflow-x: clip;
+  max-width: 100%;
   width: 100%;
   background: transparent;
   color: var(--t);
@@ -60,7 +55,7 @@ select {
 header {
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: var(--z-header);
   background: color-mix(in srgb, var(--r), transparent 20%);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -195,6 +190,9 @@ main {
 
 .craftindex-card,
 .cd {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
   background: color-mix(in srgb, var(--r), transparent 22%);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -313,14 +311,64 @@ main {
   text-align: center;
   grid-column: 1/-1;
 }
-  grid-column: 1/-1;
+
+/* Loading skeleton: mirrors card geometry so the grid reserves its final
+   height before async results arrive (prevents CLS). Cells share the same
+   .cd grid tracks and stretch to the same row height as the real cards. */
+.skel-card {
+  pointer-events: none;
+  user-select: none;
+}
+.skel {
+  display: block;
+  background: color-mix(in srgb, var(--t-muted), transparent 80%);
+  border-radius: 8px;
+  animation: skel-pulse 1.4s ease-in-out infinite;
+}
+.skel-ic {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+}
+.skel-badge {
+  width: 64px;
+  height: 18px;
+  border-radius: 99px;
+}
+.skel-title {
+  width: 72%;
+  height: 18px;
+  margin: 8px 0 10px;
+}
+.skel-line {
+  width: 100%;
+  height: 12px;
+  margin-bottom: 8px;
+}
+.skel-line.short {
+  width: 55%;
+}
+.skel-actions {
+  margin-top: 2px;
+}
+.skel-btn {
+  width: 56px;
+  height: 24px;
+  border-radius: 6px;
+}
+@keyframes skel-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.85; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skel { animation: none; }
 }
 
 .fabs {
   position: fixed;
   right: 28px;
   bottom: 28px;
-  z-index: 120 !important;
+  z-index: var(--z-fab) !important;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -412,7 +460,7 @@ body.light-mode .fabs .big {
   background: rgba(4, 2, 10, 0.88) !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
-  z-index: 99990 !important;
+  z-index: var(--z-backdrop) !important;
   display: none;
   opacity: 0;
   transition: opacity 0.28s ease;
@@ -438,7 +486,7 @@ body.light-mode .sc {
   background: rgba(14, 10, 26, 0.985) !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
-  z-index: 99999 !important;
+  z-index: var(--z-drawer) !important;
   transform: translateX(100%);
   transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1) !important;
   display: flex;
@@ -563,6 +611,7 @@ body.light-mode .dr-header #dc:hover {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+  overscroll-behavior: contain;
   padding: 16px 20px;
   display: flex;
   flex-direction: column;
@@ -800,10 +849,6 @@ body.light-mode .rw b {
   /* animation removed */
 }
 
-/* @keyframes floatCart removed for minimal design standards */
-  100% { transform: translateY(-6px); }
-}
-
 body.light-mode .dr-empty-icon {
   background: rgba(147, 51, 234, 0.08);
   border-color: rgba(147, 51, 234, 0.22);
@@ -888,7 +933,7 @@ body.light-mode .dr-footer {
   transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
               visibility 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  z-index: 100050 !important;
+  z-index: var(--z-menu) !important;
 }
 
 /* Hover bridge between button and popover so mouse move never loses hover */
@@ -1225,11 +1270,31 @@ body.light-mode .dr-footer #dd {
   box-shadow: 0 4px 18px rgba(147, 51, 234, 0.35) !important;
 }
 
+.dr-footer {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
+}
+
+.dr-footer .dr-tool-btn,
+.dr-footer #am,
+.dr-footer #dd {
+  height: 42px !important;
+  min-height: 42px !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+}
+
 /* Modals (Download, Presets, History) */
 .md {
   position: fixed;
   inset: 0;
-  z-index: 100100 !important;
+  z-index: var(--z-modal) !important;
   display: flex !important;
   align-items: center;
   justify-content: center;
@@ -1336,6 +1401,7 @@ body.light-mode .mh {
 .mx.sources-mode .mbd {
   max-height: 70vh;
   overflow-y: auto !important;
+  overscroll-behavior: contain;
 }
 
 .mf {
@@ -1399,7 +1465,7 @@ body.light-mode .mf {
   color: var(--w);
   padding: 9px 16px;
   border-radius: 99px;
-  z-index: 60;
+  z-index: var(--z-toast);
   display: none;
 }
 
@@ -1408,7 +1474,7 @@ body.light-mode .mf {
   outline-offset: 4px;
   border-radius: 8px;
   box-shadow: 0 0 0 7px color-mix(in srgb, var(--b), transparent 72%);
-  animation: hlp 1s ease-in-out infinite alternate;
+  animation: hlp 0.4s ease-in-out 2 alternate;
 }
 
 @keyframes hlp {
@@ -1502,20 +1568,21 @@ footer a {
   position: absolute;
   inset: 0;
   transition:
-    background 0.8s ease,
-    backdrop-filter 0.8s ease;
+    background 0.8s ease;
   pointer-events: none;
 }
 
-/* Dark mode video overlay - deep cosmic purple translucent scrim */
+/* Dark mode video overlay - deep cosmic purple translucent scrim.
+   Note: the full-viewport backdrop-filter was removed — measured ~3x
+   lower scroll frame-rate with it (13 vs 39 fps in headless Chrome) because
+   a full-page blur layer must re-composite every frame. The gradient scrim
+   (visual identity) and the localized header/card blurs are retained. */
 .bg-overlay.dark {
   background: radial-gradient(
     circle at 50% 20%,
     rgba(12, 9, 21, 0.55) 0%,
     rgba(12, 9, 21, 0.82) 100%
   );
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
 }
 
 /* Light mode video overlay - soft sakura translucent scrim */
@@ -1525,8 +1592,6 @@ footer a {
     rgba(255, 240, 248, 0.22) 0%,
     rgba(245, 235, 250, 0.42) 100%
   );
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
 }
 
 /* ========================================================
@@ -1593,16 +1658,17 @@ body.light-mode .tb {
 }
 
 body.light-mode .tb:hover {
-  background: rgba(255, 255, 255, 0.88);
-  color: #6b21a8;
+  background: rgba(147, 51, 234, 0.08) !important;
+  color: #4c1d95 !important;
 }
 
 body.light-mode .tb.on {
-  background: rgba(255, 255, 255, 0.94);
-  color: #7e22ce;
+  background: rgba(255, 255, 255, 0.96) !important;
+  color: #6b21a8 !important;
+  border-color: rgba(147, 51, 234, 0.5) !important;
   box-shadow:
-    0 4px 14px rgba(168, 85, 247, 0.25),
-    inset 0 0 0 2px #a855f7;
+    0 4px 16px rgba(147, 51, 234, 0.16),
+    inset 0 0 0 2px #9333ea !important;
 }
 
 body.light-mode .in {
@@ -1686,9 +1752,46 @@ header {
     inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-  padding: 14px 44px !important;
+  flex-wrap: nowrap;
+  gap: 12px;
+  padding: 10px 24px !important;
+}
+
+header .btn {
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 13.5px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  white-space: nowrap !important;
+  vertical-align: middle !important;
+}
+
+header #mt {
+  height: 38px !important;
+  min-height: 38px !important;
+  box-sizing: border-box !important;
+}
+
+header #cb {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+
+header #cb .bdg {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
 }
 
 .lg {
@@ -1741,6 +1844,7 @@ main {
 .tabs {
   display: inline-flex !important;
   max-width: 100% !important;
+  min-height: 49px;
   overflow-x: auto !important;
   flex-wrap: nowrap !important;
   scrollbar-width: none !important;
@@ -1781,8 +1885,8 @@ main {
 }
 
 .tb:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
-  color: #fff !important;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
   transform: translateY(-1px);
 }
 
@@ -1791,11 +1895,11 @@ main {
     135deg,
     rgba(179, 136, 255, 0.25),
     rgba(124, 77, 255, 0.4)
-  ) !important;
-  border-color: rgba(179, 136, 255, 0.5) !important;
-  color: #ffffff !important;
+  );
+  border-color: rgba(179, 136, 255, 0.5);
+  color: #ffffff;
   box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.25) !important;
+    inset 0 1px 1px rgba(255, 255, 255, 0.25);
 }
 
 /* Filter & Search Bar - Glass Cyber Dock */
@@ -1981,13 +2085,28 @@ main {
 /* Card Action Buttons Bar */
 .act {
   grid-column: 1/-1 !important;
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  align-items: center;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
   margin-top: 10px !important;
   padding-top: 12px !important;
   border-top: 1px solid rgba(179, 136, 255, 0.12) !important;
+}
+
+.act .btn.ad {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 16px !important;
+  font-size: 13.5px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
 }
 
 /* Futuristic Buttons */
@@ -2231,12 +2350,6 @@ body.light-mode #mo.retry-btn {
   border-color: rgba(239, 68, 68, 0.4) !important;
   color: #991b1b !important;
   box-shadow: 0 8px 25px rgba(239, 68, 68, 0.18) !important;
-}
-
-/* @keyframes pulseButton removed for minimal design standards */
-  50% {
-    transform: scale(1.03);
-  }
 }
 
 body.light-mode .auto-loader {
@@ -2535,6 +2648,11 @@ body.light-mode .glass-select-menu::-webkit-scrollbar-thumb {
   flex-shrink: 0;
 }
 
+/* Anchor variant renders the same button as a crawlable internal link. */
+a.btn-info {
+  text-decoration: none;
+}
+
 .btn-info:hover {
   background: rgba(179, 136, 255, 0.32);
   border-color: #b388ff;
@@ -2642,6 +2760,34 @@ body.light-mode .source-badge {
   box-shadow: 0 3px 12px rgba(251, 191, 36, 0.25);
   color: #ffffff;
   transform: translateY(-1.5px) scale(1.03);
+}
+
+body.light-mode .source-link.modrinth {
+  color: #047857;
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.35);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.12);
+}
+
+body.light-mode .source-link.modrinth:hover {
+  background: rgba(16, 185, 129, 0.22);
+  border-color: #059669;
+  color: #064e3b;
+  box-shadow: 0 3px 12px rgba(16, 185, 129, 0.22);
+}
+
+body.light-mode .source-link.curseforge {
+  color: #9a3412;
+  background: rgba(234, 88, 12, 0.12);
+  border-color: rgba(234, 88, 12, 0.35);
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.12);
+}
+
+body.light-mode .source-link.curseforge:hover {
+  background: rgba(234, 88, 12, 0.22);
+  border-color: #ea580c;
+  color: #7c2d12;
+  box-shadow: 0 3px 12px rgba(234, 88, 12, 0.22);
 }
 
 body.light-mode .source-link.bukkit {
@@ -3613,7 +3759,7 @@ body.light-mode .src-cat-manage-link:hover {
 .dash-modal {
   position: fixed;
   inset: 0;
-  z-index: 100200 !important;
+  z-index: var(--z-dialog) !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3743,24 +3889,42 @@ body.light-mode .dash-author {
 }
 
 .dash-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.dash-header-actions .btn {
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 13.5px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
 }
 
 .dash-close {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid rgba(179, 136, 255, 0.25);
-  background: rgba(179, 136, 255, 0.08);
-  color: var(--t);
-  font-size: 18px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  border-radius: 50% !important;
+  border: 1px solid rgba(179, 136, 255, 0.25) !important;
+  background: rgba(179, 136, 255, 0.08) !important;
+  color: var(--t) !important;
+  font-size: 18px !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  transition: all 0.2s ease !important;
 }
 
 .dash-close:hover {
@@ -3869,6 +4033,7 @@ body.light-mode .dash-tab.active {
 .dash-content {
   flex: 1;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 24px;
   color: var(--t);
   font-size: 14.5px;
@@ -4182,7 +4347,7 @@ body.light-mode .dash-gallery-title {
 .dash-lightbox {
   position: fixed;
   inset: 0;
-  z-index: 100300 !important;
+  z-index: var(--z-lightbox) !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4323,7 +4488,7 @@ body.light-mode .dash-link-sub {
 .dep-modal {
   position: fixed;
   inset: 0;
-  z-index: 100400 !important;
+  z-index: var(--z-dialog-top) !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4650,6 +4815,66 @@ body.light-mode .dr-zip-input {
   border-color: rgba(236, 72, 153, 0.6) !important;
   color: #f472b6 !important;
   box-shadow: none !important;
+}
+
+body.light-mode .cat-mods, body.light-mode .cart-cat-badge.mods {
+  background: rgba(14, 165, 233, 0.12) !important;
+  border-color: rgba(14, 165, 233, 0.35) !important;
+  color: #0369a1 !important;
+}
+
+body.light-mode .cat-plugins, body.light-mode .cart-cat-badge.plugins {
+  background: rgba(147, 51, 234, 0.12) !important;
+  border-color: rgba(147, 51, 234, 0.35) !important;
+  color: #6b21a8 !important;
+}
+
+body.light-mode .cat-resourcepacks, body.light-mode .cart-cat-badge.resourcepacks {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border-color: rgba(16, 185, 129, 0.35) !important;
+  color: #047857 !important;
+}
+
+body.light-mode .cat-shaders, body.light-mode .cart-cat-badge.shaders {
+  background: rgba(249, 115, 22, 0.12) !important;
+  border-color: rgba(249, 115, 22, 0.35) !important;
+  color: #9a3412 !important;
+}
+
+body.light-mode .cat-datapacks, body.light-mode .cart-cat-badge.datapacks {
+  background: rgba(244, 63, 94, 0.12) !important;
+  border-color: rgba(244, 63, 94, 0.35) !important;
+  color: #be123c !important;
+}
+
+body.light-mode .cat-modpacks, body.light-mode .cart-cat-badge.modpacks {
+  background: rgba(217, 70, 239, 0.12) !important;
+  border-color: rgba(217, 70, 239, 0.35) !important;
+  color: #a21caf !important;
+}
+
+body.light-mode .cat-worlds, body.light-mode .cart-cat-badge.worlds {
+  background: rgba(234, 179, 8, 0.14) !important;
+  border-color: rgba(234, 179, 8, 0.4) !important;
+  color: #854d0e !important;
+}
+
+body.light-mode .cat-serversoftwares, body.light-mode .cart-cat-badge.serversoftwares {
+  background: rgba(14, 165, 233, 0.12) !important;
+  border-color: rgba(14, 165, 233, 0.35) !important;
+  color: #075985 !important;
+}
+
+body.light-mode .cat-modloaders, body.light-mode .cart-cat-badge.modloaders {
+  background: rgba(249, 115, 22, 0.12) !important;
+  border-color: rgba(249, 115, 22, 0.35) !important;
+  color: #9a3412 !important;
+}
+
+body.light-mode .cat-dependencies, body.light-mode .cart-cat-badge.dependencies {
+  background: rgba(236, 72, 153, 0.12) !important;
+  border-color: rgba(236, 72, 153, 0.35) !important;
+  color: #be185d !important;
 }
 
 /* Card Category Pill */
@@ -5483,7 +5708,7 @@ body.light-mode #mt:hover .theme-svg-sun {
   gap: 6px !important;
   white-space: nowrap !important;
   position: relative !important;
-  z-index: 60 !important;
+  z-index: var(--z-nav) !important;
 }
 
 .tb-wrapper {
@@ -5612,6 +5837,9 @@ body.light-mode .tb-dropdown-item.on {
 }
 
 /* Secondary Subtabs Pill Bar */
+.subtabs-bar:empty {
+  display: none !important;
+}
 .subtabs-bar {
   display: flex;
   align-items: center;
@@ -6180,9 +6408,24 @@ body.light-mode .settings-switch input:checked + .settings-slider {
 
 /* Action button row */
 .settings-action-bar {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  width: 100% !important;
+}
+
+.settings-action-bar .btn {
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 18px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 13.5px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
 }
 
 /* Light mode support for settings */
@@ -6440,8 +6683,8 @@ body {
   flex-shrink: 0 !important;
 }
 
-/* 5. Mobile & Small Screen Responsive Refinements (<= 768px) */
-@media (max-width: 768px) {
+/* 5. Mobile & Tablet Screen Responsive Refinements (<= 820px) */
+@media (max-width: 820px) {
   .tabs {
     overflow-x: auto !important;
     max-width: 100% !important;
@@ -6450,20 +6693,33 @@ body {
   }
 
   header {
-    padding: 10px 18px !important;
-    gap: 10px !important;
+    flex-wrap: wrap !important;
+    gap: 8px 8px !important;
+    padding: 8px 14px !important;
+  }
+
+  header #hl {
+    flex-basis: 100% !important;
+    height: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+  }
+
+  header .btn {
+    height: 34px !important;
+    min-height: 34px !important;
+    padding: 0 10px !important;
+    font-size: 12.5px !important;
+  }
+
+  header #mt {
+    height: 34px !important;
+    min-height: 34px !important;
+    width: 36px !important;
   }
 
   main {
     padding: 18px 16px 120px !important;
-  }
-
-  .btn,
-  .dr-tool-btn,
-  .dr-close,
-  .theme-toggle-btn,
-  #mt {
-    min-height: 42px;
   }
 
   .dr-tool-btn {
@@ -6486,6 +6742,20 @@ body {
   .lg img {
     width: 32px !important;
     height: 32px !important;
+  }
+
+  .act {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .act-right {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  .act .btn.ad {
+    width: 100% !important;
   }
 
   .dr {
@@ -6561,8 +6831,25 @@ body {
 /* 7. Narrow Phone Refinements (<= 480px, including 320px, 360px, 375px, 390px, 430px) */
 @media (max-width: 480px) {
   header {
-    padding: 8px 12px !important;
-    gap: 6px !important;
+    padding: 6px 8px !important;
+    gap: 4px !important;
+  }
+
+  header #lg span {
+    display: none !important;
+  }
+
+  header .btn {
+    padding: 0 6px !important;
+    font-size: 11.5px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+  }
+
+  header #mt {
+    height: 32px !important;
+    min-height: 32px !important;
+    width: 34px !important;
   }
 
   .lg {
@@ -6595,7 +6882,8 @@ body {
     gap: 10px !important;
   }
 
-  .cd img {
+  .cd img,
+  .skel-ic {
     width: 68px !important;
     height: 68px !important;
   }
@@ -6617,17 +6905,61 @@ body {
 /* 8. Ultra-Compact Mobile (<= 360px, e.g. 320px iPhone SE) */
 @media (max-width: 360px) {
   header {
-    padding: 6px 8px !important;
-    gap: 4px !important;
+    padding: 4px 4px !important;
+    gap: 3px !important;
+  }
+
+  header #lg span {
+    display: none !important;
+  }
+
+  header .btn {
+    padding: 0 4px !important;
+    font-size: 10.5px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+  }
+
+  header #mt {
+    height: 30px !important;
+    min-height: 30px !important;
+    width: 28px !important;
+  }
+
+  .lg img {
+    width: 26px !important;
+    height: 26px !important;
   }
 
   .lg {
-    font-size: 16px !important;
+    font-size: 15px !important;
   }
 
   .btn {
     padding: 6px 8px !important;
     font-size: 12px !important;
+  }
+
+  .dr-footer {
+    gap: 6px !important;
+    padding: 8px 8px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .dr-footer .dr-tool-btn {
+    min-width: 32px !important;
+    height: 36px !important;
+    padding: 0 4px !important;
+    font-size: 13px !important;
+  }
+
+  .dr-footer #am,
+  .dr-footer #dd {
+    flex: 1 1 100% !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    font-size: 12px !important;
+    padding: 0 8px !important;
   }
 
   .cd {
@@ -6639,6 +6971,16 @@ body {
   .cd img {
     width: 56px !important;
     height: 56px !important;
+  }
+
+  .cart-popover-menu {
+    width: calc(100vw - 40px) !important;
+    max-width: 275px !important;
+    left: 0 !important;
+  }
+
+  #importWrap .cart-popover-menu {
+    left: -42px !important;
   }
 }
 
@@ -6671,7 +7013,7 @@ body {
 .about-modal {
   position: fixed;
   inset: 0;
-  z-index: 100000 !important;
+  z-index: var(--z-modal-low) !important;
   display: none;
   align-items: center;
   justify-content: center;
@@ -6876,6 +7218,7 @@ body.light-mode .about-nav-item.active {
 .about-content {
   flex: 1;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 28px 36px 60px;
   color: #e8e0f5;
   font-size: 14.5px;
@@ -7631,7 +7974,9 @@ body.light-mode .doc-faq-item p {
   display: flex !important;
   align-items: center !important;
   gap: 10px !important;
-  padding: 9px 12px !important;
+  padding: 0 14px !important;
+  height: 50px !important;
+  min-height: 50px !important;
   border-radius: 10px !important;
   text-align: left !important;
   width: 100% !important;
@@ -7653,6 +7998,18 @@ body.light-mode .doc-faq-item p {
 .studio-action-tool-btn.danger:hover {
   background: rgba(239, 68, 68, 0.18) !important;
   border-color: rgba(239, 68, 68, 0.6) !important;
+}
+
+body.light-mode .studio-action-tool-btn.danger {
+  color: #b91c1c !important;
+  border-color: rgba(239, 68, 68, 0.45) !important;
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+
+body.light-mode .studio-action-tool-btn.danger:hover {
+  background: rgba(239, 68, 68, 0.16) !important;
+  border-color: #dc2626 !important;
+  color: #b91c1c !important;
 }
 
 .studio-action-icon {
@@ -8527,23 +8884,41 @@ body.light-mode .doc-creator-tag {
 }
 
 .doc-creator-actions {
-  display: flex;
-  gap: 10px;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 
 .doc-pill-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  text-decoration: none;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  padding: 0 16px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
   background: var(--b2);
   color: #fff;
   border: 1px solid var(--b);
   transition: all 0.15s ease;
+}
+
+body.light-mode .doc-pill-btn {
+  background: #7e22ce !important;
+  border-color: #6b21a8 !important;
+  color: #ffffff !important;
+}
+
+body.light-mode .doc-pill-btn:hover {
+  background: #6b21a8 !important;
+  border-color: #581c87 !important;
+  color: #ffffff !important;
 }
 
 .doc-pill-btn:hover {
@@ -8560,14 +8935,15 @@ body.light-mode .doc-creator-tag {
 }
 
 body.light-mode .doc-pill-btn.secondary {
-  background: rgba(147, 51, 234, 0.08);
-  border-color: rgba(147, 51, 234, 0.25);
-  color: #3b0764;
+  background: rgba(147, 51, 234, 0.08) !important;
+  border-color: rgba(147, 51, 234, 0.25) !important;
+  color: #3b0764 !important;
 }
 
-.doc-pill-btn.secondary:hover {
-  background: rgba(179, 136, 255, 0.15);
-  color: var(--w);
+body.light-mode .doc-pill-btn.secondary:hover {
+  background: rgba(147, 51, 234, 0.18) !important;
+  border-color: #7e22ce !important;
+  color: #1e1b4b !important;
 }
 
 .doc-layout-grid {
@@ -9002,7 +9378,7 @@ body.light-mode .ad-promote-card:hover {
 .socials-modal {
   position: fixed;
   inset: 0;
-  z-index: 100200 !important;
+  z-index: var(--z-dialog) !important;
   display: none;
   align-items: center;
   justify-content: center;

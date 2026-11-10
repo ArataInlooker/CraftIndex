@@ -10,7 +10,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "build": "node build_pages.js && node sync_standalone.js",
+    "build": "node build_pages.js && node build_sitemap.js && node sync_standalone.js",
     "build:pages": "node build_pages.js",
     "build:routes": "node build_static_routes.js",
     "build:standalone": "node sync_standalone.js",

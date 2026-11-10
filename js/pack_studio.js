@@ -432,6 +432,9 @@
   // =========================================================================
 
   async function importZipArchive(file) {
+    if (window.ensureJSZip) {
+      try { await window.ensureJSZip(); } catch (e) {}
+    }
     if (!window.JSZip) {
       throw new Error('JSZip is not available.');
     }
@@ -915,6 +918,9 @@
   // =========================================================================
 
   async function exportCollectionZip(customOptions) {
+    if (window.ensureJSZip) {
+      try { await window.ensureJSZip(); } catch (e) {}
+    }
     if (!window.JSZip) {
       throw new Error('JSZip is not available.');
     }
@@ -1453,10 +1459,10 @@
   }
 
   function showImportSummaryModal(res) {
-    if (!window.md || !window.mf || !window.$) return;
+    if (!window.md || !window.mf) return;
     window.md(1);
-    window.$('mh').textContent = '📁 ZIP Import Summary';
-    window.$('mb').innerHTML = `
+    document.getElementById('mh').textContent = '📁 ZIP Import Summary';
+    document.getElementById('mb').innerHTML = `
       <div style="display:flex; flex-direction:column; gap:14px; padding:6px 0;">
         <div style="background:rgba(124,77,255,0.14); border:1px solid rgba(179,136,255,0.35); border-radius:12px; padding:14px; color:#e9d5ff; font-size:13.5px;">
           ✨ Archive inspection completed successfully! Identified binaries have been securely stored in persistent IndexedDB.

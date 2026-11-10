@@ -65,7 +65,15 @@ async function createFixtures() {
   await new Promise(r => setTimeout(r, 1200));
 
   console.log('[Step 2: Browser Launch & Navigation]');
-  const isLoaded = await browser.evaluate('Boolean(window.CraftIndexStudio)');
+  // Pack Studio is now lazy-loaded on first need (Phase 2 performance work).
+  // Await the public loader so the test exercises the real initialization path
+  // instead of racing a fixed timeout.
+  const isLoaded = await browser.evaluate(`(async () => {
+    if (typeof window.ensurePackStudio === 'function') {
+      try { await window.ensurePackStudio(); } catch (_) {}
+    }
+    return Boolean(window.CraftIndexStudio);
+  })()`);
   console.log(' - CraftIndexStudio available:', isLoaded);
   if (!isLoaded) throw new Error('CraftIndexStudio failed to initialize in browser');
 

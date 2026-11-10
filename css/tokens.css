@@ -1,0 +1,432 @@
+/* ==========================================================================
+   CraftIndex Design Tokens — single source of truth
+   --------------------------------------------------------------------------
+   Layers (in order):
+     1. Primitives  (--brand-*, --neutral-*, --green-*, ...)
+     2. Semantic    (--colors-*, --font-*, --space-*, --radius-*, --shadow-*)
+     3. Theme maps  (dark default on :root, light on body.light-mode)
+     4. Legacy aliases (--b/--bg/--r/--t/...) kept temporarily while the legacy
+        stylesheet migrates onto semantic tokens. Do not use them in new code.
+   Rule: components must consume semantic tokens (or legacy aliases that point
+   here); arbitrary hex values inside component rules are prohibited for new
+   code. See DESIGN.md for the full rulebook.
+   ========================================================================== */
+
+/* ------------------------------------------------------------------ */
+/* 1. Primitive palette — Tailwind-style scales                        */
+/* ------------------------------------------------------------------ */
+:root {
+  /* Brand (CraftIndex amethyst, hue ~262°) */
+  --brand-50: #f6f2ff;
+  --brand-100: #ede4ff;
+  --brand-200: #ddccff;
+  --brand-300: #c9aeff;
+  --brand-400: #b388ff;
+  --brand-500: #9d68ff;
+  --brand-600: #7c4dff;
+  --brand-700: #6a3ce8;
+  --brand-800: #5630bf;
+  --brand-900: #3c1f85;
+
+  /* Neutral (deep violet-tinted) */
+  --neutral-0: #ffffff;
+  --neutral-50: #f8f6fc;
+  --neutral-100: #efecf5;
+  --neutral-200: #dcd6e6;
+  --neutral-300: #b6aec6;
+  --neutral-400: #8b7ea6;
+  --neutral-500: #6b5f86;
+  --neutral-600: #4c4066;
+  --neutral-700: #362c4d;
+  --neutral-800: #241a38;
+  --neutral-850: #161126;
+  --neutral-900: #100b1e;
+  --neutral-950: #0c0915;
+
+  /* Red / danger */
+  --red-50: #fff1f4;
+  --red-100: #ffe0e7;
+  --red-300: #ff9db4;
+  --red-400: #ff6b8f;
+  --red-500: #f43f5e;
+  --red-800: #9f1239;
+
+  /* Green / success */
+  --green-50: #ecfdf5;
+  --green-100: #d1fae5;
+  --green-400: #34d399;
+  --green-500: #10b981;
+  --green-700: #047857;
+
+  /* Amber / warning */
+  --amber-50: #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-400: #fbbf24;
+  --amber-500: #f59e0b;
+  --amber-700: #b45309;
+
+  /* Blue / info */
+  --blue-50: #eff6ff;
+  --blue-100: #dbeafe;
+  --blue-400: #60a5fa;
+  --blue-500: #3b82f6;
+  --blue-700: #1d4ed8;
+}
+
+/* ------------------------------------------------------------------ */
+/* 2. Typography scale (Inter is the only permitted family)            */
+/* ------------------------------------------------------------------ */
+:root {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --text-xs: 0.75rem;      /* 12px — badges, fine print only          */
+  --text-sm: 0.8125rem;    /* 13px — secondary UI                     */
+  --text-base: 0.875rem;   /* 14px — app default body                 */
+  --text-lg: 1rem;         /* 16px — card titles, emphasized body     */
+  --text-xl: 1.125rem;     /* 18px — sub-headings                     */
+  --text-2xl: 1.375rem;    /* 22px — page/section headings           */
+  --text-3xl: 1.75rem;     /* 28px — hero titles                     */
+  --text-4xl: 2.25rem;     /* 36px — display (rare)                  */
+
+  /* Line heights paired to the size scale */
+  --leading-tight: 1.25;
+  --leading-snug: 1.4;
+  --leading-base: 1.55;
+  --leading-relaxed: 1.7;
+
+  /* Weights: 400 default, 500 sparse, 600 for real hierarchy only.
+     700+ is reserved for display sizes (>= --text-2xl) or numeric focus. */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  --tracking-tight: -0.01em;
+  --tracking-wide: 0.03em;
+
+  /* Legacy alias (must stay quoted the way app.js injects it) */
+  --font-title: var(--font-sans);
+  --font: var(--font-sans);
+}
+
+/* ------------------------------------------------------------------ */
+/* 3. Spacing scale — strict 4px grid                                  */
+/* ------------------------------------------------------------------ */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+}
+
+/* ------------------------------------------------------------------ */
+/* 4. Radius / elevation / motion                                      */
+/* ------------------------------------------------------------------ */
+:root {
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 14px;   /* legacy --rad alias keeps the 14px default */
+  --radius-xl: 18px;
+  --radius-full: 999px;
+
+  --shadow-1: 0 1px 2px rgba(6, 4, 14, 0.18);
+  --shadow-2: 0 2px 8px rgba(6, 4, 14, 0.22);
+  --shadow-3: 0 8px 24px -6px rgba(6, 4, 14, 0.35);
+  --shadow-4: 0 18px 48px -12px rgba(6, 4, 14, 0.45);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 120ms;
+  --duration-base: 160ms;
+  --duration-slow: 240ms;
+
+  /* Z-index elevation scale — single documented source of truth.
+     Overlays occupy the 100000+ band; lower values are page-level layers.
+     Toast is the topmost layer so it always renders above every overlay.
+     Component CSS must consume these tokens instead of scattering literals. */
+  --z-base: 1;
+  --z-header: 20;
+  --z-nav: 60;
+  --z-fab: 120;
+  --z-menu: 1000;      /* dropdowns, tooltips, popovers */
+  --z-backdrop: 99990; /* modal/drawer backdrop */
+  --z-drawer: 99999;
+  --z-modal-low: 100000; /* About center */
+  --z-modal: 100100;      /* generic modal (.md) */
+  --z-dialog: 100200;     /* dashboard, socials */
+  --z-lightbox: 100300;
+  --z-dialog-top: 100400; /* dependency-resolution modal */
+  --z-toast: 100500;
+}
+
+/* ------------------------------------------------------------------ */
+/* 5. Semantic tokens — DARK (default theme)                           */
+/*    Values preserve the existing CraftIndex "Cosmic Obsidian" look.  */
+/* ------------------------------------------------------------------ */
+:root {
+  /* Backgrounds & surfaces */
+  --colors-background: var(--neutral-950);
+  --colors-background-subtle: #110c1d;
+  --colors-surface: #161126;
+  --colors-surface-glass: rgba(28, 20, 48, 0.55);
+  --colors-surface-raised: #1c1530;
+  --colors-surface-overlay: #0a0712;
+
+  /* Text */
+  --colors-text-primary: #e8e0f5;
+  --colors-text-secondary: #c3b6dc;
+  --colors-text-muted: #8b7ea6;
+  --colors-text-disabled: rgba(232, 224, 245, 0.35);
+  --colors-text-inverse: #ffffff;
+
+  /* Interactive accent */
+  --colors-primary: var(--brand-400);
+  --colors-primary-hover: var(--brand-300);
+  --colors-primary-active: var(--brand-500);
+  --colors-primary-text: var(--brand-300);
+  --colors-primary-btn: linear-gradient(135deg, var(--brand-400), var(--brand-600));
+  --colors-primary-btn-hover: linear-gradient(135deg, var(--brand-300), var(--brand-500));
+  --colors-primary-btn-text: #ffffff;
+
+  /* Inputs */
+  --colors-input-bg: rgba(255, 255, 255, 0.05);
+  --colors-input-border: rgba(255, 255, 255, 0.12);
+  --colors-input-border-hover: rgba(179, 136, 255, 0.35);
+  --colors-input-border-focus: rgba(179, 136, 255, 0.65);
+
+  /* Borders */
+  --colors-border: rgba(179, 136, 255, 0.20);
+  --colors-border-subtle: rgba(255, 255, 255, 0.08);
+  --colors-border-strong: rgba(179, 136, 255, 0.45);
+
+  /* Focus */
+  --colors-focus-ring: var(--brand-400);
+
+  /* Feedback */
+  --colors-success: var(--green-500);
+  --colors-warning: var(--amber-500);
+  --colors-danger: var(--red-400);
+  --colors-info: var(--blue-400);
+
+  /* Overlays & glass */
+  --colors-overlay: rgba(4, 2, 10, 0.85);
+  --colors-overlay-blur: 12px;
+  --colors-scrim-hover: rgba(255, 255, 255, 0.06);
+}
+
+/* ------------------------------------------------------------------ */
+/* 6. Semantic tokens — LIGHT ("Daylight Crystal")                     */
+/*    Applied both to app.js's body.light-mode toggle and to the       */
+/*    pre-CSS html[data-theme="light"] hint that prevents FOUC.        */
+/* ------------------------------------------------------------------ */
+body.light-mode,
+html[data-theme="light"] body {
+  --colors-background: #f8f4fc;
+  --colors-background-subtle: #f3edfb;
+  --colors-surface: rgba(255, 255, 255, 0.72);
+  --colors-surface-glass: rgba(255, 255, 255, 0.72);
+  --colors-surface-raised: #ffffff;
+  --colors-surface-overlay: #1b1030;
+
+  --colors-text-primary: #3d2b56;
+  --colors-text-secondary: #5b4674;
+  --colors-text-muted: #816f9e;
+  --colors-text-disabled: rgba(61, 43, 86, 0.35);
+  --colors-text-inverse: #ffffff;
+
+  --colors-primary: #9333ea;
+  --colors-primary-hover: #a855f7;
+  --colors-primary-active: #7e22ce;
+  --colors-primary-text: #7e22ce;
+  --colors-primary-btn: linear-gradient(135deg, #a855f7, #9333ea);
+  --colors-primary-btn-hover: linear-gradient(135deg, #9333ea, #7e22ce);
+  --colors-primary-btn-text: #ffffff;
+
+  --colors-input-bg: rgba(255, 255, 255, 0.85);
+  --colors-input-border: rgba(93, 63, 148, 0.22);
+  --colors-input-border-hover: rgba(147, 51, 234, 0.4);
+  --colors-input-border-focus: rgba(147, 51, 234, 0.65);
+
+  --colors-border: rgba(93, 63, 148, 0.2);
+  --colors-border-subtle: rgba(93, 63, 148, 0.12);
+  --colors-border-strong: rgba(147, 51, 234, 0.4);
+
+  --colors-focus-ring: #7c4dff;
+
+  --colors-success: #059669;
+  --colors-warning: #b45309;
+  --colors-danger: #e11d48;
+  --colors-info: #2563eb;
+
+  --colors-overlay: rgba(27, 16, 48, 0.5);
+  --colors-overlay-blur: 10px;
+  --colors-scrim-hover: rgba(27, 16, 48, 0.05);
+}
+
+/* ------------------------------------------------------------------ */
+/* 7. Legacy aliases — consumed by the pre-existing stylesheet and     */
+/*    app.js's injected `#st` rules. Values follow the active theme.   */
+/* ------------------------------------------------------------------ */
+:root {
+  --b: var(--brand-400);
+  --b2: var(--brand-600);
+  --bg: var(--colors-background);
+  --r: var(--colors-surface);
+  /* Effective values carried over from the legacy stylesheet so component
+     rules keep their exact prior computed appearance. */
+  --r2: color-mix(in srgb, var(--r), #fff 10%);
+  --bd: color-mix(in srgb, var(--r), #fff 22%);
+  --t: var(--colors-text-primary);
+  --t-muted: var(--colors-text-muted);
+  --t-accent: var(--brand-400);
+  --w: #fcf4ff;
+  --on: #26102e;
+  --g: linear-gradient(135deg, var(--b2), var(--b));
+  --bd-focus: var(--colors-border-strong);
+  --rad: var(--radius-lg);
+  --green: var(--colors-success);
+  --amber: var(--colors-warning);
+  --red: var(--colors-danger);
+}
+body.light-mode,
+html[data-theme="light"] body {
+  --b: var(--colors-primary);
+  --b2: #c084fc;
+  --g: var(--colors-primary-btn);
+  --w: #180c2e;
+  --on: #ffffff;
+  --bd: rgba(225, 210, 240, 0.75);
+  --r2: rgba(255, 255, 255, 0.85);
+  --t-accent: var(--colors-primary);
+}
+
+/* ------------------------------------------------------------------ */
+/* 8. Scroll-lock helper — league of overlay managers (app.js)         */
+/*    html gets the class; stable page geometry, no layout shift.      */
+/* ------------------------------------------------------------------ */
+html.ci-scroll-locked {
+  overflow: hidden;
+}
+html.ci-scroll-locked body {
+  overflow: hidden;
+}
+
+/* Nesting safety: every independent scroll region inside an overlay
+   must contain its scrolling instead of chaining to the document. */
+.mbd, .dl, .dash-content, .about-content, .socials-body {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Standalone resource page host (client-rendered resource route). */
+#standaloneResourceView {
+  display: none;
+}
+#standaloneResourceView.active {
+  display: block;
+  max-width: 1080px;
+  margin: 20px auto 0;
+  padding: 0 16px 72px;
+}
+
+/* Breadcrumb + shell chrome for standalone resource pages. */
+.rp-shell {
+  display: block;
+}
+.rp-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--colors-text-muted);
+  margin: var(--space-2) 0 var(--space-5);
+}
+.rp-breadcrumb a {
+  color: var(--colors-primary-text);
+  text-decoration: none;
+  border-radius: 6px;
+  padding: 1px 2px;
+}
+.rp-breadcrumb a:focus-visible {
+  outline: 2px solid var(--colors-focus-ring);
+  outline-offset: 2px;
+}
+.rp-breadcrumb a:hover {
+  text-decoration: underline;
+}
+.rp-breadcrumb .rp-crumb-sep {
+  opacity: 0.45;
+}
+.rp-breadcrumb [aria-current="page"] {
+  color: var(--colors-text-secondary);
+}
+
+.rp-loading,
+.rp-notfound {
+  text-align: center;
+  padding: 72px 20px;
+  color: var(--colors-text-secondary);
+}
+.rp-notfound h1 {
+  font-size: var(--text-2xl);
+  font-weight: var(--fw-semibold);
+  color: var(--colors-text-primary);
+  margin: var(--space-2) 0 var(--space-3);
+  letter-spacing: var(--tracking-tight);
+}
+.rp-notfound p {
+  max-width: 520px;
+  margin: 0 auto var(--space-5);
+  line-height: var(--leading-relaxed);
+}
+.rp-notfound .rp-provider-status {
+  display: inline-block;
+  margin-top: var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--colors-text-muted);
+}
+
+/* When the dashboard window is hosted inline on a resource page it
+   becomes normal page flow instead of a fixed dialog: natural height,
+   the page scrolls, contents are fully exposed for reading. */
+.dash-modal.inline {
+  position: static;
+  display: block;
+  background: none;
+  backdrop-filter: none;
+  z-index: auto;
+}
+.dash-modal.inline .dash-backdrop {
+  display: none;
+}
+#standaloneResourceView.active .dash-window {
+  position: static;
+  width: 100%;
+  max-width: 1080px;
+  height: auto;
+  max-height: none;
+  overflow: visible;
+  transform: none;
+  transition: none;
+  box-shadow: var(--shadow-3);
+  margin: 0 auto;
+}
+#standaloneResourceView.active .dash-content {
+  flex: 0 1 auto;
+  max-height: none;
+  overflow: visible;
+  overscroll-behavior: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+  }
+}

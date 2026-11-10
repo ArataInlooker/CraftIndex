@@ -83,6 +83,132 @@ const safeStorage = {
   }
 };
 
+/* --- Centralized overlay scroll-lock manager (Phase 5) ------------------
+   Any overlay (modal, dashboard, drawer, lightbox) acquires the lock on
+   open and releases it on close. A reference counter keeps the document
+   locked while nested overlays are open, so individual overlays can open
+   and close independently without ever accidentally unlocking the page.
+   Scroll position is preserved (overflow hidden keeps scrollTop) and the
+   document offset is re-asserted after unlock in case the UA reset it. */
+const CraftIndexScrollLock = {
+  _count: 0,
+  _scrollY: 0,
+  acquire(id) {
+    if (document.documentElement.__ciLockOwners === undefined) {
+      document.documentElement.__ciLockOwners = new Set();
+    }
+    const owners = document.documentElement.__ciLockOwners;
+    if (owners.has(id)) return; // idempotent re-open
+    owners.add(id);
+    if (this._count === 0) {
+      this._scrollY = window.scrollY || 0;
+      document.documentElement.classList.add("ci-scroll-locked");
+    }
+    this._count++;
+  },
+  release(id) {
+    const owners = document.documentElement.__ciLockOwners;
+    if (!owners || !owners.has(id)) return;
+    owners.delete(id);
+    this._count = Math.max(0, this._count - 1);
+    if (this._count === 0) {
+      document.documentElement.classList.remove("ci-scroll-locked");
+      if (window.scrollY !== this._scrollY) {
+        window.scrollTo(0, this._scrollY);
+      }
+      this._scrollY = 0;
+    }
+  },
+  has(id) {
+    const owners = document.documentElement.__ciLockOwners;
+    return Boolean(owners && owners.has(id));
+  }
+};
+window.CraftIndexScrollLock = CraftIndexScrollLock;
+
+/* --- Lazy JSZip loader (Phase 2) ----------------------------------------
+   The vendor bundle is no longer render-blocking in <head>. It is fetched
+   on demand the first time a ZIP operation actually runs (bulk archive,
+   Pack Studio import/export). Standalone dist pages sit one level deeper,
+   so both relative bases are attempted. */
+let _jsZipPromise = null;
+function ensureJSZip() {
+  if (typeof JSZip !== "undefined") return Promise.resolve(window.JSZip);
+  if (_jsZipPromise) return _jsZipPromise;
+  const bases = ["js/vendor/jszip.min.js", "../js/vendor/jszip.min.js"];
+  _jsZipPromise = new Promise((resolve, reject) => {
+    let i = 0;
+    (function tryNext() {
+      if (i >= bases.length) {
+        _jsZipPromise = null;
+        reject(new Error("JSZip failed to load"));
+        return;
+      }
+      const s = document.createElement("script");
+      s.src = bases[i++];
+      s.async = true;
+      s.onload = () => (typeof JSZip !== "undefined" ? resolve(window.JSZip) : tryNext());
+      s.onerror = () => {
+        s.remove();
+        tryNext();
+      };
+      document.head.appendChild(s);
+    })();
+  });
+  return _jsZipPromise;
+}
+window.ensureJSZip = ensureJSZip;
+
+/* --- Lazy feature-script loaders (Phase 2) -------------------------------
+   Pack Studio (pack_studio.js, ~60 KB) and the About/Docs center
+   (about_docs.js, ~41 KB) are heavy, self-contained modules whose globals
+   (window.CraftIndexStudio, ABOUT_DOCS) are referenced everywhere through
+   guarded `typeof` checks. Loading them on first need (Studio tab, Docs
+   route/modal) removes ~100 KB of script parsing from the initial page
+   load. In the standalone dist, these globals are already inlined, so the
+   loaders resolve immediately without any network fetch. */
+let _aboutDocsPromise = null;
+function ensureAboutDocs() {
+  if (typeof ABOUT_DOCS !== "undefined") return Promise.resolve(window.ABOUT_DOCS || ABOUT_DOCS);
+  if (_aboutDocsPromise) return _aboutDocsPromise;
+  const bases = ["/js/about_docs.js", "js/about_docs.js", "../js/about_docs.js"];
+  _aboutDocsPromise = new Promise((resolve, reject) => {
+    let i = 0;
+    (function tryNext() {
+      if (i >= bases.length) { _aboutDocsPromise = null; reject(new Error("about_docs.js failed to load")); return; }
+      const s = document.createElement("script");
+      s.src = bases[i++];
+      s.async = true;
+      s.onload = () => (typeof ABOUT_DOCS !== "undefined" ? resolve() : tryNext());
+      s.onerror = () => { s.remove(); tryNext(); };
+      document.body.appendChild(s);
+    })();
+  });
+  return _aboutDocsPromise;
+}
+window.ensureAboutDocs = ensureAboutDocs;
+
+let _packStudioPromise = null;
+function ensurePackStudio() {
+  if (window.CraftIndexStudio) return Promise.resolve(window.CraftIndexStudio);
+  if (_packStudioPromise) return _packStudioPromise;
+  const bases = ["/js/pack_studio.js", "js/pack_studio.js", "../js/pack_studio.js"];
+  _packStudioPromise = new Promise((resolve, reject) => {
+    let i = 0;
+    (function tryNext() {
+      if (i >= bases.length) { _packStudioPromise = null; reject(new Error("pack_studio.js failed to load")); return; }
+      const s = document.createElement("script");
+      s.src = bases[i++];
+      s.async = true;
+      s.onload = () => (window.CraftIndexStudio ? resolve(window.CraftIndexStudio) : tryNext());
+      s.onerror = () => { s.remove(); tryNext(); };
+      document.body.appendChild(s);
+    })();
+  });
+  return _packStudioPromise;
+}
+window.ensurePackStudio = ensurePackStudio;
+
 // --- CraftIndex Independent Sanitization & Markdown Engine ---
 const CraftIndexSanitizer = {
   ALLOWED_TAGS: new Set([
@@ -584,11 +710,23 @@ const T = (id) => C.tabs.find((t) => t.id === id) || {},
       dependencies: "DEPENDENCY",
     };
     return map[id] || (T(id).name ? T(id).name.toUpperCase() : String(id || "").toUpperCase());
-  },
-  api = async (p, signal) => {
+  };
+const _apiCache = new Map();
+const api = async (p, signal) => {
+    if (!signal && _apiCache.has(p)) {
+      const cached = _apiCache.get(p);
+      if (Date.now() - cached.time < 60000) {
+        return cached.data;
+      }
+    }
     const r = await fetch(A + p, signal ? { signal } : {});
     if (!r.ok) throw Error("API " + r.status);
-    return r.json();
+    const data = await r.json();
+    if (!signal) {
+      if (_apiCache.size > 100) _apiCache.clear();
+      _apiCache.set(p, { time: Date.now(), data });
+    }
+    return data;
   };
 const toast = (m) => {
   $("tt").textContent = m;
@@ -798,6 +936,10 @@ function updateBrowserTitle(customContext = null) {
       document.title = `${dashTitle} | CraftIndex`;
       return;
     }
+    if ($("dashModal") && $("dashModal").classList.contains("inline") && typeof currentDashItem !== "undefined" && currentDashItem && typeof rpTitle === "function") {
+      document.title = rpTitle(currentDashItem);
+      return;
+    }
     if ($("dr") && $("dr").classList.contains("o")) {
       const count = (window.cart && window.cart.size !== undefined ? window.cart.size : (window.cart && window.cart.length ? window.cart.length : 0));
       document.title = `Collection (${count}) | CraftIndex`;
@@ -967,6 +1109,297 @@ function switchTab(tObj, skipUrlUpdate = false) {
   updateBrowserTitle();
 }
 
+/* ========================================================
+   STANDALONE RESOURCE PAGES (Phase 1)
+  Permanent URLs: /<category>/<slug>/ for provider-resolvable
+   resources. The existing Resource Detail Dashboard window is
+   re-parented into #standaloneResourceView (inline mode) instead
+   of being a modal, so direct navigation, refresh, sharing and
+   crawling all work against real URLs.
+   ======================================================== */
+const RP_CATS = new Set([
+  "mods", "plugins", "resourcepacks", "shaders", "datapacks", "modpacks", "worlds",
+]);
+const RP_LINKABLE_SOURCES = new Set(["modrinth", "curseforge", "bukkit", "hangar", "github"]);
+const RP_GITHUB_SEP = "--";
+// Search-result hits handed to openStandaloneResource without a re-resolve.
+const _pendingResourceHits = new Map();
+let _rpNavToken = 0; // invalidates stale async resolution when the user navigates on
+let dashInline = null; // non-null while the dashboard window is hosted on a resource page
+
+function rpResourceUrl(tabId, slug) {
+  return "/" + tabId + "/" + String(slug).toLowerCase() + "/";
+}
+
+function rpParseResourceRoute(pathname) {
+  const m = pathname.match(
+    /^\/(mods|plugins|resourcepacks|shaders|datapacks|modpacks|worlds)\/([a-z0-9][a-z0-9_-]*)$/,
+  );
+  if (!m) return null;
+  // /mods/<loader>/ is the loader-filter route, never a resource page
+  // (fabric, neoforge, forge, quilt are reserved under /mods/).
+  if (m[1] === "mods" && ML.includes(m[2])) return null;
+  return { tabId: m[1], slug: m[2] };
+}
+
+// A search hit can be linked to a standalone page when its identity can be
+// re-resolved against a provider from URL alone. GitHub hits use owner--repo.
+function rpCardHref(h) {
+  if (!h || !h.tab || !RP_CATS.has(h.tab)) return null;
+  if (h.tab === "mods" && ML.includes(String(h.slug || ""))) return null;
+  if (h.source === "github") {
+    if (!h.id || !String(h.id).includes("/")) return null;
+    return rpResourceUrl(h.tab, String(h.id).replace("/", RP_GITHUB_SEP));
+  }
+  if (!RP_LINKABLE_SOURCES.has(h.source)) return null;
+  const slug = String(h.slug || "");
+  if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/.test(slug)) return null;
+  return rpResourceUrl(h.tab, slug);
+}
+
+function rpTitle(h) {
+  const cat = (T(h.tab) && T(h.tab).name) || h.tab || "Resource";
+  return `${h.title || "Resource"} — ${cat} | CraftIndex`;
+}
+
+function rpBreadcrumb(h) {
+  const cat = (T(h.tab) && T(h.tab).name) || h.tab;
+  return `
+    <nav class="rp-breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a><span class="rp-crumb-sep">›</span>
+      <a href="/${E(h.tab)}/">${E(cat)}</a><span class="rp-crumb-sep">›</span>
+      <span aria-current="page">${E(h.title || h.slug)}</span>
+    </nav>`;
+}
+
+function rpNotFoundShell(tabId, slug, notes) {
+  const cat = (T(tabId) && T(tabId).name) || tabId;
+  return `
+    <div class="rp-notfound" role="alert">
+      <div style="font-size:38px;margin-bottom:10px;">🗂️</div>
+      <h1>Resource not found</h1>
+      <p>No <b>${E(cat)}</b> resource matching <code>${E(slug)}</code> could be
+      resolved on the supported providers. The resource may have been renamed,
+      delisted, or the URL may contain a typo.</p>
+      <a class="btn p" href="/${E(tabId)}/">Browse all ${E(cat)}</a>
+      <span class="rp-provider-status">${E(notes || "")}</span>
+    </div>`;
+}
+
+// Resolution chain for a URL slug against live provider APIs.
+// Chain: Modrinth slug → CurseForge exact-slug (needs server key) → GitHub owner--repo.
+// Providers requiring per-resource numeric lookup or missing keys degrade to null;
+// the page then shows an honest not-found state (no fabricated metadata).
+async function rpResolveResource(tabId, slug) {
+  const t = T(tabId) || {};
+
+  // 1. Modrinth: /project/{slug} accepts the canonical project slug.
+  try {
+    const d = await api("/project/" + encodeURIComponent(slug));
+    if (d && d.id) {
+      const hit = {
+        k: "mr:" + d.id,
+        id: d.id,
+        tab: tabId,
+        source: "modrinth",
+        sourceName: "Modrinth",
+        websiteUrl: `https://modrinth.com/${d.project_type || t.ptype || "mod"}/${d.slug || d.id}`,
+        title: d.title || slug,
+        icon: d.icon_url,
+        author: d.organization || "",
+        desc: d.description || "",
+        dl: d.downloads,
+        fo: d.followers,
+        slug: d.slug || slug,
+        pt: d.project_type || t.ptype,
+        tags: (d.categories || []).slice(0, 2),
+        cf: 0,
+        _rpProj: d, // already fetched — the dashboard reuses it
+      };
+      return hit;
+    }
+  } catch (e) { /* fall through to next provider */ }
+
+  // 2. CurseForge: search by the slug and require an exact-slug match.
+  if (t.cfClass) {
+    try {
+      const d = await cfa(
+        "/v1/mods/search?gameId=432&classId=" + encodeURIComponent(t.cfClass) +
+        "&pageSize=8&searchFilter=" + encodeURIComponent(slug),
+      );
+      const exact = (d.data || []).find((m) => m.slug === slug);
+      if (exact) {
+        const catSlug =
+          tabId === "mods" ? "mc-mods"
+          : tabId === "resourcepacks" ? "texture-packs"
+          : tabId === "shaders" ? "shaders"
+          : tabId === "datapacks" ? "data-packs"
+          : tabId === "modpacks" ? "modpacks"
+          : tabId === "worlds" ? "worlds"
+          : "bukkit-plugins";
+        return {
+          k: "cf:" + exact.id,
+          id: exact.id,
+          tab: tabId,
+          source: "curseforge",
+          sourceName: "CurseForge",
+          websiteUrl: (exact.links && exact.links.websiteUrl)
+            ? exact.links.websiteUrl
+            : `https://www.curseforge.com/minecraft/${catSlug}/${exact.slug || exact.id}`,
+          title: exact.name,
+          icon: exact.logo ? exact.logo.thumbnailUrl || exact.logo.url : null,
+          author: exact.authors && exact.authors[0] ? exact.authors[0].name : "",
+          desc: exact.summary,
+          dl: exact.downloadCount,
+          fo: exact.thumbsUpCount || 0,
+          slug: exact.slug,
+          pt: t.ptype,
+          tags: (exact.categories || []).slice(0, 2).map((c) => c.name),
+          cf: 1,
+        };
+      }
+    } catch (e) { /* fall through to next provider */ }
+  }
+
+  // 3. GitHub: owner--repo identity.
+  if (slug.indexOf(RP_GITHUB_SEP) !== -1) {
+    const seg = slug.split(RP_GITHUB_SEP);
+    if (seg.length === 2 && seg[0] && seg[1]) {
+      try {
+        const baseUrl = window.location.protocol.startsWith("http")
+          ? "/api/github"
+          : "https://api.github.com";
+        const r = await fetch(baseUrl + "/repos/" + seg[0] + "/" + seg[1], {
+          headers: { Accept: "application/vnd.github.v3+json" },
+        });
+        if (r.ok) {
+          const repo = await r.json();
+          return {
+            k: "gh:" + repo.full_name,
+            id: repo.full_name,
+            tab: tabId,
+            source: "github",
+            sourceName: "GitHub",
+            websiteUrl: repo.html_url || `https://github.com/${seg[0]}/${seg[1]}`,
+            title: repo.name || slug,
+            icon: (repo.owner && repo.owner.avatar_url) || null,
+            author: (repo.owner && repo.owner.login) || "",
+            desc: repo.description || "",
+            dl: null,
+            fo: repo.stargazers_count || 0,
+            slug: slug,
+            pt: t.ptype,
+            tags: (repo.topics || []).slice(0, 2),
+            cf: 0,
+          };
+        }
+      } catch (e) { /* fall through */ }
+    }
+  }
+
+  return null;
+}
+
+function rpCloseToCategory() {
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    window.location.assign("/" + (currentDashItem && currentDashItem.tab ? currentDashItem.tab : "") + "/");
+  }
+}
+
+// Move the dashboard window back into #dashModal and clear the page host.
+function restoreInlineDashHost() {
+  const host = $("standaloneResourceView");
+  const modal = $("dashModal");
+  // Rescue the dashboard window out of the page host BEFORE wiping the host,
+  // otherwise the window (with its content) is destroyed along with it.
+  const orphan = host && host.querySelector(".dash-window");
+  if (orphan && modal && !modal.contains(orphan)) modal.appendChild(orphan);
+  if (host) {
+    host.classList.remove("active");
+    host.innerHTML = "";
+  }
+  _pendingResourceHits.clear();
+}
+
+// Render + hydrate a standalone resource page at /<category>/<slug>/.
+async function openStandaloneResource(tabId, slug, opts = {}) {
+  const token = ++_rpNavToken;
+  const host = $("standaloneResourceView");
+  if (!host) return;
+
+  document.body.dataset.tab = tabId;
+  if (typeof tabs === "function") tabs();
+  if (typeof lf === "function") lf();
+  if ($("fl") && $("fl").parentElement) $("fl").parentElement.style.display = "none";
+  if ($("mo-wrap")) $("mo-wrap").style.display = "none";
+  if ($("fabs")) $("fabs").classList.add("h");
+  if ($("g")) $("g").style.display = "none";
+  if ($("standaloneDocsView")) $("standaloneDocsView").style.display = "none";
+  if ($("standaloneSocialsView")) $("standaloneSocialsView").style.display = "none";
+
+  host.classList.add("active");
+  const catLabel = (T(tabId) && T(tabId).name) || tabId;
+  host.innerHTML = `
+    <div class="rp-shell">
+      <nav class="rp-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a><span class="rp-crumb-sep">›</span>
+        <a href="/${E(tabId)}/">${E(catLabel)}</a><span class="rp-crumb-sep">›</span>
+        <span aria-current="page">${E(slug)}</span>
+      </nav>
+      <div class="rp-loading">
+        <div class="cyber-spinner" style="margin: 0 auto 14px;"></div>
+        <div style="color: var(--colors-text-muted); font-size: 14px;">Resolving “${E(slug)}” on ${E(catLabel)} providers…</div>
+      </div>
+    </div>`;
+  document.title = `Loading ${E(slug)} | CraftIndex`;
+
+  // Fast path: a search hit rendered moments ago can skip provider resolution.
+  const key = rpResourceUrl(tabId, slug);
+  const hit = _pendingResourceHits.get(key) || _pendingResourceHits.get(key.replace(/\/$/, ""));
+  if (hit) {
+    _pendingResourceHits.delete(key);
+    _pendingResourceHits.delete(key.replace(/\/$/, ""));
+  }
+
+  // SSR fast path: the dynamic server embeds the resolved identity in
+  // data-rp on #g content — reuse it and preserve a single upstream fetch.
+  let ssrPayload = null;
+  try {
+    const el = document.querySelector("#g .rp-ssr[data-rp]");
+    if (el) ssrPayload = JSON.parse(decodeURIComponent(el.getAttribute("data-rp")));
+  } catch (e) {
+    ssrPayload = null;
+  }
+
+  let resolved = hit || ssrPayload;
+  if (!resolved) {
+    try {
+      resolved = await rpResolveResource(tabId, slug);
+    } catch (e) {
+      resolved = null;
+    }
+  }
+  if (token !== _rpNavToken) return; // a newer navigation superseded this one
+
+  if (!resolved) {
+    let notes = "";
+    if (!T(tabId).cfClass) notes = "Note: CurseForge resolution is unavailable for this category in this browser session.";
+    host.innerHTML = `<div class="rp-shell">${rpBreadcrumb({ tab: tabId, title: slug })}${rpNotFoundShell(tabId, slug, notes)}</div>`;
+    document.title = `Not found: ${E(slug)} | CraftIndex`;
+    return;
+  }
+
+  currentDashItem = resolved;
+  currentDashData = null;
+  currentDashVersions = [];
+  currentDashTab = "docs";
+  dashVerFilter = "";
+  dashLoaderFilter = "";
+  await openResourceDash(resolved, { inline: true });
+}
+
 function handleRouteFromUrl(isPopState = false) {
   try {
     let path = window.location.pathname.toLowerCase().replace(/\/+$/, "");
@@ -984,17 +1417,26 @@ function handleRouteFromUrl(isPopState = false) {
       if ($("fabs")) $("fabs").classList.add("h");
       if ($("g")) $("g").style.display = "none";
       if ($("standaloneSocialsView")) $("standaloneSocialsView").style.display = "none";
-      if (!$("standaloneDocsView")) {
-        renderStandaloneDocsView();
+      // Leave any inline resource page cleanly (window restored, locks released)
+      if (typeof closeDashModal === "function" && $("dashModal") && $("dashModal").classList.contains("inline")) {
+        closeDashModal();
       }
-      if ($("standaloneDocsView")) {
-        $("standaloneDocsView").style.display = "block";
-        if (hash) {
-          const targetEl = document.getElementById(hash) || document.getElementById(hash.replace(/^\d+-/, "")) || document.getElementById("0" + hash);
-          if (targetEl) targetEl.scrollIntoView({ behavior: "smooth" });
+      ensureAboutDocs().then(() => {
+        if (!$("standaloneDocsView")) {
+          renderStandaloneDocsView();
         }
-      }
-      updateBrowserTitle();
+        if ($("standaloneDocsView")) {
+          $("standaloneDocsView").style.display = "block";
+          if (hash) {
+            const targetEl = document.getElementById(hash) || document.getElementById(hash.replace(/^\d+-/, "")) || document.getElementById("0" + hash);
+            if (targetEl) targetEl.scrollIntoView({ behavior: "smooth" });
+          }
+        }
+        updateBrowserTitle();
+      }).catch(() => {
+        if (!$("standaloneDocsView")) renderStandaloneDocsView();
+        updateBrowserTitle();
+      });
       return;
     }
 
@@ -1009,6 +1451,9 @@ function handleRouteFromUrl(isPopState = false) {
       if ($("fabs")) $("fabs").classList.add("h");
       if ($("g")) $("g").style.display = "none";
       if ($("standaloneDocsView")) $("standaloneDocsView").style.display = "none";
+      if (typeof closeDashModal === "function" && $("dashModal") && $("dashModal").classList.contains("inline")) {
+        closeDashModal();
+      }
       if ($("standaloneSocialsView")) {
         $("standaloneSocialsView").style.display = "block";
       } else if (typeof openSocialsModal === "function") {
@@ -1032,15 +1477,14 @@ function handleRouteFromUrl(isPopState = false) {
     if (typeof closeSocialsModal === "function" && $("socialsModal") && $("socialsModal").classList.contains("open")) {
       closeSocialsModal(true);
     }
-    if (typeof closeDashModal === "function" && $("dashModal") && $("dashModal").classList.contains("open")) {
+    if (typeof closeDashModal === "function" && $("dashModal") && ($("dashModal").classList.contains("open") || $("dashModal").classList.contains("inline"))) {
       closeDashModal();
     }
     if (typeof closeSettingsModal === "function" && $("settingsModal") && $("settingsModal").classList.contains("open")) {
       closeSettingsModal();
     }
     if ($("dr") && $("dr").classList.contains("o")) {
-      $("dr").classList.remove("o");
-      if ($("sc")) $("sc").classList.remove("o");
+      dr(0);
     }
     recordCurrentBrowseUrl();
 
@@ -1054,9 +1498,10 @@ function handleRouteFromUrl(isPopState = false) {
       }
     }
 
-    // 3. Subloader route: e.g. /mods/fabric/
+    // 3. Subloader route: e.g. /mods/fabric/ — reserved loader names only,
+    //    so resource slugs like /mods/sodium/ fall through to case 3b.
     const modsMatch = path.match(/^\/mods\/([a-z0-9_-]+)$/);
-    if (modsMatch) {
+    if (modsMatch && ML.includes(modsMatch[1])) {
       const loader = modsMatch[1];
       const modsTab = T("mods");
       if (modsTab && modsTab.id) {
@@ -1071,6 +1516,14 @@ function handleRouteFromUrl(isPopState = false) {
         updateBrowserTitle();
         return;
       }
+    }
+
+    // 3b. Standalone resource page route: e.g. /mods/sodium/
+    // (loader names are reserved under /mods/ and handled above)
+    const rpRoute = rpParseResourceRoute(path);
+    if (rpRoute) {
+      openStandaloneResource(rpRoute.tabId, rpRoute.slug);
+      return;
     }
 
     // 4. Resource tab route: /mods, /plugins, /resourcepacks, /shaders, /worlds, etc.
@@ -3589,9 +4042,13 @@ async function go(reset, force, signal) {
     if ($("mo-wrap")) $("mo-wrap").style.display = "none";
     if ($("mo")) $("mo").style.display = "none";
     if ($("auto-loader")) $("auto-loader").style.display = "none";
-    if (window.CraftIndexStudio && window.CraftIndexStudio.renderStudioView) {
-      window.CraftIndexStudio.renderStudioView($("g"));
-    }
+    ensurePackStudio().then(() => {
+      // Re-check the target container and tab so a fast switch away from
+      // Studio does not paint a stale studio view into a hidden grid.
+      if (window.CraftIndexStudio && window.CraftIndexStudio.renderStudioView && $("g") && document.body.dataset.tab === "studio") {
+        window.CraftIndexStudio.renderStudioView($("g"));
+      }
+    }).catch(() => {});
     return;
   }
 
@@ -3765,7 +4222,7 @@ async function go(reset, force, signal) {
   }
 
   if (tab.kind === "github") {
-    $("g").innerHTML = '<div class="em">Loading...</div>';
+    renderGridSkeleton($("g"));
     hits = await gh(force);
     const q = $("q").value.toLowerCase();
     hits = hits.filter(
@@ -3792,7 +4249,7 @@ async function go(reset, force, signal) {
     neoforge: 6,
   };
 
-  if (reset) $("g").innerHTML = '<div class="em">Loading...</div>';
+  if (reset) renderGridSkeleton($("g"));
 
   const searchModrinth = async (limit, offset) => {
     const f = [];
@@ -4148,7 +4605,9 @@ async function go(reset, force, signal) {
           sourceName: "Sponge",
           websiteUrl: `https://ore.spongepowered.org/${p.namespace ? p.namespace.owner : ""}/${p.namespace ? p.namespace.slug : p.plugin_id}`,
           title: p.name,
-          icon: p.icon_url,
+          // Ore API returns http:// icon URLs which violate the CSP (img-src
+          // https:) — upgrade the scheme so cards render instead of erroring.
+          icon: p.icon_url ? String(p.icon_url).replace(/^http:\/\//i, "https://") : null,
           author: p.namespace ? p.namespace.owner : "",
           desc: p.description,
           dl: p.stats ? p.stats.downloads : 0,
@@ -5438,7 +5897,11 @@ function renderCatalogGrid(itemsList, container) {
           </div>
         </div>
         <div class="act craftindex-card-actions">
-          <button class="btn-info craftindex-btn-info" data-info="${i}" title="View documentation, screenshots, and single downloads" aria-label="View details for ${E(h.title)}">ℹ</button>
+          ${
+            rpCardHref(h)
+              ? `<a class="btn-info craftindex-btn-info" href="${E(rpCardHref(h))}" data-info="${i}" title="Open the full resource page for ${E(h.title)}" aria-label="Open full resource page for ${E(h.title)}">ℹ</a>`
+              : `<button class="btn-info craftindex-btn-info" data-info="${i}" title="View documentation, screenshots, and single downloads" aria-label="View details for ${E(h.title)}">ℹ</button>`
+          }
           ${
             h.sources && h.sources.length > 1
               ? `<div class="source-badge multi-source">
@@ -5533,7 +5996,19 @@ function renderCatalogGrid(itemsList, container) {
     (b) =>
       (b.onclick = (e) => {
         e.stopPropagation();
-        openResourceDash(hits[b.dataset.info]);
+        const hit = hits[b.dataset.info];
+        if (!hit) return;
+        const href = rpCardHref(hit);
+        if (href) {
+          // Real navigation to the permanent resource page. The hit object is
+          // stashed so the route reuses it instead of re-resolving.
+          e.preventDefault();
+          _pendingResourceHits.set(href, hit);
+          window.history.pushState({}, "", href);
+          handleRouteFromUrl(false);
+        } else {
+          openResourceDash(hit);
+        }
       }),
   );
 
@@ -5586,6 +6061,32 @@ function renderCatalogGrid(itemsList, container) {
   setTimeout(() => {
     $("g").dataset.anim = "";
   }, 1100);
+}
+
+// Render a skeleton card grid mirroring the real card geometry so the
+// container reserves its final height before async results arrive.
+// This prevents CLS: skeleton cells use the same .cd grid tracks and
+// stretch to the same row height as the cards they stand in for.
+function renderGridSkeleton(target) {
+  const el = target || $("g");
+  if (!el) return;
+  const n = C && C.per && C.per > 0 ? Math.min(C.per, 24) : 12;
+  let html = "";
+  for (let i = 0; i < n; i++) {
+    html += `
+      <article class="cd craftindex-card skel-card" aria-hidden="true">
+        <div class="craftindex-card-icon skel skel-ic"></div>
+        <div class="craftindex-card-content">
+          <div class="card-top-row craftindex-card-badges"><span class="skel skel-badge"></span></div>
+          <div class="skel skel-title"></div>
+          <div class="skel skel-line"></div>
+          <div class="skel skel-line short"></div>
+          <div class="skel skel-line"></div>
+          <div class="card-top-row craftindex-card-badges skel-actions"><span class="skel skel-btn"></span><span class="skel skel-btn"></span></div>
+        </div>
+      </article>`;
+  }
+  el.innerHTML = html;
 }
 
 function draw() {
@@ -5804,6 +6305,8 @@ const CraftIndexDrawer = {
       drawerEl.classList.toggle("o", Boolean(isOpen));
       drawerEl.classList.toggle("is-open", Boolean(isOpen));
       drawerEl.setAttribute("aria-hidden", isOpen ? "false" : "true");
+      if (isOpen) CraftIndexScrollLock.acquire("drawer");
+      else CraftIndexScrollLock.release("drawer");
     }
     if (scrimEl) {
       scrimEl.classList.toggle("o", Boolean(isOpen));
@@ -5921,6 +6424,7 @@ function openCartWithDepCheck() {
     ` : ''}
   `;
 
+  CraftIndexScrollLock.acquire("dep");
   modal.classList.add("open");
   modal.setAttribute("aria-hidden", "false");
 }
@@ -6121,6 +6625,7 @@ if ($("depSkipBtn")) {
     if (modal) {
       modal.classList.remove("open");
       modal.setAttribute("aria-hidden", "true");
+      CraftIndexScrollLock.release("dep");
     }
     dr(1);
   };
@@ -6133,6 +6638,7 @@ if ($("depCloseBtn")) {
       if (modal) {
         modal.classList.remove("open");
         modal.setAttribute("aria-hidden", "true");
+        CraftIndexScrollLock.release("dep");
       }
       if (activeToolbarModal === "collection") {
         activeToolbarModal = null;
@@ -6175,6 +6681,7 @@ if ($("depConfirmBtn")) {
     if (modal) {
       modal.classList.remove("open");
       modal.setAttribute("aria-hidden", "true");
+      CraftIndexScrollLock.release("dep");
     }
     $("depConfirmBtn").disabled = false;
     $("depSkipBtn").disabled = false;
@@ -6924,21 +7431,26 @@ function openAboutModal(targetCatId = "overview", skipUrlUpdate = false) {
   const modal = $("aboutModal");
   if (!modal) return;
   lastFocusedBeforeAbout = document.activeElement;
-  modal.classList.add("open");
-  modal.setAttribute("aria-hidden", "false");
-  renderAboutSidebar(targetCatId);
-  showAboutCategory(targetCatId);
-  updateBrowserTitle();
-  const closeBtn = $("aboutCloseBtn");
-  if (closeBtn) closeBtn.focus();
-  if (!skipUrlUpdate) {
-    const targetUrl = targetCatId && targetCatId !== "overview" ? `/docs/#${targetCatId}` : "/docs/";
-    if (window.location.pathname !== "/docs" && window.location.pathname !== "/docs/") {
-      try {
-        window.history.pushState({ modal: "docs", docId: targetCatId }, "", targetUrl);
-      } catch (_) {}
+  // Ensure the heavy Docs module is loaded before rendering its sidebar/content,
+  // so the modal never opens blank on a cold page load.
+  ensureAboutDocs().finally(() => {
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    CraftIndexScrollLock.acquire("about");
+    renderAboutSidebar(targetCatId);
+    showAboutCategory(targetCatId);
+    updateBrowserTitle();
+    const closeBtn = $("aboutCloseBtn");
+    if (closeBtn) closeBtn.focus();
+    if (!skipUrlUpdate) {
+      const targetUrl = targetCatId && targetCatId !== "overview" ? `/docs/#${targetCatId}` : "/docs/";
+      if (window.location.pathname !== "/docs" && window.location.pathname !== "/docs/") {
+        try {
+          window.history.pushState({ modal: "docs", docId: targetCatId }, "", targetUrl);
+        } catch (_) {}
+      }
     }
-  }
+  });
 }
 
 function closeAboutModal(skipUrlUpdate = false) {
@@ -6947,6 +7459,7 @@ function closeAboutModal(skipUrlUpdate = false) {
   if (!modal) return;
   modal.classList.remove("open");
   modal.setAttribute("aria-hidden", "true");
+  CraftIndexScrollLock.release("about");
   updateBrowserTitle();
   const sidebar = $("aboutSidebar");
   if (sidebar) sidebar.classList.remove("mobile-open");
@@ -7217,6 +7730,7 @@ function openSocialsModal(skipUrlUpdate = false) {
   lastFocusedBeforeSocials = document.activeElement;
   modal.classList.add("open");
   modal.setAttribute("aria-hidden", "false");
+  CraftIndexScrollLock.acquire("socials");
   renderSocialsContent();
   const closeBtn = $("socialsCloseBtn");
   if (closeBtn) closeBtn.focus();
@@ -7234,6 +7748,7 @@ function closeSocialsModal(skipUrlUpdate = false) {
   if (!modal) return;
   modal.classList.remove("open");
   modal.setAttribute("aria-hidden", "true");
+  CraftIndexScrollLock.release("socials");
   updateBrowserTitle();
   if (lastFocusedBeforeSocials && typeof lastFocusedBeforeSocials.focus === "function") {
     lastFocusedBeforeSocials.focus();
@@ -8086,6 +8601,7 @@ addEventListener("keydown", (e) => {
     } else if (depModal && depModal.classList.contains("open")) {
       depModal.classList.remove("open");
       depModal.setAttribute("aria-hidden", "true");
+      CraftIndexScrollLock.release("dep");
       if (activeToolbarModal === "collection") {
         activeToolbarModal = null;
         returnToLastUrlAndReload();
@@ -8114,6 +8630,10 @@ function applyAppMode(targetMode) {
     m === "light" ||
     (m === "auto" && matchMedia("(prefers-color-scheme:light)").matches);
   document.body.classList.toggle("light-mode", l);
+  // Keep the pre-CSS theme hint attribute in sync so tokens.css matches
+  // the body class mechanism exactly (no double source of truth).
+  if (l) document.documentElement.setAttribute("data-theme", "light");
+  else document.documentElement.removeAttribute("data-theme");
   if ($("mt")) {
     $("mt").title = l ? "Switch to Night Mode (Dark) 🌙" : "Switch to Day Mode (Light) ☀️";
     $("mt").setAttribute("aria-label", $("mt").title);
@@ -8125,6 +8645,17 @@ function applyAppMode(targetMode) {
   const vLight = $("bgVideoLight");
   const overlay = $("bgOverlay");
   const isVideoEnabled = safeStorage.getItem("cv_ambient_video") !== "0";
+  // Performance gate: no ambient download on Save-Data connections or for
+  // users who prefer reduced motion. The static gradient fallback renders
+  // instead and the identity stays intact.
+  const prefersReducedMotion =
+    matchMedia("(prefers-reduced-motion: reduce)").matches || false;
+  let dataSaver = false;
+  try {
+    const conn = navigator.connection || {};
+    dataSaver = Boolean(conn.saveData) || /2g/.test(conn.effectiveType || "");
+  } catch (e) {}
+  const shouldLoadVideo = isVideoEnabled && !prefersReducedMotion && !dataSaver;
 
   if (vDark && vLight && overlay) {
     if (!isVideoEnabled) {
@@ -8134,16 +8665,37 @@ function applyAppMode(targetMode) {
       try { vLight.pause(); } catch (e) {}
       overlay.className = l ? "bg-overlay light no-video" : "bg-overlay dark no-video";
     } else {
-      if (l) {
-        vLight.classList.add("active");
-        vDark.classList.remove("active");
-        overlay.className = "bg-overlay light";
-        vLight.play().catch(() => {});
+      // Load-at-most-one: only the active theme's video receives a source
+      // (both <video> elements ship with preload="none" and no <source>).
+      const active = l ? vLight : vDark;
+      const idle = l ? vDark : vLight;
+      overlay.className = l ? "bg-overlay light" : "bg-overlay dark";
+      if (shouldLoadVideo && !active.dataset.loaded) {
+        active.dataset.loaded = "1";
+        // Keep preload="none" until the browser is idle so the ~10 MB video
+        // fetch never competes with initial HTML/CSS/JS parsing for LCP/FCP.
+        const startVideo = () => {
+          active.preload = "auto";
+          active.innerHTML =
+            '<source src="' + (active.dataset.src || "") + '" type="video/mp4" />';
+          active.load();
+          active.classList.add("active");
+          active.play().catch(() => {});
+        };
+        const defer = (typeof requestIdleCallback === "function" ? requestIdleCallback : (cb) => setTimeout(cb, 0));
+        defer(() => {
+          // Do not start playback if the overlay was turned off meanwhile.
+          if (safeStorage.getItem("cv_ambient_video") !== "0") startVideo();
+        }, { timeout: 1500 });
+      } else if (!shouldLoadVideo) {
+        active.classList.remove("active");
+        try { active.pause(); } catch (e) {}
+        overlay.className = l ? "bg-overlay light no-video" : "bg-overlay dark no-video";
       } else {
-        vDark.classList.add("active");
-        vLight.classList.remove("active");
-        overlay.className = "bg-overlay dark";
-        vDark.play().catch(() => {});
+        // Video already attached — resume the active theme's playback
+        // (e.g. after a theme re-toggle), never double-fetch.
+        active.classList.add("active");
+        try { active.play().catch(() => {}); } catch (e) {}
       }
     }
   }
@@ -8156,6 +8708,17 @@ if ($("mt")) {
     applyAppMode(cur === "light" ? "dark" : "light");
   };
 }
+// Pause ambient video when the tab is hidden / page is being unloaded to save
+// bandwidth and avoid background decode work; resume only on visible.
+const _pauseAmbient = () => {
+  const vD = $("bgVideoDark"), vL = $("bgVideoLight");
+  try { if (vD) vD.pause(); } catch (e) {}
+  try { if (vL) vL.pause(); } catch (e) {}
+};
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") _pauseAmbient();
+});
+window.addEventListener("pagehide", _pauseAmbient);
 async function getFile(url, label, h) {
   const fn = decodeURIComponent(url.split("/").pop().split("?")[0]) || label;
   try {
@@ -8278,6 +8841,8 @@ const CraftIndexModal = {
     modalEl.classList.toggle("o", Boolean(isOpen));
     modalEl.classList.toggle("is-open", Boolean(isOpen));
     modalEl.setAttribute("aria-hidden", isOpen ? "false" : "true");
+    if (isOpen) CraftIndexScrollLock.acquire("md");
+    else CraftIndexScrollLock.release("md");
 
     if (!isOpen) {
       const mx = modalEl.querySelector(".mx");
@@ -8671,7 +9236,11 @@ function show() {
   $("b2").onclick = zip;
 }
 async function zip() {
-  if (typeof JSZip === "undefined") return toast("JSZip failed to load");
+  try {
+    await ensureJSZip();
+  } catch (err) {
+    return toast("JSZip failed to load");
+  }
   busy = 1;
   const rs = res.filter((r) => r.f);
   if (!rs.length) {
@@ -8796,49 +9365,54 @@ $("md").onclick = (e) => {
   if (e.target === $("md") && !busy) md(0);
 };
 (async () => {
-  tabs();
-  lf();
-  upd();
-  try {
-    GV = await api("/tag/game_version");
-    const rel = GV.filter(
-      (v) =>
-        v.version_type === "release" ||
-        (C.snaps && v.version_type === "snapshot"),
-    );
-    cfg.mc =
-      C.defMc && GV.some((v) => v.version === C.defMc)
-        ? C.defMc
-        : GV.find((v) => v.version_type === "release").version;
-    $("fv").innerHTML =
-      '<option value="">Any version</option>' +
-      rel.map((v) => `<option>${v.version}</option>`).join("");
-  } catch (e) {}
-  
-  // Canonical Route Dispatcher from Initial Browser URL
+  // Canonical Route Dispatcher from Initial Browser URL:
+  // Must execute immediately to hydrate the exact requested route first,
+  // preventing home-mode flicker, filter bar collapse, and layout shift.
   handleRouteFromUrl(false);
+  upd();
 
-  // Dismiss the boot loading screen now that the app is fully hydrated
+  // Load game versions asynchronously in background without blocking initial route rendering
+  api("/tag/game_version")
+    .then((gv) => {
+      GV = gv || [];
+      const rel = GV.filter(
+        (v) =>
+          v.version_type === "release" ||
+          (C.snaps && v.version_type === "snapshot"),
+      );
+      if (GV.length) {
+        cfg.mc =
+          C.defMc && GV.some((v) => v.version === C.defMc)
+            ? C.defMc
+            : (GV.find((v) => v.version_type === "release") || {}).version || "";
+        if ($("fv")) {
+          $("fv").innerHTML =
+            '<option value="">Any version</option>' +
+            rel.map((v) => `<option>${v.version}</option>`).join("");
+        }
+      }
+    })
+    .catch(() => {});
+
+  // Dismiss the boot loading screen now that the app is fully hydrated.
+  // No simulated progress or artificial delay: the bar completes and the
+  // screen exits immediately when initialization actually finishes.
   (function dismissBootScreen() {
     const boot = document.getElementById("ci-boot-screen");
     if (!boot) return;
-    // Immediately complete the progress bar fill and update status
     const fill = boot.querySelector(".ci-boot-bar-fill");
-    if (fill) fill.style.cssText = "width:100%;transition:width 0.2s ease;box-shadow:0 0 18px rgba(192,132,252,0.95);";
+    if (fill) fill.style.cssText = "width:100%;transition:width 0.15s ease;";
     const bar = boot.querySelector(".ci-boot-bar");
     if (bar) bar.setAttribute("aria-valuenow", "100");
     const statusText = document.getElementById("ciBootStatusText");
     if (statusText) statusText.textContent = "Ready";
-    // Brief pause so user sees 100%, then trigger smooth exit animation
+    boot.classList.add("ci-boot-hide");
     setTimeout(() => {
-      boot.classList.add("ci-boot-hide");
-      setTimeout(() => {
-        boot.style.display = "none";
-        if (boot.parentNode) boot.parentNode.removeChild(boot);
-        const bootStyle = document.getElementById("ci-boot-style");
-        if (bootStyle) bootStyle.remove();
-      }, 620);
-    }, 160);
+      boot.style.display = "none";
+      if (boot.parentNode) boot.parentNode.removeChild(boot);
+      const bootStyle = document.getElementById("ci-boot-style");
+      if (bootStyle) bootStyle.remove();
+    }, 400);
   })();
 })();
 
@@ -8878,9 +9452,13 @@ function closeDashModal() {
   const modal = $("dashModal");
   if (!modal) return;
   modal.classList.remove("open");
+  modal.classList.remove("inline");
   modal.setAttribute("aria-hidden", "true");
-  updateBrowserTitle();
-  document.body.style.overflow = "";
+  if (dashInline) {
+    restoreInlineDashHost();
+    dashInline = null;
+  }
+  CraftIndexScrollLock.release("dash");
   updateBrowserTitle();
 }
 
@@ -8891,6 +9469,7 @@ function openLightbox(url, caption) {
   $("dashLightboxCaption").textContent = caption || "";
   box.classList.add("open");
   box.setAttribute("aria-hidden", "false");
+  CraftIndexScrollLock.acquire("dash-lightbox");
 }
 
 function closeLightbox() {
@@ -8899,6 +9478,7 @@ function closeLightbox() {
   box.classList.remove("open");
   box.setAttribute("aria-hidden", "true");
   $("dashLightboxImg").src = "";
+  CraftIndexScrollLock.release("dash-lightbox");
 }
 
 function renderDashHeader(h) {
@@ -9380,7 +9960,8 @@ function renderDashTabContent() {
   }
 }
 
-async function openResourceDash(h) {
+async function openResourceDash(h, opts = {}) {
+  const inline = Boolean(opts.inline);
   currentDashItem = h;
   currentDashTab = "docs";
   dashVerFilter = "";
@@ -9389,14 +9970,52 @@ async function openResourceDash(h) {
   const modal = $("dashModal");
   if (!modal) return;
 
-  modal.classList.add("open");
-  modal.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
+  if (inline && !$("standaloneResourceView")) {
+    // No page host available (e.g. very old markup) — degrade to modal.
+    inline = false;
+  }
+
+  if (inline) {
+    dashInline = { url: window.location.pathname, tab: h.tab, slug: h.slug };
+    modal.classList.add("inline");
+    const host = $("standaloneResourceView");
+    host.innerHTML = `
+      <div class="rp-shell">
+        ${rpBreadcrumb(h)}
+        <div class="rp-dash-mount"></div>
+      </div>`;
+    const win = modal.querySelector(".dash-window");
+    const mount = host.querySelector(".rp-dash-mount");
+    if (win && mount && !mount.contains(win)) mount.appendChild(win);
+    // The window leaves `.open` modal flow: remove modal display state so
+    // backdrop/pointer-events stay inert while inline.
+    modal.classList.remove("open");
+  } else {
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    CraftIndexScrollLock.acquire("dash");
+  }
+
   updateBrowserTitle();
+  if (inline) document.title = rpTitle(h);
 
   renderDashHeader(h);
   renderDashMetrics(h, null);
   renderDashNav();
+
+  if (inline) {
+    // Rebind the header close button to a real history back-navigation so the
+    // browser restores the previous scroll position cleanly.
+    const closeBtn = $("dashCloseBtn");
+    if (closeBtn) {
+      closeBtn.title = "Back";
+      closeBtn.setAttribute("aria-label", "Back to " + ((T(h.tab) && T(h.tab).name) || h.tab));
+      closeBtn.onclick = (e) => {
+        e.preventDefault();
+        rpCloseToCategory();
+      };
+    }
+  }
 
   $("dashContent").innerHTML = `
     <div style="text-align: center; padding: 70px 20px;">
@@ -9709,7 +10328,7 @@ async function openResourceDash(h) {
             versionNumber: rel.tag_name || "1.0.0",
             type: rel.prerelease ? "beta" : "release",
             gameVersions: [],
-            loaders: [tab.id],
+            loaders: [h.tab],
             date: rel.published_at ? new Date(rel.published_at).toLocaleDateString() : "",
             downloads: asset.download_count || 0,
             fileName: asset.name,
@@ -9725,7 +10344,7 @@ async function openResourceDash(h) {
           versionNumber: repo.default_branch || "main",
           type: "release",
           gameVersions: [],
-          loaders: [tab.id],
+          loaders: [h.tab],
           date: repo.updated_at ? new Date(repo.updated_at).toLocaleDateString() : "",
           downloads: repo.stargazers_count || 0,
           fileName: `${h.title}.zip`,
@@ -9754,15 +10373,23 @@ async function openResourceDash(h) {
         descriptionHtml: descData.data || mod.summary || "",
       };
       const catSlug =
-        tab.id === "mods"
+        h.tab === "mods"
           ? "mc-mods"
-          : tab.id === "resourcepacks"
+          : h.tab === "resourcepacks"
             ? "texture-packs"
-            : tab.id === "shaders"
+            : h.tab === "shaders"
               ? "shaders"
-              : tab.id === "datapacks"
+              : h.tab === "datapacks"
                 ? "data-packs"
-                : "bukkit-plugins";
+                : h.tab === "modpacks"
+                  ? "modpacks"
+                  : h.tab === "worlds"
+                    ? "worlds"
+                    : h.tab === "serversoftwares"
+                      ? "mc-mods"
+                      : h.tab === "modloaders"
+                        ? "mc-mods"
+                        : "bukkit-plugins";
 
       currentDashVersions = (filesData.data || []).map((f) => {
         const typeMap = { 1: "release", 2: "beta", 3: "alpha" };
@@ -9828,6 +10455,9 @@ document.addEventListener("keydown", (e) => {
       closeLightbox();
     } else if ($("dashModal") && $("dashModal").classList.contains("open")) {
       closeDashModal();
+    } else if ($("dashModal") && $("dashModal").classList.contains("inline") && typeof rpCloseToCategory === "function") {
+      // Inline resource page: Escape goes back like the header ✕ button does.
+      rpCloseToCategory();
     }
   }
 });

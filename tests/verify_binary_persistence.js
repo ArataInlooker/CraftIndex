@@ -62,8 +62,14 @@ async function createTestFixtures() {
   await browser.navigate('http://localhost:3000/studio/');
   await new Promise(r => setTimeout(r, 1000));
 
-  // Confirm studio loaded
-  const studioExists = await browser.evaluate('Boolean(window.CraftIndexStudio)');
+  // Confirm studio loaded (Pack Studio is lazy-loaded on first need — await the
+  // public loader so we exercise the real init path rather than racing timing).
+  const studioExists = await browser.evaluate(`(async () => {
+    if (typeof window.ensurePackStudio === 'function') {
+      try { await window.ensurePackStudio(); } catch (_) {}
+    }
+    return Boolean(window.CraftIndexStudio);
+  })()`);
   console.log('CraftIndexStudio initialized in browser:', studioExists);
   if (!studioExists) throw new Error('CraftIndexStudio missing from window');
 

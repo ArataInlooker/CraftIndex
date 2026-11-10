@@ -115,6 +115,9 @@ async function runMasterTestSuite() {
   suiteResults.push(await runNodeScript('build_pages.js'));
   suiteResults.push(await runNodeScript('sync_standalone.js'));
 
+  // Phase 3b: Breadcrumb structured-data regression guard (generated output)
+  suiteResults.push(await runNodeScript('tests/verify_breadcrumbs.js'));
+
   // Phase 4: Cloudflare Pages Deployment Preflight (self-hosting port 3033)
   suiteResults.push(await runNodeScript('tests/verify_pages_deployment.js'));
 

@@ -664,6 +664,49 @@ function resolveRouteKey(cleanPath) {
   return null;
 }
 
+const SUBTAB_GROUPS = {
+  mods: [
+    { id: "mods", name: "Mods", emoji: "🧩" },
+    { id: "modpacks", name: "Modpacks", emoji: "📦" },
+    { id: "modloaders", name: "Mod Loader", emoji: "⚙️" },
+    { id: "launchers", name: "Minecraft Launchers", emoji: "🚀" }
+  ],
+  modpacks: [
+    { id: "mods", name: "Mods", emoji: "🧩" },
+    { id: "modpacks", name: "Modpacks", emoji: "📦" },
+    { id: "modloaders", name: "Mod Loader", emoji: "⚙️" },
+    { id: "launchers", name: "Minecraft Launchers", emoji: "🚀" }
+  ],
+  modloaders: [
+    { id: "mods", name: "Mods", emoji: "🧩" },
+    { id: "modpacks", name: "Modpacks", emoji: "📦" },
+    { id: "modloaders", name: "Mod Loader", emoji: "⚙️" },
+    { id: "launchers", name: "Minecraft Launchers", emoji: "🚀" }
+  ],
+  launchers: [
+    { id: "mods", name: "Mods", emoji: "🧩" },
+    { id: "modpacks", name: "Modpacks", emoji: "📦" },
+    { id: "modloaders", name: "Mod Loader", emoji: "⚙️" },
+    { id: "launchers", name: "Minecraft Launchers", emoji: "🚀" }
+  ],
+  worlds: [
+    { id: "worlds", name: "Worlds", emoji: "🌍" },
+    { id: "datapacks", name: "Data Packs", emoji: "📦" }
+  ],
+  datapacks: [
+    { id: "worlds", name: "Worlds", emoji: "🌍" },
+    { id: "datapacks", name: "Data Packs", emoji: "📦" }
+  ],
+  plugins: [
+    { id: "plugins", name: "Plugins", emoji: "🔌" },
+    { id: "serversoftwares", name: "Server Software", emoji: "🖥️" }
+  ],
+  serversoftwares: [
+    { id: "plugins", name: "Plugins", emoji: "🔌" },
+    { id: "serversoftwares", name: "Server Software", emoji: "🖥️" }
+  ]
+};
+
 function injectRouteHtml(rawHtml, cleanPath) {
   const routeKey = resolveRouteKey(cleanPath);
   const cfg = routeKey !== null ? ROUTE_CONFIG[routeKey] : ROUTE_CONFIG[''];
@@ -671,11 +714,60 @@ function injectRouteHtml(rawHtml, cleanPath) {
 
   const canonicalUrl = `${DOMAIN}${cfg.canonicalPath}`;
   const initialContent = cfg.getInitialHtml ? cfg.getInitialHtml() : (cfg.initialBodyHtml || '');
+  const primaryTab = routeKey ? routeKey.split('/')[0] : 'home';
 
   let html = rawHtml;
 
+  const pathParts = cleanPath.toLowerCase().replace(/^\/+|\/+$/g, '').split('/');
+  const isResourcePage = pathParts.length === 2 && ['mods', 'plugins', 'resourcepacks', 'shaders', 'datapacks', 'modpacks', 'worlds'].includes(pathParts[0]) && !ROUTE_CONFIG[`${pathParts[0]}/${pathParts[1]}`];
+
+  // Set active route tab on body immediately to prevent layout shift & FOUC
+  html = html.replace(/<body([^>]*)>/i, `<body$1 data-tab="${primaryTab}">`);
+
+  if (isResourcePage) {
+    const catNames = { mods: 'Mods', plugins: 'Plugins', resourcepacks: 'Resource Packs', shaders: 'Shaders', datapacks: 'Data Packs', modpacks: 'Modpacks', worlds: 'Worlds' };
+    const catLabel = catNames[pathParts[0]] || pathParts[0];
+    const slug = pathParts[1];
+    const resourceShell = `
+    <div class="rp-shell">
+      <nav class="rp-breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a><span class="rp-crumb-sep">›</span>
+        <a href="/${pathParts[0]}/">${catLabel}</a><span class="rp-crumb-sep">›</span>
+        <span aria-current="page">${escapeHtml(slug)}</span>
+      </nav>
+      <div class="rp-loading">
+        <div class="cyber-spinner" style="margin: 0 auto 14px;"></div>
+        <div style="color: var(--colors-text-muted); font-size: 14px;">Resolving “${escapeHtml(slug)}” on ${catLabel} providers…</div>
+      </div>
+    </div>`;
+    html = html.replace(
+      '<div id="standaloneResourceView" class="standalone-resource-container" aria-live="polite"></div>',
+      `<div id="standaloneResourceView" class="standalone-resource-container active" aria-live="polite">${resourceShell}</div>`
+    );
+    html = html.replace('<div class="gr" id="g"></div>', '<div class="gr" id="g" style="display:none"></div>');
+    html = html.replace('<div class="fl">', '<div class="fl" style="display:none">');
+  } else {
+    // Pre-render subtabs bar if route belongs to a group with subcategories
+    const subs = SUBTAB_GROUPS[primaryTab];
+    if (subs) {
+      const subButtons = subs.map(st => {
+        const isSubActive = st.id === primaryTab;
+        return `<button class="subtab-btn ${isSubActive ? 'on' : ''}" data-subid="${st.id}" role="tab" aria-selected="${isSubActive ? 'true' : 'false'}"><span>${st.emoji}</span><span>${escapeHtml(st.name)}</span></button>`;
+      }).join('');
+      html = html.replace(
+        '<div class="subtabs-bar" id="subtabsBar" role="tablist" aria-label="Subcategories" style="display: none;"></div>',
+        `<div class="subtabs-bar" id="subtabsBar" role="tablist" aria-label="Subcategories">${subButtons}</div>`
+      );
+    }
+  }
+
   // 1. Replace Title
-  html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(cfg.title)}</title>`);
+  if (isResourcePage) {
+    const slug = pathParts[1];
+    html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>Loading ${escapeHtml(slug)} | CraftIndex</title>`);
+  } else {
+    html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(cfg.title)}</title>`);
+  }
 
   // 2. Replace Meta Description
   html = html.replace(/<meta\s+name="description"[\s\S]*?>/i, `<meta name="description" content="${escapeHtml(cfg.description)}" />`);
@@ -711,9 +803,13 @@ function injectRouteHtml(rawHtml, cleanPath) {
   const jsonLdString = JSON.stringify(cfg.jsonLd, null, 2);
   html = html.replace(/<script\s+type="application\/ld\+json">[\s\S]*?<\/script>/i, `<script type="application/ld+json">\n${jsonLdString}\n    </script>`);
 
-  // 7. Inject Initial HTML into <div class="gr" id="g">
+  // 7. Inject Initial HTML
   if (initialContent) {
-    html = html.replace('<div class="gr" id="g"></div>', `<div class="gr" id="g">${initialContent}</div>`);
+    if (cfg.canonicalPath === '/docs/' || cfg.canonicalPath === '/socials/') {
+      html = html.replace('<div class="gr" id="g"></div>', `<div class="gr" id="g" style="display:none"></div>\n${initialContent}`);
+    } else {
+      html = html.replace('<div class="gr" id="g"></div>', `<div class="gr" id="g">${initialContent}</div>`);
+    }
   }
 
   return html;

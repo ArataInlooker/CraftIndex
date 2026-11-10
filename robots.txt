@@ -2,5 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /scratch/
+Disallow: /tests/
 
 Sitemap: https://craftindex.inlooker.top/sitemap.xml
+Sitemap: https://craftindex.inlooker.top/sitemap-resources.xml
