@@ -39,7 +39,7 @@ export async function onRequest(context) {
   const upstreamUrl = `https://api.curseforge.com${targetPath}`;
   const headers = new Headers();
   headers.set('Accept', 'application/json');
-  headers.set('User-Agent', 'CraftIndex/2.6.0');
+  headers.set('User-Agent', 'CraftIndex/2.6.1');
   headers.set('x-api-key', activeKey);
 
   try {

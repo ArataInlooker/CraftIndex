@@ -216,7 +216,7 @@ export async function onRequest(context) {
 
     // Request Headers
     const reqHeaders = new Headers();
-    reqHeaders.set('User-Agent', 'CraftIndex/2.6.0 (https://craftindex.inlooker.top)');
+    reqHeaders.set('User-Agent', 'CraftIndex/2.6.1 (https://craftindex.inlooker.top)');
     if (request.headers.get('accept')) {
       reqHeaders.set('Accept', request.headers.get('accept'));
     }

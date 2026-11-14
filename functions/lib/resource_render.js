@@ -81,7 +81,7 @@ function fmtDate(iso) {
 async function fetchJson(url, headers) {
   const res = await fetch(url, {
     headers: {
-      'User-Agent': 'CraftIndex/2.6.0 (https://craftindex.inlooker.top; aratainlooker@gmail.com)',
+      'User-Agent': 'CraftIndex/2.6.1 (https://craftindex.inlooker.top; aratainlooker@gmail.com)',
       Accept: 'application/json',
       ...(headers || {})
     }

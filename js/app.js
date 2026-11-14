@@ -6940,7 +6940,7 @@ function openSettingsModal() {
       <div class="smh-left">
         <span class="smh-icon">⚙️</span>
         <span class="smh-title">CraftIndex Settings</span>
-        <span class="smh-badge">v2.6.0</span>
+        <span class="smh-badge">v2.6.1</span>
       </div>
     </div>
   `;
