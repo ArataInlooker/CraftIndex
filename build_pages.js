@@ -91,6 +91,7 @@ function buildPages() {
     'sitemap.xml',
     'sitemap-resources.xml',
     'site.webmanifest',
+    '_headers',
     '_redirects',
     '_routes.json',
     '404.html'

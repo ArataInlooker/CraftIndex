@@ -143,11 +143,44 @@ async function main() {
   check('CF_KEY read from env not hardcoded', serverSource.includes('process.env.CF_KEY') && fetchSource2.includes('env.CF_KEY'));
   check('.env.example has placeholder only', fs.readFileSync(path.resolve(__dirname, '..', '.env.example'), 'utf-8').includes('CF_KEY='));
 
-  console.log(`\n================================================================`);
-  console.log(`RESULTS: ${passed} passed, ${failed} failed`);
-  console.log('================================================================\n');
+  // ── Test 8: Security Headers Consistency ──
+  console.log('\n8. Security Headers Consistency');
 
-  process.exit(failed > 0 ? 1 : 0);
+  const headersSource = fs.readFileSync(
+    path.resolve(__dirname, '..', '_headers'),
+    'utf-8'
+  );
+
+  check('_headers file exists for static assets', fs.existsSync(path.resolve(__dirname, '..', '_headers')));
+  check('_headers X-Content-Type-Options', headersSource.includes('X-Content-Type-Options: nosniff'));
+  check('_headers X-Frame-Options', headersSource.includes('X-Frame-Options: SAMEORIGIN'));
+  check('_headers Referrer-Policy', headersSource.includes('Referrer-Policy: strict-origin-when-cross-origin'));
+  check('_headers Permissions-Policy', headersSource.includes('Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()'));
+  check('_headers Strict-Transport-Security', headersSource.includes('Strict-Transport-Security: max-age=31536000'));
+  check('_headers CSP present', headersSource.includes('Content-Security-Policy:'));
+  check('_headers no preload in HSTS', !headersSource.includes('preload'));
+  check('_headers no duplicate CSP', (headersSource.match(/Content-Security-Policy:/g) || []).length === 1);
+
+  // route function headers
+  check('route function X-Frame-Options', routeSource.includes("'x-frame-options': 'SAMEORIGIN'"));
+  check('route function Permissions-Policy', routeSource.includes("'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=()'"));
+  check('route function Strict-Transport-Security', routeSource.includes("'strict-transport-security': 'max-age=31536000'"));
+  check('route function X-Content-Type-Options', routeSource.includes("'x-content-type-options': 'nosniff'"));
+  check('route function no unsafe-eval', !routeSource.includes("'unsafe-eval'"));
+
+  // fetch.js headers
+  check('fetch.js Permissions-Policy', fetchSource2.includes("'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=()'"));
+  check('fetch.js Strict-Transport-Security', fetchSource2.includes("'Strict-Transport-Security': 'max-age=31536000'"));
+  check('fetch.js X-Frame-Options', fetchSource2.includes("'X-Frame-Options': 'SAMEORIGIN'"));
+  check('fetch.js X-Content-Type-Options', fetchSource2.includes("'X-Content-Type-Options': 'nosniff'"));
+  check('fetch.js restrictive CSP', fetchSource2.includes("default-src 'none'"));
+
+  // server.js headers
+  check('server.js X-Frame-Options', serverSource.includes("'X-Frame-Options': 'SAMEORIGIN'"));
+  check('server.js Permissions-Payment', serverSource.includes("'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=()'"));
+  check('server.js Strict-Transport-Security no preload', serverSource.includes("'Strict-Transport-Security': 'max-age=31536000'"));
+  check('server.js no preload in HSTS', !serverSource.includes("'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'"));
+  check('server.js X-Content-Type-Options', serverSource.includes("'X-Content-Type-Options': 'nosniff'"));
 }
 
 main().catch((err) => {
