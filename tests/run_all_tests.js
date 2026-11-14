@@ -121,6 +121,9 @@ async function runMasterTestSuite() {
   // Phase 3c: SSR resource page verification (no server required)
   suiteResults.push(await runNodeScript('tests/verify_ssr_resource_pages.js'));
 
+  // Phase 3d: Security hardening regression tests (no server required)
+  suiteResults.push(await runNodeScript('tests/verify_security_hardening.js'));
+
   // Phase 4: Cloudflare Pages Deployment Preflight (self-hosting port 3033)
   suiteResults.push(await runNodeScript('tests/verify_pages_deployment.js'));
 

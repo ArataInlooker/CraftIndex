@@ -57,7 +57,7 @@ const SECURITY_HEADERS = {
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
-  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob:; font-src 'self' data:; connect-src 'self' https: blob:; worker-src 'self' blob:; object-src 'none'; base-uri 'self';"
+  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob:; font-src 'self' data:; connect-src 'self' https: blob:; worker-src 'self' blob:; object-src 'none'; base-uri 'self';"
 };
 
 const WHITELISTED_HOSTS = new Set([
@@ -154,7 +154,95 @@ function sanitizeError(err) {
     .replace(/https?:\/\/[^/\s]+/g, '[redacted-url]');
 }
 
+/* ---------------------------------------------------------------
+ * Rate Limiting (fixed-window, IP-based, in-memory)
+ * ---------------------------------------------------------------
+ * CraftIndex runs on Cloudflare Pages at the edge, where each edge
+ * node maintains its own in-memory state. A process-local Map is the
+ * only locally-verifiable implementation available without production
+ * Cloudflare KV/Durable Objects bindings. Counter resets every
+ * WINDOW_MS. Limits are generous enough to never block normal
+ * browsing but low enough to prevent provider quota exhaustion.
+ */
+const RATE_WINDOW_MS = 60 * 1000; // 1 minute fixed window
+const rateLimiters = new Map(); // key: `${ip}:${endpoint}` => { count, resetAt }
+
+function getClientIp(req) {
+  // Standalone Node.js server: prefer the direct socket peer address.
+  // X-Forwarded-For is client-supplied and spoofable; only trust it when
+  // the server is demonstrably behind a trusted reverse proxy.
+  if (req.socket && req.socket.remoteAddress) {
+    return req.socket.remoteAddress;
+  }
+  return 'unknown';
+}
+
+function endpointKey(req) {
+  const url = req.url || '';
+  if (url.startsWith('/api/fetch')) return '/api/fetch';
+  if (url.startsWith('/api/curseforge')) return '/api/curseforge';
+  if (url.startsWith('/api/sponge')) return '/api/sponge';
+  if (url.startsWith('/api/hangar')) return '/api/hangar';
+  if (url.startsWith('/api/spiget')) return '/api/spiget';
+  if (url.startsWith('/api/polymart')) return '/api/polymart';
+  if (url.startsWith('/api/smithed')) return '/api/smithed';
+  if (url.startsWith('/api/github')) return '/api/github';
+  return url.startsWith('/api/') ? '/api/other' : null;
+}
+
+// Endpoint-specific limits: requests per window per IP.
+const RATE_LIMITS = {
+  '/api/fetch': 60,
+  '/api/curseforge': 30,
+  '/api/sponge': 30,
+  '/api/hangar': 60,
+  '/api/spiget': 60,
+  '/api/polymart': 60,
+  '/api/smithed': 60,
+  '/api/github': 60,
+  '/api/other': 60
+};
+
+function checkRateLimit(ip, endpoint) {
+  const limit = RATE_LIMITS[endpoint] || 60;
+  const now = Date.now();
+  const key = `${ip}:${endpoint}`;
+  let entry = rateLimiters.get(key);
+  if (!entry || now >= entry.resetAt) {
+    entry = { count: 0, resetAt: now + RATE_WINDOW_MS };
+    rateLimiters.set(key, entry);
+  }
+  entry.count++;
+  const remaining = Math.max(0, limit - entry.count);
+  const retryAfter = Math.ceil((entry.resetAt - now) / 1000);
+  return { allowed: entry.count <= limit, limit, remaining, retryAfter };
+}
+
+function sendRateLimitResponse(res, retryAfter) {
+  res.writeHead(429, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Retry-After': String(retryAfter),
+    ...SECURITY_HEADERS
+  });
+  res.end(JSON.stringify({ error: 'Too many requests. Please slow down and try again later.' }));
+}
+
 const server = http.createServer((req, res) => {
+  // Rate limiting: apply to API proxy endpoints only.
+  const ep = endpointKey(req);
+  if (ep) {
+    const ip = getClientIp(req);
+    const rl = checkRateLimit(ip, ep);
+    // Set rate-limit info headers on all API responses.
+    res.setHeader('X-RateLimit-Limit', String(rl.limit));
+    res.setHeader('X-RateLimit-Remaining', String(rl.remaining));
+    res.setHeader('X-RateLimit-Reset', String(Math.ceil(rl.retryAfter)));
+    if (!rl.allowed) {
+      return sendRateLimitResponse(res, rl.retryAfter);
+    }
+  }
+
   // CORS preflight support
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
