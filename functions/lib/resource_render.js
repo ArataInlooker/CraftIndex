@@ -340,23 +340,23 @@ function buildSsrBody(resource, related, slug) {
   const info = CATEGORY_MAP[resource.category] || {};
   const stats = [];
   if (resource.downloads != null) {
-    stats.push(`<li>⬇ <strong>${escapeHtml(fmtCompact(resource.downloads))}</strong> downloads (as reported by ${escapeHtml(resource.sourceName)})</li>`);
+    stats.push(`⬇ <strong>${escapeHtml(fmtCompact(resource.downloads))}</strong> downloads (as reported by ${escapeHtml(resource.sourceName)})`);
   }
   if (resource.followers != null && resource.source === 'github') {
-    stats.push(`<li>★ <strong>${escapeHtml(fmtCompact(resource.followers))}</strong> stars</li>`);
+    stats.push(`★ <strong>${escapeHtml(fmtCompact(resource.followers))}</strong> stars`);
   } else if (resource.followers) {
-    stats.push(`<li>♥ <strong>${escapeHtml(fmtCompact(resource.followers))}</strong> followers</li>`);
+    stats.push(`♥ <strong>${escapeHtml(fmtCompact(resource.followers))}</strong> followers`);
   }
   if (resource.license) {
     const lic = resource.licenseUrl
       ? `<a href="${escapeHtml(resource.licenseUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(resource.license)}</a>`
       : escapeHtml(resource.license);
-    stats.push(`<li>License: ${lic}</li>`);
+    stats.push(`License: ${lic}`);
   }
   const upd = fmtDate(resource.updated);
-  if (upd) stats.push(`<li>Updated: <time datetime="${escapeHtml(resource.updated)}">${escapeHtml(upd)}</time></li>`);
+  if (upd) stats.push(`Updated: <time datetime="${escapeHtml(resource.updated)}">${escapeHtml(upd)}</time>`);
   if (resource.loaders && resource.loaders.length) {
-    stats.push(`<li>Loaders: ${resource.loaders.slice(0, 6).map((l) => escapeHtml(String(l).toLowerCase())).join(', ')}</li>`);
+    stats.push(`Loaders: ${resource.loaders.slice(0, 6).map((l) => escapeHtml(String(l).toLowerCase())).join(', ')}`);
   }
 
   const paragraphs = stripMarkdownToText(resource.body || resource.desc || '', 2400)
@@ -487,6 +487,16 @@ export function injectResourcePage(templateHtml, resource, related, slug) {
     // Fallback: insert before the first main wrapper's closing position marker
     html = html.replace(/(<main[^>]*>)/i, `$1${buildSsrBody(resource, related, slug)}`);
   }
+
+  // Hide category-specific chrome (filter bar, load more) on resource pages.
+  html = html.replace(
+    '<div class="fl"',
+    '<div class="fl" style="display:none"'
+  );
+  html = html.replace(
+    'id="mo-wrap"',
+    'style="display:none" id="mo-wrap"'
+  );
 
   return html;
 }

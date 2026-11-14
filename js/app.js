@@ -1151,13 +1151,7 @@ function rpParseResourceRoute(pathname) {
 // re-resolved against a provider from URL alone. GitHub hits use owner--repo.
 function rpCardHref(h) {
   if (!h || !h.tab || !RP_CATS.has(h.tab)) return null;
-  if (h.tab === "mods" && ML.includes(String(h.slug || ""))) return null;
-  if (h.source === "github") {
-    if (!h.id || !String(h.id).includes("/")) return null;
-    return rpResourceUrl(h.tab, String(h.id).replace("/", RP_GITHUB_SEP));
-  }
-  if (!RP_LINKABLE_SOURCES.has(h.source)) return null;
-  const slug = String(h.slug || "");
+  const slug = String(h.slug || h.id || "");
   if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]*$/.test(slug)) return null;
   return rpResourceUrl(h.tab, slug);
 }
@@ -1345,6 +1339,27 @@ async function openStandaloneResource(tabId, slug, opts = {}) {
   if ($("standaloneSocialsView")) $("standaloneSocialsView").style.display = "none";
 
   host.classList.add("active");
+
+  // SSR fast path: if the server already rendered the resource profile,
+  // display it directly without a loading shell or duplicate resolution.
+  const ssrEl = document.querySelector("#g .rp-ssr[data-rp]");
+  if (ssrEl) {
+    try {
+      const ssrPayload = JSON.parse(decodeURIComponent(ssrEl.getAttribute("data-rp")));
+      host.appendChild(ssrEl);
+      document.title = `${ssrPayload.title || slug} — ${(T(tabId) && T(tabId).name) || tabId} | CraftIndex`;
+      currentDashItem = ssrPayload;
+      currentDashData = null;
+      currentDashVersions = [];
+      currentDashTab = "docs";
+      dashVerFilter = "";
+      dashLoaderFilter = "";
+      return;
+    } catch (e) {
+      // Malformed SSR payload: fall through to normal client-side resolution.
+    }
+  }
+
   const catLabel = (T(tabId) && T(tabId).name) || tabId;
   host.innerHTML = `
     <div class="rp-shell">
@@ -1476,6 +1491,10 @@ function handleRouteFromUrl(isPopState = false) {
     if ($("mo-wrap")) $("mo-wrap").style.display = "";
     if ($("standaloneDocsView")) $("standaloneDocsView").style.display = "none";
     if ($("standaloneSocialsView")) $("standaloneSocialsView").style.display = "none";
+    if ($("standaloneResourceView")) {
+      $("standaloneResourceView").classList.remove("active");
+      $("standaloneResourceView").innerHTML = "";
+    }
     if (typeof closeAboutModal === "function" && $("aboutModal") && $("aboutModal").classList.contains("open")) {
       closeAboutModal(true);
     }
@@ -1678,7 +1697,65 @@ function tabs() {
       switchTab(tObj);
     };
   });
+  // Resource card action buttons - add to cart only
+  $("g").addEventListener("click", (e) => {
+    const btn = e.target.closest(".cd .ad");
+    if (btn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = btn.dataset.i;
+      const h = hits[Number(id)];
+      if (h) {
+        const isAdded = cart.has(h.k) || (h.sources && h.sources.some((src) => cart.has(src.rawKey || (src.rawItem && src.rawItem.k))));
+        if (isAdded) {
+          cart.delete(h.k);
+          if (h.sources) {
+            h.sources.forEach((src) => {
+              if (src.rawKey) cart.delete(src.rawKey);
+              if (src.rawItem && src.rawItem.k) cart.delete(src.rawItem.k);
+            });
+          }
+        } else {
+          if (C.max && cart.size >= C.max) return toast("Limit: " + C.max + " items");
+          if (h.sources && h.sources.length > 1) {
+            const catId = h.tab || "mods";
+            const { primary: prim, secondary: sec } = getSourcePrefs(catId);
+            const auto = safeStorage.getItem("cv_auto_source") !== "0";
+            if (auto && prim !== "none") {
+              const primMatch = h.sources.find((s) => s.id === prim);
+              if (primMatch) {
+                applyCraftSource(h, primMatch);
+                cart.set(h.k, h);
+                sv();
+                upd();
+                toast(`Added ${h.title} from ${primMatch.name}!`);
+                return;
+              }
+            }
 
+            if (sec !== "none") {
+              const secMatch = h.sources.find((s) => s.id === sec);
+              if (secMatch) {
+                applyCraftSource(h, secMatch);
+                cart.set(h.k, h);
+                sv();
+                upd();
+                toast(`Added ${h.title} from ${secMatch.name} (Secondary fallback)!`);
+                return;
+              }
+            }
+
+            openSourceSelectorModal(h);
+            return;
+          }
+          cart.set(h.k, h);
+        }
+        sv();
+        upd();
+        draw();
+      }
+    }
+  });
   // 2. Render Subtabs Bar if active group has subcategories
   const subBar = $("subtabsBar");
   if (subBar) {
@@ -5901,11 +5978,11 @@ function renderCatalogGrid(itemsList, container) {
             ${(h.tags || []).map((c) => `<span class="tg craftindex-tag">${E(c)}</span>`).join("")}
           </div>
         </div>
-        <div class="act craftindex-card-actions">
+          <div class="act craftindex-card-actions">
           ${
             rpCardHref(h)
               ? `<a class="btn-info craftindex-btn-info" href="${E(rpCardHref(h))}" data-info="${i}" title="Open the full resource page for ${E(h.title)}" aria-label="Open full resource page for ${E(h.title)}">ℹ</a>`
-              : `<button class="btn-info craftindex-btn-info" data-info="${i}" title="View documentation, screenshots, and single downloads" aria-label="View details for ${E(h.title)}">ℹ</button>`
+              : `<a class="btn-info craftindex-btn-info" href="${rpResourceUrl(h.tab, h.slug)}" data-info="${i}" title="Open the full resource page for ${E(h.title)}" aria-label="Open full resource page for ${E(h.title)}">ℹ</a>`
           }
           ${
             h.sources && h.sources.length > 1

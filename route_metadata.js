@@ -724,28 +724,38 @@ function injectRouteHtml(rawHtml, cleanPath) {
   // Set active route tab on body immediately to prevent layout shift & FOUC
   html = html.replace(/<body([^>]*)>/i, `<body$1 data-tab="${primaryTab}">`);
 
-  if (isResourcePage) {
-    const catNames = { mods: 'Mods', plugins: 'Plugins', resourcepacks: 'Resource Packs', shaders: 'Shaders', datapacks: 'Data Packs', modpacks: 'Modpacks', worlds: 'Worlds' };
-    const catLabel = catNames[pathParts[0]] || pathParts[0];
-    const slug = pathParts[1];
-    const resourceShell = `
-    <div class="rp-shell">
-      <nav class="rp-breadcrumb" aria-label="Breadcrumb">
-        <a href="/">Home</a><span class="rp-crumb-sep">›</span>
-        <a href="/${pathParts[0]}/">${catLabel}</a><span class="rp-crumb-sep">›</span>
-        <span aria-current="page">${escapeHtml(slug)}</span>
-      </nav>
-      <div class="rp-loading">
-        <div class="cyber-spinner" style="margin: 0 auto 14px;"></div>
-        <div style="color: var(--colors-text-muted); font-size: 14px;">Resolving “${escapeHtml(slug)}” on ${catLabel} providers…</div>
-      </div>
-    </div>`;
-    html = html.replace(
-      '<div id="standaloneResourceView" class="standalone-resource-container" aria-live="polite"></div>',
-      `<div id="standaloneResourceView" class="standalone-resource-container active" aria-live="polite">${resourceShell}</div>`
-    );
-    html = html.replace('<div class="gr" id="g"></div>', '<div class="gr" id="g" style="display:none"></div>');
-    html = html.replace('<div class="fl">', '<div class="fl" style="display:none">');
+    if (isResourcePage) {
+      const catNames = { mods: 'Mods', plugins: 'Plugins', resourcepacks: 'Resource Packs', shaders: 'Shaders', datapacks: 'Data Packs', modpacks: 'Modpacks', worlds: 'Worlds' };
+      const catLabel = catNames[pathParts[0]] || pathParts[0];
+      const slug = pathParts[1];
+      const resourceShell = `
+      <div class="rp-shell">
+        <nav class="rp-breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a><span class="rp-crumb-sep">›</span>
+          <a href="/${pathParts[0]}/">${catLabel}</a><span class="rp-crumb-sep">›</span>
+          <span aria-current="page">${escapeHtml(slug)}</span>
+        </nav>
+        <div class="rp-loading">
+          <div class="cyber-spinner" style="margin: 0 auto 14px;"></div>
+          <div style="color: var(--colors-text-muted); font-size: 14px;">Resolving “${escapeHtml(slug)}” on ${catLabel} providers…</div>
+        </div>
+      </div>`;
+      // Ensure #standaloneResourceView exists in the template (category pages don't have it)
+      if (!html.includes('id="standaloneResourceView"')) {
+        html = html.replace(
+          '<div class="gr" id="g"></div>',
+          `<div id="standaloneResourceView" class="standalone-resource-container active" aria-live="polite">${resourceShell}</div>\n<div class="gr" id="g"></div>`
+        );
+      } else {
+        html = html.replace(
+          '<div id="standaloneResourceView" class="standalone-resource-container" aria-live="polite"></div>',
+          `<div id="standaloneResourceView" class="standalone-resource-container active" aria-live="polite">${resourceShell}</div>`
+        );
+      }
+      html = html.replace(
+        '<div class="gr" id="g"></div>', '<div class="gr" id="g" style="display:none"></div>'
+      );
+      html = html.replace('<div class="fl">', '<div class="fl" style="display:none">');
   } else {
     // Pre-render subtabs bar if route belongs to a group with subcategories
     const subs = SUBTAB_GROUPS[primaryTab];
@@ -819,6 +829,7 @@ module.exports = {
   ROUTE_CONFIG,
   resolveRouteKey,
   injectRouteHtml,
+  injectResourcePage: injectRouteHtml,
   getDocsInitialHtml,
   getSocialsInitialHtml
 };
