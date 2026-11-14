@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-11-10T14:34:07.910Z",
+  "timestamp": "2026-11-14T07:28:12.009Z",
   "specification": "WCAG 2.2 AA",
-  "totalAudited": 84,
+  "totalAudited": 82,
   "failuresCount": 0,
   "verdict": "PASS",
   "lowestFiveRatios": [
@@ -283,7 +283,7 @@
       },
       "effectiveOp": 1,
       "fontSize": 13.5,
-      "fontWeight": 600,
+      "fontWeight": 500,
       "tag": "button",
       "isLarge": false,
       "minRequired": 4.5,
@@ -317,62 +317,6 @@
       "minRequired": 4.5,
       "rawRatio": 18.01176631353611,
       "formattedRatio": "18.01",
-      "pass": true
-    },
-    {
-      "view": "Catalog Mods",
-      "route": "/mods/",
-      "component": "Active Subtab (Mods)",
-      "sel": ".subtab-btn.on",
-      "textSample": "Mods",
-      "fg": {
-        "r": 24,
-        "g": 12,
-        "b": 46,
-        "a": 1
-      },
-      "bg": {
-        "r": 253,
-        "g": 252,
-        "b": 254,
-        "a": 1
-      },
-      "effectiveOp": 1,
-      "fontSize": 13,
-      "fontWeight": 600,
-      "tag": "button",
-      "isLarge": false,
-      "minRequired": 4.5,
-      "rawRatio": 18.155662726964895,
-      "formattedRatio": "18.15",
-      "pass": true
-    },
-    {
-      "view": "Catalog Mods",
-      "route": "/mods/",
-      "component": "Inactive Subtab",
-      "sel": ".subtab-btn:not(.on)",
-      "textSample": "Modpacks",
-      "fg": {
-        "r": 75,
-        "g": 56,
-        "b": 105,
-        "a": 1
-      },
-      "bg": {
-        "r": 253,
-        "g": 252,
-        "b": 254,
-        "a": 1
-      },
-      "effectiveOp": 1,
-      "fontSize": 13,
-      "fontWeight": 500,
-      "tag": "button",
-      "isLarge": false,
-      "minRequired": 4.5,
-      "rawRatio": 9.924399352285986,
-      "formattedRatio": "9.92",
       "pass": true
     },
     {
@@ -970,15 +914,15 @@
       "sel": ".rp-breadcrumb a",
       "textSample": "Home",
       "fg": {
-        "r": 107,
-        "g": 33,
-        "b": 168,
+        "r": 24,
+        "g": 12,
+        "b": 46,
         "a": 1
       },
       "bg": {
-        "r": 248,
-        "g": 244,
-        "b": 252,
+        "r": 255,
+        "g": 255,
+        "b": 255,
         "a": 1
       },
       "effectiveOp": 1,
@@ -987,8 +931,8 @@
       "tag": "a",
       "isLarge": false,
       "minRequired": 4.5,
-      "rawRatio": 8.029962907815587,
-      "formattedRatio": "8.02",
+      "rawRatio": 18.56963995306393,
+      "formattedRatio": "18.56",
       "pass": true
     },
     {
@@ -998,25 +942,25 @@
       "sel": ".rp-breadcrumb [aria-current=\"page\"]",
       "textSample": "Sodium",
       "fg": {
-        "r": 74,
-        "g": 56,
-        "b": 105,
+        "r": 24,
+        "g": 12,
+        "b": 46,
         "a": 1
       },
       "bg": {
-        "r": 248,
-        "g": 244,
-        "b": 252,
+        "r": 255,
+        "g": 255,
+        "b": 255,
         "a": 1
       },
       "effectiveOp": 1,
       "fontSize": 13,
-      "fontWeight": 400,
+      "fontWeight": 600,
       "tag": "span",
       "isLarge": false,
       "minRequired": 4.5,
-      "rawRatio": 9.383252604758594,
-      "formattedRatio": "9.38",
+      "rawRatio": 18.56963995306393,
+      "formattedRatio": "18.56",
       "pass": true
     },
     {
@@ -1089,7 +1033,7 @@
       },
       "bg": {
         "r": 248,
-        "g": 244,
+        "g": 245,
         "b": 255,
         "a": 1
       },
@@ -1099,8 +1043,8 @@
       "tag": "div",
       "isLarge": false,
       "minRequired": 4.5,
-      "rawRatio": 7.464634536577765,
-      "formattedRatio": "7.46",
+      "rawRatio": 7.511131468260424,
+      "formattedRatio": "7.51",
       "pass": true
     },
     {
@@ -1117,7 +1061,7 @@
       },
       "bg": {
         "r": 248,
-        "g": 244,
+        "g": 245,
         "b": 255,
         "a": 1
       },
@@ -1127,8 +1071,8 @@
       "tag": "b",
       "isLarge": false,
       "minRequired": 4.5,
-      "rawRatio": 17.13320327771817,
-      "formattedRatio": "17.13",
+      "rawRatio": 17.239925365504988,
+      "formattedRatio": "17.23",
       "pass": true
     },
     {
@@ -1173,7 +1117,7 @@
       },
       "bg": {
         "r": 242,
-        "g": 235,
+        "g": 236,
         "b": 255,
         "a": 1
       },
@@ -1183,8 +1127,8 @@
       "tag": "button",
       "isLarge": false,
       "minRequired": 4.5,
-      "rawRatio": 16.007720619928,
-      "formattedRatio": "16.00",
+      "rawRatio": 16.10927775671776,
+      "formattedRatio": "16.10",
       "pass": true
     },
     {
@@ -2354,7 +2298,7 @@
         "a": 1
       },
       "effectiveOp": 1,
-      "fontSize": 13.5,
+      "fontSize": 13,
       "fontWeight": 500,
       "tag": "button",
       "isLarge": false,
@@ -2382,7 +2326,7 @@
         "a": 1
       },
       "effectiveOp": 1,
-      "fontSize": 14,
+      "fontSize": 11,
       "fontWeight": 600,
       "tag": "button",
       "isLarge": false,
@@ -2410,7 +2354,7 @@
         "a": 1
       },
       "effectiveOp": 1,
-      "fontSize": 14,
+      "fontSize": 11,
       "fontWeight": 600,
       "tag": "button",
       "isLarge": false,

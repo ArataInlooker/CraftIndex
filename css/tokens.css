@@ -293,6 +293,12 @@ html[data-theme="light"] body {
   --t: var(--colors-text-primary);
   --t-muted: var(--colors-text-muted);
   --t-accent: var(--brand-400);
+  /* Resource category badges - light theme */
+  .cat-mods {
+    background: rgba(14, 165, 233, 0.12);
+    border-color: rgba(14, 165, 233, 0.35);
+    color: #0369a1;
+  }
   --w: #fcf4ff;
   --on: #26102e;
   --g: linear-gradient(135deg, var(--b2), var(--b));
@@ -443,3 +449,4 @@ html.ci-scroll-locked body {
     scroll-behavior: auto !important;
   }
 }
+
