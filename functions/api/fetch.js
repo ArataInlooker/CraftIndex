@@ -29,6 +29,26 @@ const SECURITY_HEADERS = {
   'Access-Control-Allow-Headers': 'Content-Type, x-api-key, Authorization'
 };
 
+// Strip sensitive implementation details from error messages before
+// returning them to clients. Prevents leakage of internal host names,
+// stack traces, and connection specifics.
+function sanitizeError(err) {
+  const msg = String(err && err.message ? err.message : err || 'Unknown error');
+  return msg
+    .replace(/ECONNREFUSED[^)]*\)/g, 'connection refused')
+    .replace(/ENOTFOUND[^)]*\)/g, 'host not found')
+    .replace(/ETIMEDOUT[^)]*\)/g, 'connection timed out')
+    .replace(/ECONNRESET[^)]*\)/g, 'connection reset')
+    .replace(/EHOSTUNREACH[^)]*\)/g, 'host unreachable')
+    .replace(/EACCES[^)]*\)/g, 'access denied')
+    .replace(/[0-9]{1,3}(\.[0-9]{1,3}){3}/g, '[redacted-ip]')
+    .replace(/localhost/g, '[redacted-host]')
+    .replace(/127\.0\.0\.1/g, '[redacted-host]')
+    .replace(/::1/g, '[redacted-host]')
+    .replace(/169\.254\.169\.254/g, '[redacted-host]')
+    .replace(/https?:\/\/[^/\s]+/g, '[redacted-url]');
+}
+
 const MAX_RESPONSE_SIZE = 50 * 1024 * 1024; // 50 MB
 const TIMEOUT_MS = 10000; // 10 seconds
 
@@ -178,7 +198,7 @@ export async function onRequest(context) {
   } catch (err) {
     const isTimeout = err.name === 'AbortError';
     return new Response(JSON.stringify({
-      error: isTimeout ? 'Upstream request timed out (10s)' : 'Internal proxy error: ' + err.message
+      error: isTimeout ? 'Upstream request timed out (10s)' : 'Internal proxy error: ' + sanitizeError(err)
     }), {
       status: isTimeout ? 504 : 502,
       headers: { 'Content-Type': 'application/json', ...SECURITY_HEADERS }

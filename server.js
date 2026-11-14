@@ -134,6 +134,26 @@ function sendProxyError(res, code, message) {
   }
 }
 
+// Strip sensitive implementation details from error messages before
+// returning them to clients. Prevents leakage of internal host names,
+// stack traces, and connection specifics.
+function sanitizeError(err) {
+  const msg = String(err && err.message ? err.message : err || 'Unknown error');
+  return msg
+    .replace(/ECONNREFUSED[^)]*\)/g, 'connection refused')
+    .replace(/ENOTFOUND[^)]*\)/g, 'host not found')
+    .replace(/ETIMEDOUT[^)]*\)/g, 'connection timed out')
+    .replace(/ECONNRESET[^)]*\)/g, 'connection reset')
+    .replace(/EHOSTUNREACH[^)]*\)/g, 'host unreachable')
+    .replace(/EACCES[^)]*\)/g, 'access denied')
+    .replace(/[0-9]{1,3}(\.[0-9]{1,3}){3}/g, '[redacted-ip]')
+    .replace(/localhost/g, '[redacted-host]')
+    .replace(/127\.0\.0\.1/g, '[redacted-host]')
+    .replace(/::1/g, '[redacted-host]')
+    .replace(/169\.254\.169\.254/g, '[redacted-host]')
+    .replace(/https?:\/\/[^/\s]+/g, '[redacted-url]');
+}
+
 const server = http.createServer((req, res) => {
   // CORS preflight support
   if (req.method === 'OPTIONS') {
@@ -202,13 +222,13 @@ const server = http.createServer((req, res) => {
       });
 
       proxyReq.on('error', (err) => {
-        sendProxyError(res, 502, 'Upstream connection error: ' + err.message);
+        sendProxyError(res, 502, 'Upstream connection error: ' + sanitizeError(err));
       });
 
       req.pipe(proxyReq);
       return;
     } catch (err) {
-      return sendProxyError(res, 500, 'Internal proxy error: ' + err.message);
+      return sendProxyError(res, 500, 'Internal proxy error: ' + sanitizeError(err));
     }
   }
 
@@ -245,7 +265,7 @@ const server = http.createServer((req, res) => {
     });
 
     proxyReq.on('error', (err) => {
-      sendProxyError(res, 502, 'CurseForge proxy error: ' + err.message);
+      sendProxyError(res, 502, 'CurseForge proxy error: ' + sanitizeError(err));
     });
 
     res.on('close', () => {
@@ -278,14 +298,14 @@ const server = http.createServer((req, res) => {
         proxyRes.pipe(res);
       });
       proxyReq.on('error', (err) => {
-        sendProxyError(res, 502, 'Sponge proxy error: ' + err.message);
+        sendProxyError(res, 502, 'Sponge proxy error: ' + sanitizeError(err));
       });
       res.on('close', () => {
         if (!res.writableEnded && !proxyReq.destroyed) proxyReq.destroy();
       });
       req.pipe(proxyReq);
     }).catch((err) => {
-      sendProxyError(res, 502, 'Sponge auth error: ' + err.message);
+      sendProxyError(res, 502, 'Sponge auth error: ' + sanitizeError(err));
     });
     return;
   }
@@ -309,7 +329,7 @@ const server = http.createServer((req, res) => {
       proxyRes.pipe(res);
     });
     proxyReq.on('error', (err) => {
-      sendProxyError(res, 502, 'Hangar proxy error: ' + err.message);
+      sendProxyError(res, 502, 'Hangar proxy error: ' + sanitizeError(err));
     });
     res.on('close', () => {
       if (!res.writableEnded && !proxyReq.destroyed) proxyReq.destroy();
@@ -337,7 +357,7 @@ const server = http.createServer((req, res) => {
       proxyRes.pipe(res);
     });
     proxyReq.on('error', (err) => {
-      sendProxyError(res, 502, 'Spiget proxy error: ' + err.message);
+      sendProxyError(res, 502, 'Spiget proxy error: ' + sanitizeError(err));
     });
     res.on('close', () => {
       if (!res.writableEnded && !proxyReq.destroyed) proxyReq.destroy();
@@ -365,7 +385,7 @@ const server = http.createServer((req, res) => {
       proxyRes.pipe(res);
     });
     proxyReq.on('error', (err) => {
-      sendProxyError(res, 502, 'Polymart proxy error: ' + err.message);
+      sendProxyError(res, 502, 'Polymart proxy error: ' + sanitizeError(err));
     });
     res.on('close', () => {
       if (!res.writableEnded && !proxyReq.destroyed) proxyReq.destroy();
@@ -393,7 +413,7 @@ const server = http.createServer((req, res) => {
       proxyRes.pipe(res);
     });
     proxyReq.on('error', (err) => {
-      sendProxyError(res, 502, 'Smithed proxy error: ' + err.message);
+      sendProxyError(res, 502, 'Smithed proxy error: ' + sanitizeError(err));
     });
     res.on('close', () => {
       if (!res.writableEnded && !proxyReq.destroyed) proxyReq.destroy();
@@ -421,7 +441,7 @@ const server = http.createServer((req, res) => {
       proxyRes.pipe(res);
     });
     proxyReq.on('error', (err) => {
-      sendProxyError(res, 502, 'GitHub proxy error: ' + err.message);
+      sendProxyError(res, 502, 'GitHub proxy error: ' + sanitizeError(err));
     });
     res.on('close', () => {
       if (!res.writableEnded && !proxyReq.destroyed) proxyReq.destroy();
