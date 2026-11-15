@@ -181,6 +181,66 @@ async function main() {
   check('server.js Strict-Transport-Security no preload', serverSource.includes("'Strict-Transport-Security': 'max-age=31536000'"));
   check('server.js no preload in HSTS', !serverSource.includes("'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload'"));
   check('server.js X-Content-Type-Options', serverSource.includes("'X-Content-Type-Options': 'nosniff'"));
+
+  // ── Test 9: Cache Hit Header Refresh ──
+  console.log('\n9. Cache Hit Header Refresh (resource_render route)');
+
+  const routeSSRSource = fs.readFileSync(
+    path.resolve(__dirname, '..', 'functions', '[[route]].js'),
+    'utf-8'
+  );
+
+  // Import the buildCacheKey function, RESOURCE_CACHE_VERSION, and HTML_HEADERS
+  const routeMod = await import('../functions/[[route]].js');
+
+  check('RESOURCE_CACHE_VERSION is defined', routeMod.RESOURCE_CACHE_VERSION === 'v2');
+  check('buildCacheKey is exported', typeof routeMod.buildCacheKey === 'function');
+  check('HTML_HEADERS is exported', typeof routeMod.HTML_HEADERS === 'object');
+
+  // Cache key normalization tests
+  const baseUrl = 'https://craftindex.inlooker.top/mods/sodium/';
+  const baseKey = routeMod.buildCacheKey(baseUrl);
+  check('buildCacheKey returns a Request', baseKey instanceof Request);
+  check('buildCacheKey URL contains cache version param', baseKey.url.includes('__ci_resource_cache=v2'));
+  check('buildCacheKey URL path ends with trailing slash', new URL(baseKey.url).pathname === '/mods/sodium/');
+
+  // Irrelevant query parameters should not create extra cache variants
+  const noisyUrl = 'https://craftindex.inlooker.top/mods/sodium/?utm_source=twitter&fbclid=abc123&_cb=xyz';
+  const noisyKey = routeMod.buildCacheKey(noisyUrl);
+  check('Noisy URL produces same cache key as clean URL', noisyKey.url === baseKey.url);
+
+  // Trailing slash normalization
+  const noTrailingUrl = 'https://craftindex.inlooker.top/mods/sodium';
+  const noTrailingKey = routeMod.buildCacheKey(noTrailingUrl);
+  check('No trailing slash produces same cache key as with trailing slash', noTrailingKey.url === baseKey.url);
+
+  // Different slugs produce different keys
+  const otherSlugKey = routeMod.buildCacheKey('https://craftindex.inlooker/mods/fabric-api/');
+  check('Different slug produces different cache key', otherSlugKey.url !== baseKey.url);
+
+  // Cache hit header refresh simulation
+  // Simulate a cached response with OLD headers (missing X-Frame-Options, Permissions-Policy, etc.)
+  const cachedHeaders = new Headers({
+    'content-type': 'text/html; charset=utf-8',
+    'cache-control': 'public, max-age=3600, s-maxage=86400',
+    'x-craftindex-ssr': 'resource-page',
+    // Intentionally missing X-Frame-Options, Permissions-Policy, Strict-Transport-Security
+  });
+
+  const headers = new Headers(cachedHeaders);
+  for (const [key, value] of Object.entries(routeMod.HTML_HEADERS)) {
+    headers.set(key, value);
+  }
+
+  check('Reapplied headers include X-Frame-Options', headers.get('x-frame-options') === 'SAMEORIGIN');
+  check('Reapplied headers include Permissions-Policy', headers.get('permissions-policy') === 'camera=(), microphone=(), geolocation=(), payment=(), usb=()');
+  check('Reapplied headers include Strict-Transport-Security', headers.get('strict-transport-security') === 'max-age=31536000');
+  check('Reapplied headers include X-Content-Type-Options', headers.get('x-content-type-options') === 'nosniff');
+  check('Reapplied headers include Referrer-Policy', headers.get('referrer-policy') === 'strict-origin-when-cross-origin');
+  check('Reapplied headers include Content-Security-Policy', headers.get('content-security-policy').startsWith("default-src 'self'"));
+  check('Reapplied headers preserve Cache-Control', headers.get('cache-control') === 'public, max-age=3600, s-maxage=86400');
+  check('Reapplied headers preserve X-CraftIndex-SSR', headers.get('x-craftindex-ssr') === 'resource-page');
+
 }
 
 main().catch((err) => {

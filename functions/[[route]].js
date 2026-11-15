@@ -26,6 +26,24 @@ const HTML_HEADERS = {
   'content-security-policy': "default-src 'self'; script-src 'self' 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob:; font-src 'self' data:; connect-src 'self' https: blob:; worker-src 'self' blob:; object-src 'none'; base-uri 'self';"
 };
 
+// Increment this whenever the resource page HTML template or
+// server-rendered headers change, so previously cached responses
+// are not served with stale headers.
+const RESOURCE_CACHE_VERSION = 'v2';
+
+// Build a cache key that ignores arbitrary query parameters except the
+// internal cache version marker. This prevents tracking parameters and
+// cache-busting values from generating unlimited cache variants.
+function buildCacheKey(url) {
+  const parsed = new URL(url);
+  const pathname = parsed.pathname.replace(/\/+$/, '') + '/';
+  const cacheUrl = new URL(`${parsed.protocol}//${parsed.host}${pathname}`);
+  cacheUrl.searchParams.set('__ci_resource_cache', RESOURCE_CACHE_VERSION);
+  return new Request(cacheUrl.toString(), { method: 'GET' });
+}
+
+export { RESOURCE_CACHE_VERSION, buildCacheKey, HTML_HEADERS };
+
 function isResourceRoute(pathname) {
   const path = pathname.toLowerCase().replace(/\/+$/, '');
   const seg = path.split('/').filter(Boolean);
@@ -53,10 +71,23 @@ export async function onRequest(context) {
   }
 
   // Edge cache around fully-rendered resource pages.
-  const cacheKey = new Request(url.toString().replace(/\/+$/, '') + '/', { method: 'GET' });
+  const cacheKey = buildCacheKey(url);
   try {
     const cached = await caches.default.match(cacheKey);
-    if (cached) return cached;
+    if (cached) {
+      // Reapply current security headers so stale cache entries never
+      // serve outdated headers. Preserve body, status, and all other
+      // cached headers.
+      const headers = new Headers(cached.headers);
+      for (const [key, value] of Object.entries(HTML_HEADERS)) {
+        headers.set(key, value);
+      }
+      return new Response(cached.body, {
+        status: cached.status,
+        statusText: cached.statusText,
+        headers
+      });
+    }
   } catch (_) {}
 
   let resource = null;
