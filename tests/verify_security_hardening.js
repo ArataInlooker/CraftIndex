@@ -241,7 +241,101 @@ async function main() {
   check('Reapplied headers preserve Cache-Control', headers.get('cache-control') === 'public, max-age=3600, s-maxage=86400');
   check('Reapplied headers preserve X-CraftIndex-SSR', headers.get('x-craftindex-ssr') === 'resource-page');
 
+  // ── Test 10: Resource Resolution Error Handling ──
+  console.log('\n10. Resource Resolution Error Handling');
+
+  routeSSRSource2 = fs.readFileSync(
+    path.resolve(__dirname, '..', 'functions', '[[route]].js'),
+    'utf-8'
+  );
+
+  // resolveResource throws on provider error (not just 404)
+  check('resolveResource throws on provider error', routeSSRSource2.includes('throw lastErr'));
+  // resolveResource returns null on genuine not-found (all providers return null/404)
+  check('resolveResource returns null on total failure', routeSSRSource2.includes('return null'));
+  // Route handler returns 502 on provider error
+  check('route returns 502 on provider error', routeSSRSource2.includes('status: 502'));
+  // Route returns 404 on unknown resource
+  check('route returns 404 on unknown resource', routeSSRSource2.includes('status: 404'));
+  // Error responses include security headers
+  check('Error response includes security headers', routeSSRSource2.includes('...HTML_HEADERS'));
+  // Error responses are not cached as successful resource pages
+  const errorHandlingBlock = routeSSRSource2.substring(routeSSRSource2.indexOf('catch (err)'));
+  check('Error responses not cached as success', !errorHandlingBlock.includes('caches.default.put'));
+
+  // Functional test with mocked fetch
+  const { resolveResource } = await import('../functions/lib/resource_render.js');
+
+  const originalFetch = global.fetch;
+
+  // Test: Provider throws 502 → resolveResource throws
+  global.fetch = async () => {
+    throw new Error('ECONNREFUSED');
+  };
+  try {
+    await resolveResource('mods', 'nonexistent-mod', {});
+    check('resolveResource throws on provider error', false);
+  } catch (e) {
+    check('resolveResource throws on provider error', e.message.includes('ECONNREFUSED'));
+  }
+
+  // Test: All providers return 404 → resolveResource returns null
+  global.fetch = async () => {
+    return new Response(JSON.stringify({}), { status: 404 });
+  };
+  try {
+    const result = await resolveResource('mods', 'nonexistent-mod', {});
+    check('resolveResource returns null when all providers return 404', result === null);
+  } catch (e) {
+    check('resolveResource returns null on 404 from all providers', false);
+  }
+
+  // Test: All providers return null → resolveResource returns null
+  global.fetch = async () => {
+    return new Response(JSON.stringify({}), { status: 200 });
+  };
+  try {
+    const result = await resolveResource('mods', 'nonexistent-mod', {});
+    check('resolveResource returns null when all providers return null', result === null);
+  } catch (e) {
+    check('resolveResource returns null when all providers return null', false);
+  }
+
+  global.fetch = originalFetch;
+
+  // ── Test 10b: Error Response Handling ──
+  console.log('\n10b. Resource Error Response Handling');
+
+  console.log('\n10b. Resource Error Response Handling');
+
+  routeSSRSource2 = fs.readFileSync(
+    path.resolve(__dirname, '..', 'functions', '[[route]].js'),
+    'utf-8'
+  );
+
+  // Provider error (502) → route returns 502
+  check('route returns 502 on provider 502 error', routeSSRSource2.includes('status: 502'));
+
+  // Provider timeout/network failure → route returns 503
+  check('route returns 503 on provider timeout/network failure', routeSSRSource2.includes('status: 503'));
+
+  // Rate limiting → 429 (preserved from existing logic)
+  check('route returns 429 on rate limit', routeSSRSource2.includes('status: 429'));
+
+  // Error responses have Cache-Control: no-store
+  check('error response has no-store Cache-Control', routeSSRSource2.includes("'cache-control': 'no-store'"));
+
+  // Resource 404 response has Cache-Control: no-store
+  check('resource 404 response has no-store Cache-Control', routeSSRSource2.includes("'cache-control': 'no-store'"));
+
+  // Error responses are NOT cached (no caches.default.put in error path)
+  const errorBlock = routeSSRSource2.substring(routeSSRSource2.indexOf('catch (err)'));
+  check('error responses not cached as successful resources', !errorBlock.includes('caches.default.put'));
+
+  // Successful resource responses ARE cached
+  check('successful responses are cached', routeSSRSource2.includes('caches.default.put'));
 }
+
 
 main().catch((err) => {
   console.error('Test runner error:', err);

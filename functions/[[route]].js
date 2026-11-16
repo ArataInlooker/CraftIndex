@@ -94,22 +94,30 @@ export async function onRequest(context) {
   try {
     resource = await resolveResource(route.category, route.slug, env);
   } catch (err) {
-    // Upstream provider outage: degrade to the static category page so the
-    // UX stays functional rather than erroring the whole route.
-    try {
-      const fallback = await env.ASSETS.fetch(new Request(url.origin + '/' + route.category + '/'));
-      return new Response(fallback.body, fallback);
-    } catch (_) {
-      const nf = await env.ASSETS.fetch(new Request(url.origin + '/404.html'));
-      return new Response(nf.body, { status: nf.status, headers: HTML_HEADERS });
+    // Provider outage: return 502 for genuine upstream errors, 503 for timeouts/network failures.
+    let statusCode = 502;
+    if (err.name === 'AbortError' || err.message.includes('timeout') || err.code === 'ETIMEDOUT' || err.code === 'ECONNREFUSED' || err.code === 'ENOTFOUND') {
+      statusCode = 503;
     }
+
+    return new Response(
+      JSON.stringify({ error: 'Upstream provider error' }),
+      {
+        status: statusCode,
+        headers: {
+          ...HTML_HEADERS,
+          'Content-Type': 'application/json',
+          'cache-control': 'no-store'
+        }
+      }
+    );
   }
 
   if (!resource) {
     const nf = await env.ASSETS.fetch(new Request(url.origin + '/404.html'));
     return new Response(nf.body, {
       status: 404,
-      headers: { ...HTML_HEADERS, 'cache-control': 'public, max-age=600' }
+      headers: { ...HTML_HEADERS, 'cache-control': 'no-store' }
     });
   }
 

@@ -219,7 +219,7 @@ export async function resolveResource(category, slug, env) {
       lastErr = e;
     }
   }
-  if (lastErr && lastErr.status && lastErr.status !== 404) throw lastErr;
+  if (lastErr && lastErr.status !== 404) throw lastErr;
   return null;
 }
 
